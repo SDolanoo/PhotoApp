@@ -48,7 +48,9 @@ fun DateFilter(
 ) {
     val today = Date()
 
-    var selectedOption by remember { mutableStateOf("") }
+    var selectedOption by filterController.dateSelectedOption
+
+//    var selectedOption by remember { mutableStateOf("week") }
     var customDateFrom by remember { mutableStateOf<Long?>(null) }
     var customDateTo by remember { mutableStateOf<Long?>(null) }
 
@@ -78,7 +80,7 @@ fun DateFilter(
             RadioButton(
                 selected = selectedOption == "week",
                 onClick = {
-                    selectedOption = "week"
+                    filterController.setDateSelectedOption("week")
                     val calendar = Calendar.getInstance()
                     calendar.time = today
                     calendar.add(Calendar.DAY_OF_YEAR, -7)
@@ -98,7 +100,7 @@ fun DateFilter(
             RadioButton(
                 selected = selectedOption == "month",
                 onClick = {
-                    selectedOption = "month"
+                    filterController.setDateSelectedOption("month")
                     val calendar = Calendar.getInstance()
                     calendar.time = today
                     calendar.set(Calendar.DAY_OF_MONTH, 1)
@@ -118,7 +120,7 @@ fun DateFilter(
             RadioButton(
                 selected = selectedOption == "year",
                 onClick = {
-                    selectedOption = "year"
+                    filterController.setDateSelectedOption("year")
                     val calendar = Calendar.getInstance()
                     calendar.time = today
                     calendar.set(Calendar.DAY_OF_YEAR, 1)
@@ -152,7 +154,7 @@ fun DateFilter(
                             awaitFirstDown(pass = PointerEventPass.Initial)
                             val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
                             if (upEvent != null) {
-                                selectedOption = "From"
+                                filterController.setDateSelectedOption("From")
                                 showDatePicker = true
                             }
                         }
@@ -180,7 +182,7 @@ fun DateFilter(
                             awaitFirstDown(pass = PointerEventPass.Initial)
                             val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
                             if (upEvent != null) {
-                                selectedOption = "To"
+                                filterController.setDateSelectedOption("To")
                                 showDatePicker = true
                             }
                         }

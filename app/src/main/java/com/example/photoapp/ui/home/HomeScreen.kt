@@ -1,6 +1,7 @@
 package com.example.photoapp.ui.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -36,7 +37,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,7 +60,8 @@ fun HomeScreen(
     var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
 
         topBar = {
             CenterAlignedTopAppBar(
@@ -138,7 +142,9 @@ fun ScrollContent(
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(1),
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .paint(painter = painterResource(R.drawable.main_background_image),
+                    contentScale = ContentScale.FillBounds),
             contentPadding = innerPadding,
             verticalItemSpacing = 2.dp,
             content = {

@@ -21,11 +21,17 @@ class FilterController(databaseViewModel: DatabaseViewModel) : ViewModel() {
     private val _dateRange = mutableStateOf<Pair<Date?, Date?>>(Pair(null, null))
     val dateRange = _dateRange
 
+    private val _dateSelectedOption = mutableStateOf("")
+    val dateSelectedOption = _dateSelectedOption
+
     private val _currentFakturyDateFilter = mutableStateOf("dataWystawienia")
     val currentFakturyDateFilter = _currentFakturyDateFilter
 
     private val _priceRange = mutableStateOf<Pair<Double?, Double?>>(Pair(null, null))
     val priceRange = _priceRange
+
+    private val _priceSelectedOption = mutableStateOf("")
+    val priceSelectedOption = _priceSelectedOption
 
     private val _currentFakturyPriceFilter = mutableStateOf("brutto")
     val currentFakturyPriceFilter = _currentFakturyPriceFilter
@@ -38,12 +44,20 @@ class FilterController(databaseViewModel: DatabaseViewModel) : ViewModel() {
         _dateRange.value = range
     }
 
+    fun setDateSelectedOption(option: String) {
+        _dateSelectedOption.value = option
+    }
+
     fun setCurrentFakturyDateFilter(filter: String) { // filter: dataWystawienia or dataSprzedazy
         _currentFakturyDateFilter.value = filter
     }
 
     fun setPriceRange(range: Pair<Double?, Double?>) {
         _priceRange.value = range
+    }
+
+    fun setPriceSelectedOption(option: String) {
+        _priceSelectedOption.value = option
     }
 
     fun setCurrentFakturyPriceFilter(filter: String) { // filter: brutto or netto

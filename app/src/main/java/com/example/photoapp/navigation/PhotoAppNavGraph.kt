@@ -213,12 +213,12 @@ fun PhotoAppNavGraph(
                 onBackClick = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)},
                 onParagonsFiltersApplied = { currentFilter, showFilters, lista ->
                     navGraphViewModel.setFilters(showFilters, lista)
-                    navController.navigate(PhotoAppDestinations.HOME_ROUTE)
+                    navController.navigate(PhotoAppDestinations.PARAGON_SCREEN_ROUTE)
                 },
                 onFakturyFiltersApplied = { currentFilter, showFilters, lista ->
                     navGraphViewModel.setCurrenltyShowing(currentFilter)
                     navGraphViewModel.setFakturyFilters(showFilters, lista)
-                    navController.navigate(PhotoAppDestinations.HOME_ROUTE)
+                    navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)
                 },
             )
         }

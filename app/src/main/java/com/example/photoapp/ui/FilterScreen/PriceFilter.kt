@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -26,12 +27,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Calendar
 
 @Composable
 fun PriceFilter(
     filterController: FilterController,
     onPriceRangeSelected: (Double?, Double?) -> Unit,
 ) {
+    var selectedOption by filterController.priceSelectedOption
+
     var selectedRange by remember { mutableStateOf<PriceRange?>(null) }
     var customFromPrice by remember { mutableStateOf("") }
     var customToPrice by remember { mutableStateOf("") }
@@ -64,9 +68,9 @@ fun PriceFilter(
                 PriceRange.From100To1000,
                 PriceRange.Above1000
             ),
-            selectedOption = selectedRange,
+            selectedOption = selectedOption,
             onOptionSelected = {
-                selectedRange = it
+                filterController.setPriceSelectedOption(it.id)
                 customFromPrice = ""
                 customToPrice = ""
                 onPriceRangeSelected(it.from, it.to)
@@ -121,7 +125,7 @@ fun PriceFilter(
 @Composable
 fun PriceRadioButtonGroup(
     options: List<PriceRange>,
-    selectedOption: PriceRange?,
+    selectedOption: String,
     onOptionSelected: (PriceRange) -> Unit
 ) {
     Column {
@@ -131,7 +135,7 @@ fun PriceRadioButtonGroup(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 RadioButton(
-                    selected = selectedOption == option,
+                    selected = selectedOption == option.id,
                     onClick = { onOptionSelected(option) }
                 )
                 Text(
@@ -143,10 +147,10 @@ fun PriceRadioButtonGroup(
     }
 }
 
-enum class PriceRange(val from: Double?, val to: Double?, val label: String) {
-    UpTo100(from = null, to = 100.0, label = "do 100,00"),
-    From100To1000(from = 100.0, to = 1000.0, label = "od 100,00 do 1000,00"),
-    Above1000(from = 1000.0, to = null, label = "powyżej 1000,00")
+enum class PriceRange(val id: String, val from: Double?, val to: Double?, val label: String) {
+    UpTo100(id = "1", from = null, to = 100.0, label = "do 100,00"),
+    From100To1000(id = "2", from = 100.0, to = 1000.0, label = "od 100,00 do 1000,00"),
+    Above1000(id = "3", from = 1000.0, to = null, label = "powyżej 1000,00")
 }
 
 fun validatePriceRange(from: String, to: String): Boolean {
