@@ -448,3 +448,37 @@ interface KategoriaDao {
     @Delete
     fun delete(kategoria: Kategoria)
 }
+
+@Dao
+interface RaportFiskalnyDao {
+
+    @Query("SELECT * FROM RaportFiskalny ORDER BY dataDodania")
+    fun getAllLiveRaportFiskalny(): LiveData<List<RaportFiskalny>>
+
+    @Insert
+    fun insert(raportFiskalny: RaportFiskalny): Long
+
+    @Update
+    fun update(raportFiskalny: RaportFiskalny)
+
+    @Delete
+    fun delete(raportFiskalny: RaportFiskalny)
+}
+
+@Dao
+interface ProduktRaportFiskalnyDao {
+    @Query("SELECT * FROM ProduktRaportFiskalny")
+    fun getAllLive(): LiveData<List<ProduktRaportFiskalny>>
+
+    @Query("SELECT * FROM ProduktRaportFiskalny WHERE raportFiskalnyId = :raportFiskalnyId ORDER BY nrPLU ASC")
+    fun getProductForRaportFiskalny(raportFiskalnyId: Int): List<ProduktRaportFiskalny>
+
+    @Insert
+    fun insert(produktRaportFiskalny: ProduktRaportFiskalny): Long
+
+    @Update
+    fun update(produktRaportFiskalny: ProduktRaportFiskalny)
+
+    @Delete
+    fun delete(produktRaportFiskalny: ProduktRaportFiskalny)
+}

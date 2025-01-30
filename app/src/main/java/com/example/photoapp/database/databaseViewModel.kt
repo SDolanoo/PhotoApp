@@ -11,6 +11,8 @@ import com.example.photoapp.database.data.Faktura
 import com.example.photoapp.database.data.Paragon
 import com.example.photoapp.database.data.ProduktFaktura
 import com.example.photoapp.database.data.ProduktParagon
+import com.example.photoapp.database.data.ProduktRaportFiskalny
+import com.example.photoapp.database.data.RaportFiskalny
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,6 +28,9 @@ class DatabaseViewModel @Inject constructor(
 
     val allLiveParagony: LiveData<List<Paragon>> = databaseRepository.allLiveParagony
     val allLiveFaktura: LiveData<List<Faktura>> = databaseRepository.allLiveFaktury
+    val allLiveRaportFiskalny: LiveData<List<RaportFiskalny>> = databaseRepository.allLiveRaportFiskalny
+    
+
 
     fun addUser(login: String, password: String, email: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -45,22 +50,18 @@ class DatabaseViewModel @Inject constructor(
         }
     }
 
+    // [START] PARAGON
+
     fun addRecipe(jsonString: String) {
         viewModelScope.launch(Dispatchers.IO) {
             databaseRepository.addRecipe(jsonString)
         }
     }
 
-    fun addFaktura(jsonString: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            databaseRepository.addFaktura(jsonString)
-        }
-    }
-
     fun getProductForParagon(paragonID: Int): List<ProduktParagon>  {
         return runBlocking {
             withContext(Dispatchers.IO) {
-             databaseRepository.getProductForParagon(paragonID)
+                databaseRepository.getProductForParagon(paragonID)
             }
         }
 //        viewModelScope.launch(Dispatchers.IO) {
@@ -68,14 +69,6 @@ class DatabaseViewModel @Inject constructor(
 //            withContext(Dispatchers.Main) { onResult(products) }
 //        }
 
-    }
-
-    fun getProductForFaktura(fakturaId: Int): List<ProduktFaktura> {
-        return runBlocking {
-            withContext(Dispatchers.IO) {
-                databaseRepository.getProductForFaktura(fakturaId)
-            }
-        }
     }
 
     fun fetchFilteredParagony(
@@ -92,6 +85,26 @@ class DatabaseViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 Log.i("Dolan", "Fetching Filtered Paragony")
                 databaseRepository.fetchFilteredParagony(startDate, endDate, minPrice, maxPrice)//, currentFilter)
+            }
+        }
+    }
+
+    // [END] PARAGON
+
+
+
+    // [START] FAKTURA
+
+    fun addFaktura(jsonString: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            databaseRepository.addFaktura(jsonString)
+        }
+    }
+
+    fun getProductForFaktura(fakturaId: Int): List<ProduktFaktura> {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                databaseRepository.getProductForFaktura(fakturaId)
             }
         }
     }
@@ -115,4 +128,42 @@ class DatabaseViewModel @Inject constructor(
             }
         }
     }
+
+    // [END] FAKTURA
+
+
+
+    // [START] RAPORT FISKALNY
+
+    fun addRaportFiskalny(jsonString: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            databaseRepository.addRaportFiskalny(jsonString)
+        }
+    }
+
+    fun getProductForRaportFiskalny(raportFiskalnyId: Int) {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                databaseRepository.getProductForRaportFiskalny(raportFiskalnyId)
+            }
+        }
+    }
+
+    fun updateRaportFiskalny(raportFiskalny: RaportFiskalny) {
+        databaseRepository.updateRaportFiskalny(raportFiskalny)
+    }
+
+    fun updateProduktRaportFiskalny(produktRaportFiskalny: ProduktRaportFiskalny) {
+        databaseRepository.updateProduktRaportFiskalny(produktRaportFiskalny)
+    }
+
+    fun fetchFilteredRaportFiskalny() {
+        /* TODO */
+    }
+
+    fun saveRaportFiskalnyToDatabase(jsonString: String) {
+        /* TODO */
+    }
+
+    // [END] REPORT
 }

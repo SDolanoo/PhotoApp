@@ -18,6 +18,10 @@ import com.example.photoapp.database.data.ProduktFaktura
 import com.example.photoapp.database.data.ProduktFakturaDao
 import com.example.photoapp.database.data.ProduktParagon
 import com.example.photoapp.database.data.ProduktParagonDao
+import com.example.photoapp.database.data.ProduktRaportFiskalny
+import com.example.photoapp.database.data.ProduktRaportFiskalnyDao
+import com.example.photoapp.database.data.RaportFiskalny
+import com.example.photoapp.database.data.RaportFiskalnyDao
 import com.example.photoapp.database.data.Sprzedawca
 import com.example.photoapp.database.data.SprzedawcaDao
 import com.example.photoapp.database.data.Uzytkownik
@@ -33,7 +37,8 @@ import javax.inject.Singleton
 @Database(
     entities = [
         Uzytkownik::class, Odbiorca::class, Sprzedawca::class, Paragon::class,
-        ProduktParagon::class, Faktura::class, ProduktFaktura::class, Kategoria::class
+        ProduktParagon::class, Faktura::class, ProduktFaktura::class, Kategoria::class,
+        RaportFiskalny::class, ProduktRaportFiskalny::class,
     ],
     version = 1
 )
@@ -47,6 +52,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun paragonDao(): ParagonDao
     abstract fun produktParagonDao(): ProduktParagonDao
     abstract fun kategoriaDao(): KategoriaDao
+    abstract fun raportFiskalnyDao(): RaportFiskalnyDao
+    abstract fun produktRaportFiskalnyDao(): ProduktRaportFiskalnyDao
+
     // Dodaj inne DAO według potrzeby
 
 }
@@ -118,6 +126,16 @@ object DatabaseModule {
     @Provides
     fun provideKategoriaDao(appDatabase: AppDatabase): KategoriaDao {
         return appDatabase.kategoriaDao()
+    }
+
+    @Provides
+    fun provideRaportFiskalnyDao(appDatabase: AppDatabase): RaportFiskalnyDao {
+        return appDatabase.raportFiskalnyDao()
+    }
+
+    @Provides
+    fun provideProduktRaportFiskalnyDao(appDatabase: AppDatabase): ProduktRaportFiskalnyDao {
+        return appDatabase.produktRaportFiskalnyDao()
     }
 
 }

@@ -74,11 +74,15 @@ class DatabaseRepository @Inject constructor(
     private val produktParagonDao: ProduktParagonDao,
     private val fakturaDao: FakturaDao,
     private val produktFakturaDao: ProduktFakturaDao,
-    private val kategoriaDao: KategoriaDao
+    private val kategoriaDao: KategoriaDao,
+    private val raportFiskalnyDao: RaportFiskalnyDao,
+    private val produktRaportFiskalnyDao: ProduktRaportFiskalnyDao,
 ){
     val allLiveParagony: LiveData<List<Paragon>> = paragonDao.getAllLiveParagony()
 
     val allLiveFaktury: LiveData<List<Faktura>> = fakturaDao.getAllLiveFaktury()
+
+    val allLiveRaportFiskalny: LiveData<List<RaportFiskalny>> = raportFiskalnyDao.getAllLiveRaportFiskalny()
 
     fun addUser(login: String, password: String, email: String) {
         uzytkownikDao.addUser(login, password, email)
@@ -92,6 +96,8 @@ class DatabaseRepository @Inject constructor(
         produktParagonDao.addTestRecipeProducts(paragonDao)
     }
 
+    // [START] PARAGON
+
     fun getAllParagony(callback: (List<Paragon>) -> Unit) {
         val result: List<Paragon> =  paragonDao.getAll()
         callback(result)
@@ -101,16 +107,8 @@ class DatabaseRepository @Inject constructor(
         saveParagonToDatabase(jsonInput = jsonString, uzytkownikId = 1)
     }
 
-    fun addFaktura(jsonString: String) {
-        saveFakturaToDatabase(jsonInput = jsonString, uzytkownikId = 1)
-    }
-
     fun getProductForParagon(paragonID: Int): List<ProduktParagon> {
         return produktParagonDao.getProductByParagonId(paragonID)
-    }
-
-    fun getProductForFaktura(fakturaId: Int): List<ProduktFaktura> {
-        return produktFakturaDao.getProductByFakturaId(fakturaId)
     }
 
     fun fetchFilteredParagony(
@@ -120,17 +118,6 @@ class DatabaseRepository @Inject constructor(
         maxPrice: Double?,
     ): List<Paragon> {
         return paragonDao.getFilteredParagony(startDate, endDate, minPrice, maxPrice)
-    }
-
-    fun fetchFilteredFaktury(
-        startDate: Date?,
-        endDate: Date?,
-        minPrice: Double?,
-        maxPrice: Double?,
-        filterDate: String,
-        filterPrice: String,
-    ): List<Faktura> {
-        return fakturaDao.getFilteredFaktury(startDate, endDate, minPrice, maxPrice, filterDate, filterPrice)
     }
 
     fun saveParagonToDatabase(
@@ -165,6 +152,29 @@ class DatabaseRepository @Inject constructor(
             )
             produktParagonDao.insert(produktParagon)
         }
+    }
+
+    // [END] PARAGON
+
+    // [START] FAKTURA
+
+    fun addFaktura(jsonString: String) {
+        saveFakturaToDatabase(jsonInput = jsonString, uzytkownikId = 1)
+    }
+
+    fun getProductForFaktura(fakturaId: Int): List<ProduktFaktura> {
+        return produktFakturaDao.getProductByFakturaId(fakturaId)
+    }
+
+    fun fetchFilteredFaktury(
+        startDate: Date?,
+        endDate: Date?,
+        minPrice: Double?,
+        maxPrice: Double?,
+        filterDate: String,
+        filterPrice: String,
+    ): List<Faktura> {
+        return fakturaDao.getFilteredFaktury(startDate, endDate, minPrice, maxPrice, filterDate, filterPrice)
     }
 
     fun saveFakturaToDatabase(jsonInput: String, uzytkownikId: Int) {
@@ -218,5 +228,35 @@ class DatabaseRepository @Inject constructor(
             produktFakturaDao.insert(produktFaktura)
         }
     }
+
+    // [END] FAKTURA
+
+    // [START] RAPORT FISKALNY
+
+    fun addRaportFiskalny(jsonString: String) {
+        saveRaportFiskalnyToDatabase(jsonString)
+    }
+
+    fun getProductForRaportFiskalny(raportFiskalnyId: Int): List<ProduktRaportFiskalny> {
+        return produktRaportFiskalnyDao.getProductForRaportFiskalny(raportFiskalnyId)
+    }
+
+    fun updateRaportFiskalny(raportFiskalny: RaportFiskalny) {
+        raportFiskalnyDao.update(raportFiskalny)
+    }
+
+    fun updateProduktRaportFiskalny(produktRaportFiskalny: ProduktRaportFiskalny) {
+        produktRaportFiskalnyDao.update(produktRaportFiskalny)
+    }
+
+    fun fetchFilteredRaportFiskalny() {
+        /* TODO */
+    }
+
+    fun saveRaportFiskalnyToDatabase(jsonString: String) {
+
+    }
+
+    // [END] REPORT
 
 }
