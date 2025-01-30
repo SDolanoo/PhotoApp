@@ -2,6 +2,7 @@ package com.example.photoapp.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -41,9 +42,12 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.photoapp.R
 
 
@@ -149,7 +153,12 @@ fun ScrollContent(
             verticalItemSpacing = 2.dp,
             content = {
                 item {
-                    FourCards(
+                    WelcomeCard(
+                        /* TODO */
+                    )
+                }
+                item {
+                    MainCards(
                         navigateToParagonScreen = navigateToParagonScreen,
                         navigateToFakturaScreen = navigateToFakturaScreen,
                         navigateToExcelPacker = navigateToExcelPacker
@@ -160,7 +169,35 @@ fun ScrollContent(
 }
 
 @Composable
-fun FourCards(
+fun WelcomeCard() {
+    Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
+        ElevatedCard(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
+            ),
+            modifier = Modifier
+                .size(width = 360.dp, 120.dp)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Welcome ___ \n" +
+                            "Thanks for using the app",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                )
+            }
+
+        }
+    }
+}
+
+@Composable
+fun MainCards(
     navigateToParagonScreen: () -> Unit,
     navigateToFakturaScreen: () -> Unit,
     navigateToExcelPacker: () -> Unit
@@ -270,7 +307,33 @@ fun FourCards(
                     )
                 }
             }
-            // [END] STATISTICS
+            // [END] EXCEL PACKER
+        }
+        // [START] RAPORT FISKALNY
+        Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
+            ElevatedCard(
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 6.dp
+                ),
+                modifier = Modifier
+                    .size(width = 180.dp, height = 240.dp)
+                    .padding(end = 5.dp)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Image(
+                        painter = painterResource(id = R.drawable.raport_fiskalny_obraz),
+                        contentDescription = "android image",
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = "Raport fiskalny",
+                        modifier = Modifier
+                            .padding(8.dp),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+            // [END] RAPORT FISKALNY
         }
     }
 }
