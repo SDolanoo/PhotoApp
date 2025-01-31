@@ -2,7 +2,10 @@ package com.example.photoapp.database.data
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import com.example.photoapp.utils.jsonTransformer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import java.text.SimpleDateFormat
@@ -233,8 +236,20 @@ class DatabaseRepository @Inject constructor(
 
     // [START] RAPORT FISKALNY
 
+    fun getAllRaportFiskalny(): List<RaportFiskalny> {
+        return raportFiskalnyDao.getAll()
+    }
+
     fun addRaportFiskalny(jsonString: String) {
         saveRaportFiskalnyToDatabase(jsonString)
+    }
+
+    fun insertRaportFiskalny(raportFiskalny: RaportFiskalny) {
+        raportFiskalnyDao.insert(raportFiskalny)
+    }
+
+    fun insertProduktRaportFiskalny(produktRaportFiskalny: ProduktRaportFiskalny) {
+        produktRaportFiskalnyDao.insert(produktRaportFiskalny)
     }
 
     fun getProductForRaportFiskalny(raportFiskalnyId: Int): List<ProduktRaportFiskalny> {

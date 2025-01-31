@@ -101,7 +101,7 @@ fun ExcelPacker(
             coroutineScope.launch {
                 isCircularIndicatorShowing = true
                 delay(3000)
-                exportRoomViewModel.exportToExcel(paragonListToShow)
+                exportRoomViewModel.exportToExcel("paragon", paragonListToShow)
                 isCircularIndicatorShowing = false
             }
         } else {
@@ -167,7 +167,7 @@ fun ExcelPacker(
                                 Log.i("Dolan", "Writing to Excel")
                                 isCircularIndicatorShowing = true
                                 delay(3000)
-                                exportRoomViewModel.exportToExcel(listToExport = paragonListToShow)
+                                exportRoomViewModel.exportToExcel("paragon", paragonListToShow)
                             }.invokeOnCompletion {
                                 isCircularIndicatorShowing = false
                             }
@@ -184,7 +184,7 @@ fun ExcelPacker(
                     coroutineScope.launch {
                         isCircularIndicatorShowing = true
                         delay(3000)
-                        exportRoomViewModel.exportToExcel(listToExport = paragonListToShow)
+                        exportRoomViewModel.exportToExcel("paragon", paragonListToShow)
                     }.invokeOnCompletion {
                         isCircularIndicatorShowing = false
                     }

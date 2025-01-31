@@ -1,4 +1,4 @@
-package com.example.photoapp.ui.paragonView
+package com.example.photoapp.ui.RaportFiskalny.Screen
 
 import android.content.pm.PackageManager
 import android.os.Build
@@ -20,8 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -47,7 +45,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -59,7 +56,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.photoapp.R
 import com.example.photoapp.database.DatabaseViewModel
-import com.example.photoapp.database.data.Paragon
+import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.ui.ExcelPacker.ExportRoomViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -68,13 +65,13 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ParagonScreen(
+fun RaportFiskalnyScreen(
     navController: NavHostController,
     navigateToCameraView: (String)-> Unit,
-    navigateToParagonDetailsScreen: (Paragon) -> Unit,
+    navigateToRaportFiskalnyDetailsScreen: (RaportFiskalny) -> Unit,
     navigateToFiltersScreen: () -> Unit,
-    showFilteredParagons: Boolean,
-    paragonFilteredList: List<Paragon>,
+    showFilteredRaportyFiskalne: Boolean,
+    raportFiskalnyFilteredList: List<RaportFiskalny>,
     databaseViewModel: DatabaseViewModel = hiltViewModel(),
     exportRoomViewModel: ExportRoomViewModel = hiltViewModel()
 //    currentlyShowing: String,
@@ -83,13 +80,13 @@ fun ParagonScreen(
     var expanded by remember { mutableStateOf(false) }
 
     // hello
-    val allParagons by databaseViewModel.allLiveParagony.observeAsState(emptyList())
-    Log.i("Dolan", "Showing paragony: $allParagons")
+    val allRaportFiskalny by databaseViewModel.allLiveRaportFiskalny.observeAsState(emptyList())
+    Log.i("Dolan", "Showing paragony: $allRaportFiskalny")
 
-    val paragonListToShow = if (showFilteredParagons) {
-        paragonFilteredList
+    val raportFiskalnyListToShow = if (showFilteredRaportyFiskalne) {
+        raportFiskalnyFilteredList
     } else {
-        allParagons
+        allRaportFiskalny
     }
     // world
 
@@ -106,7 +103,10 @@ fun ParagonScreen(
             coroutineScope.launch {
                 isCircularIndicatorShowing = true
                 delay(3000)
-                exportRoomViewModel.exportToExcel("paragon", paragonListToShow)
+                exportRoomViewModel.exportToExcel(
+                    whatToExport = "raport fiskalny",
+                    listToExport = raportFiskalnyListToShow
+                )
                 isCircularIndicatorShowing = false
             }
         } else {
@@ -154,7 +154,10 @@ fun ParagonScreen(
                                         Log.i("Dolan", "Writing to Excel")
                                         isCircularIndicatorShowing = true
                                         delay(3000)
-                                        exportRoomViewModel.exportToExcel("paragon", listToExport = paragonListToShow)
+                                        exportRoomViewModel.exportToExcel(
+                                            whatToExport = "raport fiskalny",
+                                            listToExport = raportFiskalnyListToShow
+                                        )
                                     }.invokeOnCompletion {
                                         isCircularIndicatorShowing = false
                                     }
@@ -171,7 +174,10 @@ fun ParagonScreen(
                             coroutineScope.launch {
                                 isCircularIndicatorShowing = true
                                 delay(3000)
-                                exportRoomViewModel.exportToExcel("paragon", listToExport = paragonListToShow)
+                                exportRoomViewModel.exportToExcel(
+                                    whatToExport = "raport fiskalny",
+                                    listToExport = raportFiskalnyListToShow
+                                )
                             }.invokeOnCompletion {
                                 isCircularIndicatorShowing = false
                             }
@@ -205,8 +211,8 @@ fun ParagonScreen(
 
         ScrollContent(
             innerPadding,
-            paragonListToShow = paragonListToShow,
-            navigateToParagonDetailsScreen = navigateToParagonDetailsScreen,
+            raportFiskalnyListToShow = raportFiskalnyListToShow,
+            navigateToRaportFiskalnyDetailsScreen = navigateToRaportFiskalnyDetailsScreen,
         )
         DropdownMenu(
             expanded = expanded,
@@ -223,6 +229,13 @@ fun ParagonScreen(
                 text = { Text("Add Faktura") },
                 onClick = { navigateToCameraView("faktura") }
             )
+
+            HorizontalDivider()
+
+            DropdownMenuItem(
+                text = { Text("Raport Fiskalny") },
+                onClick = { navigateToCameraView("raport fiskalny") }
+            )
         }
     }
 }
@@ -230,13 +243,13 @@ fun ParagonScreen(
 
 @Composable
 fun ScrollContent(innerPadding: PaddingValues,
-                  paragonListToShow: List<Paragon>,
-                  navigateToParagonDetailsScreen: (Paragon) -> Unit,
+                  raportFiskalnyListToShow: List<RaportFiskalny>,
+                  navigateToRaportFiskalnyDetailsScreen: (RaportFiskalny) -> Unit,
 ) {
 
-    val groupedParagons = paragonListToShow
-        .sortedByDescending { it.dataZakupu }
-        .groupBy { it.dataZakupu }
+    val groupedRaportFiskalny = raportFiskalnyListToShow
+        .sortedByDescending { it.dataDodania }
+        .groupBy { it.dataDodania }
 
     val calendarIcon = Icons.Default.DateRange
 
@@ -247,7 +260,7 @@ fun ScrollContent(innerPadding: PaddingValues,
         contentPadding = innerPadding,
         verticalItemSpacing = 2.dp,
     ) {
-        groupedParagons.forEach { (date, paragonList) ->
+        groupedRaportFiskalny.forEach { (date, raportFiskalnyList) ->
             if (date != null) {
                 val dateformat = date.let {
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -269,17 +282,17 @@ fun ScrollContent(innerPadding: PaddingValues,
                         )
                     }
                 }
-                items(paragonList.size) { index ->
-                    val paragon = paragonList[index]
+                items(raportFiskalnyList.size) { index ->
+                    val raportFiskalny = raportFiskalnyList[index]
                     Column {
                         if (index > 0) {
                             HorizontalDivider(thickness = 1.dp)
                         }
-                        ParagonItem(
-                            paragon = paragon,
-                            navigateToParagonDetailsScreen = navigateToParagonDetailsScreen
+                        RaportFiskalnyItem(
+                            raportFiskalny = raportFiskalny,
+                            navigateToRaportFiskalnyDetailsScreen = navigateToRaportFiskalnyDetailsScreen
                         )
-                        if (index == paragonList.size - 1) {
+                        if (index == raportFiskalnyList.size - 1) {
                             Spacer(modifier = Modifier.height(10.dp))
                         }
                     }
@@ -291,17 +304,16 @@ fun ScrollContent(innerPadding: PaddingValues,
 }
 
 @Composable
-fun ParagonItem(paragon: Paragon, navigateToParagonDetailsScreen: (Paragon) -> Unit) {
-    val dateformat = paragon.dataZakupu?.let {
+fun RaportFiskalnyItem(raportFiskalny: RaportFiskalny, navigateToRaportFiskalnyDetailsScreen: (RaportFiskalny) -> Unit) {
+    val dateformat = raportFiskalny.dataDodania?.let {
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             .format(it)
     }
 
     ListItem(
-        modifier = Modifier.clickable { navigateToParagonDetailsScreen(paragon) },
+        modifier = Modifier.clickable { navigateToRaportFiskalnyDetailsScreen(raportFiskalny) },
         // jest clickable -> przenosi nas na inną strone, może navigation
         headlineContent = { Text("Data Zakupu: $dateformat") },
-        supportingContent = { Text(paragon.nazwaSklepu) },
-        trailingContent = { Text("${paragon.kwotaCalkowita}") }
+        supportingContent = { Text("$raportFiskalny.dataDodania") }
     )
 }

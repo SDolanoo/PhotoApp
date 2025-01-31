@@ -58,7 +58,8 @@ fun HomeScreen(
     navigateToCameraView: (String)-> Unit,
     navigateToParagonScreen: () -> Unit,
     navigateToFakturaScreen: () -> Unit,
-    navigateToExcelPacker: () -> Unit
+    navigateToExcelPacker: () -> Unit,
+    navigateToRaportFiskalnyScreen: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     var expanded by remember { mutableStateOf(false) }
@@ -114,7 +115,8 @@ fun HomeScreen(
                 innerPadding,
                 navigateToParagonScreen,
                 navigateToFakturaScreen,
-                navigateToExcelPacker)
+                navigateToExcelPacker,
+                navigateToRaportFiskalnyScreen)
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
@@ -140,7 +142,8 @@ fun ScrollContent(
     innerPadding: PaddingValues,
     navigateToParagonScreen: () -> Unit,
     navigateToFakturaScreen: () -> Unit,
-    navigateToExcelPacker: () -> Unit
+    navigateToExcelPacker: () -> Unit,
+    navigateToRaportFiskalnyScreen: () -> Unit,
     ) {
 
         LazyVerticalStaggeredGrid(
@@ -161,7 +164,8 @@ fun ScrollContent(
                     MainCards(
                         navigateToParagonScreen = navigateToParagonScreen,
                         navigateToFakturaScreen = navigateToFakturaScreen,
-                        navigateToExcelPacker = navigateToExcelPacker
+                        navigateToExcelPacker = navigateToExcelPacker,
+                        navigateToRaportFiskalnyScreen = navigateToRaportFiskalnyScreen,
                     )
                 }
             }
@@ -200,7 +204,8 @@ fun WelcomeCard() {
 fun MainCards(
     navigateToParagonScreen: () -> Unit,
     navigateToFakturaScreen: () -> Unit,
-    navigateToExcelPacker: () -> Unit
+    navigateToExcelPacker: () -> Unit,
+    navigateToRaportFiskalnyScreen: () -> Unit
     ) {
     Column {
         Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
@@ -317,7 +322,8 @@ fun MainCards(
                 ),
                 modifier = Modifier
                     .size(width = 180.dp, height = 240.dp)
-                    .padding(end = 5.dp)
+                    .padding(end = 5.dp),
+                onClick = navigateToRaportFiskalnyScreen
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(

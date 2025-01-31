@@ -455,6 +455,9 @@ interface RaportFiskalnyDao {
     @Query("SELECT * FROM RaportFiskalny ORDER BY dataDodania")
     fun getAllLiveRaportFiskalny(): LiveData<List<RaportFiskalny>>
 
+    @Query("SELECT * FROM RaportFiskalny")
+    fun getAll(): List<RaportFiskalny>
+
     @Insert
     fun insert(raportFiskalny: RaportFiskalny): Long
 

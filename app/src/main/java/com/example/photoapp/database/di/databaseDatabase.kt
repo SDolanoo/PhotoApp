@@ -38,7 +38,7 @@ import javax.inject.Singleton
     entities = [
         Uzytkownik::class, Odbiorca::class, Sprzedawca::class, Paragon::class,
         ProduktParagon::class, Faktura::class, ProduktFaktura::class, Kategoria::class,
-        RaportFiskalny::class, ProduktRaportFiskalny::class,
+        RaportFiskalny::class, ProduktRaportFiskalny::class
     ],
     version = 1
 )

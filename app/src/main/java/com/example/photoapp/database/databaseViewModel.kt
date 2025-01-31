@@ -135,13 +135,33 @@ class DatabaseViewModel @Inject constructor(
 
     // [START] RAPORT FISKALNY
 
+    fun getAllRaportFiskalny(): List<RaportFiskalny> {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                databaseRepository.getAllRaportFiskalny()
+            }
+        }
+    }
+
     fun addRaportFiskalny(jsonString: String) {
         viewModelScope.launch(Dispatchers.IO) {
             databaseRepository.addRaportFiskalny(jsonString)
         }
     }
 
-    fun getProductForRaportFiskalny(raportFiskalnyId: Int) {
+    fun insertRaportFiskalny(raportFiskalny: RaportFiskalny) {
+        viewModelScope.launch(Dispatchers.IO) {
+            databaseRepository.insertRaportFiskalny(raportFiskalny)
+        }
+    }
+
+    fun insertProduktRaportFiskalny(produktRaportFiskalny: ProduktRaportFiskalny) {
+        viewModelScope.launch(Dispatchers.IO) {
+            databaseRepository.insertProduktRaportFiskalny(produktRaportFiskalny)
+        }
+    }
+
+    fun getProductForRaportFiskalny(raportFiskalnyId: Int): List<ProduktRaportFiskalny> {
         return runBlocking {
             withContext(Dispatchers.IO) {
                 databaseRepository.getProductForRaportFiskalny(raportFiskalnyId)

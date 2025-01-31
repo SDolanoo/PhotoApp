@@ -7,6 +7,7 @@ import coil3.Bitmap
 import android.net.Uri
 import com.example.photoapp.database.data.Faktura
 import com.example.photoapp.database.data.Paragon
+import com.example.photoapp.database.data.RaportFiskalny
 
 class NavGraphViewModel : ViewModel() {
     // State for photo URI and Bitmap
@@ -45,6 +46,16 @@ class NavGraphViewModel : ViewModel() {
     private val _currentlyShowing = MutableLiveData("paragon")
     val currentlyShowing: LiveData<String> get() = _currentlyShowing
 
+    private val _raportFiskalnyViewedNow = MutableLiveData<RaportFiskalny?>(null)
+    val raportFiskalnyViewedNow: MutableLiveData<RaportFiskalny?> get() = _raportFiskalnyViewedNow
+
+    // State for filtered Raport Fiskalny
+    private val _showFilteredRaportyFiskalne = MutableLiveData(false)
+    val showFilteredRaportyFiskalne: LiveData<Boolean> get() = _showFilteredRaportyFiskalne
+
+    private val _raportFiskalnyFilteredList = MutableLiveData<List<RaportFiskalny>>(emptyList())
+    val raportFiskalnyFilteredList: LiveData<List<RaportFiskalny>> get() = _raportFiskalnyFilteredList
+
     // Functions to update states
     fun setPhotoUri(uri: Uri) {
         _photoUri.postValue(uri)
@@ -74,6 +85,15 @@ class NavGraphViewModel : ViewModel() {
     fun setFakturyFilters(showFilters: Boolean, filteredList: List<Faktura>) {
         _showFilteredFakturys.postValue(showFilters)
         _fakturaFilteredList.postValue(filteredList)
+    }
+
+    fun setRaportFiskalnyViewedNow(raport: RaportFiskalny) {
+        _raportFiskalnyViewedNow.postValue(raport)
+    }
+
+    fun setRaportFiskalnyFilters(showFilters: Boolean, filteredList: List<RaportFiskalny>) {
+        _showFilteredRaportyFiskalne.postValue(showFilters)
+        _raportFiskalnyFilteredList.postValue(filteredList)
     }
 
     fun setCurrenltyShowing(what: String) {

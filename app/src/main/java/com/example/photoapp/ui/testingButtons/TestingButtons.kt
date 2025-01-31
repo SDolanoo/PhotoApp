@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.photoapp.database.DatabaseViewModel
+import com.example.photoapp.database.data.ProduktRaportFiskalny
+import com.example.photoapp.database.data.RaportFiskalny
+import java.util.Calendar
 
 @Composable
 fun TestingButtons(
@@ -19,7 +22,9 @@ fun TestingButtons(
     Column(modifier = Modifier.padding(16.dp)) {
         Button(
             onClick = { backToHome() },
-            modifier = Modifier.fillMaxWidth().padding(top = 30.dp, bottom = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 30.dp, bottom = 8.dp)
         ) {
             Text(text = "Cofnij stronę")
         }
@@ -29,37 +34,87 @@ fun TestingButtons(
                 login = "dolan",
                 password = "123",
                 email = "dolan@dolan.com") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         ) {
             Text(text = "Add uzytkownik")
         }
 
         Button(
             onClick = { databaseViewModel.addTestRecipe() },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         ) {
             Text(text = "Add Test Paragony")
         }
 
         Button(
             onClick = { databaseViewModel.addTestRecipeProducts() },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         ) {
             Text(text = "Add Test Recipe Products")
         }
 
         Button(
             onClick = { /* TODO: addTestInvoices */ },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         ) {
             Text(text = "Add Test Invoices")
         }
 
         Button(
             onClick = { /* TODO: addTestInvoicesProducts */ },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         ) {
             Text(text = "Add Test Invoices Products")
+        }
+
+        Button(
+            onClick = {
+                for (i in 0 .. 13) {
+                    val raportFiskalny = RaportFiskalny(
+                        dataDodania = Calendar.getInstance().apply {
+                            set(2025, 1, i)
+                        }.time
+                    )
+                    databaseViewModel.insertRaportFiskalny(raportFiskalny)
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        ) {
+            Text(text = "Add Test Raporty Fiskalne")
+        }
+
+        Button(
+            onClick = {
+                val raporty = databaseViewModel.getAllRaportFiskalny()
+
+                for (raport in raporty) {
+                    for (i in 4 .. 8) {
+                        val produkt = ProduktRaportFiskalny(
+                            raportFiskalnyId = raport.id,
+                            nrPLU = "${i * 2}",
+                            ilosc = "${i * 3}"
+                        )
+                        databaseViewModel.insertProduktRaportFiskalny(produkt)
+                    }
+            }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        ) {
+            Text(text = "Add Test Produkty Raport Fiskalny")
         }
     }
 }

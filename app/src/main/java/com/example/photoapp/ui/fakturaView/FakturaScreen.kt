@@ -3,15 +3,18 @@ package com.example.photoapp.ui.fakturaView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -40,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil3.compose.AsyncImage
 import com.example.photoapp.database.DatabaseViewModel
 import com.example.photoapp.database.data.Faktura
 import java.text.SimpleDateFormat
@@ -156,6 +160,8 @@ fun ScrollContent(innerPadding: PaddingValues,
         .sortedByDescending { it.dataWystawienia }
         .groupBy { it.dataWystawienia }
 
+    val calendarIcon = Icons.Default.DateRange
+
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(1),
         modifier = Modifier
@@ -169,11 +175,19 @@ fun ScrollContent(innerPadding: PaddingValues,
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it)
                 }
                 item {
-                    Text(
-                        text=dateformat,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(start = 15.dp, top = 5.dp)
-                    )
+                    Row( modifier = Modifier.padding(start = 15.dp, top = 5.dp) ) {
+                        Icon(
+                            imageVector = calendarIcon,
+                            contentDescription = "Calendar icon",
+                            modifier = Modifier.padding(start = 1.dp, end = 5.dp)
+                        )
+                        Text(
+                            text=dateformat,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(start = 5.dp, end = 5.dp)
+                        )
+                    }
+
                 }
                 items(fakturaList.size) { index ->
                     val faktura = fakturaList[index]
