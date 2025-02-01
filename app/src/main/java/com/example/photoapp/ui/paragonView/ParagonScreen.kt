@@ -61,9 +61,12 @@ import com.example.photoapp.R
 import com.example.photoapp.database.DatabaseViewModel
 import com.example.photoapp.database.data.Paragon
 import com.example.photoapp.ui.ExcelPacker.ExportRoomViewModel
+import com.example.photoapp.utils.normalizedDate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,6 +94,12 @@ fun ParagonScreen(
     } else {
         allParagons
     }
+
+    val groupedParagons = paragonListToShow
+        .sortedByDescending { it.dataZakupu }
+        .groupBy { paragon ->
+            paragon.dataZakupu?.normalizedDate()
+        }
     // world
 
     //[START] Excel Packer
@@ -205,7 +214,7 @@ fun ParagonScreen(
 
         ScrollContent(
             innerPadding,
-            paragonListToShow = paragonListToShow,
+            groupedParagons = groupedParagons,
             navigateToParagonDetailsScreen = navigateToParagonDetailsScreen,
         )
         DropdownMenu(
@@ -230,13 +239,11 @@ fun ParagonScreen(
 
 @Composable
 fun ScrollContent(innerPadding: PaddingValues,
-                  paragonListToShow: List<Paragon>,
+                  groupedParagons: Map<Date?, List<Paragon>>,
                   navigateToParagonDetailsScreen: (Paragon) -> Unit,
 ) {
 
-    val groupedParagons = paragonListToShow
-        .sortedByDescending { it.dataZakupu }
-        .groupBy { it.dataZakupu }
+    Log.i("Dolan","Grouped Paragons $groupedParagons")
 
     val calendarIcon = Icons.Default.DateRange
 

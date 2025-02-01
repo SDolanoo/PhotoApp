@@ -46,6 +46,7 @@ import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.example.photoapp.database.DatabaseViewModel
 import com.example.photoapp.database.data.Faktura
+import com.example.photoapp.utils.normalizedDate
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -158,7 +159,7 @@ fun ScrollContent(innerPadding: PaddingValues,
 
     val groupedFaktury = faktury
         .sortedByDescending { it.dataWystawienia }
-        .groupBy { it.dataWystawienia }
+        .groupBy { faktura -> faktura.dataWystawienia?.normalizedDate() }
 
     val calendarIcon = Icons.Default.DateRange
 

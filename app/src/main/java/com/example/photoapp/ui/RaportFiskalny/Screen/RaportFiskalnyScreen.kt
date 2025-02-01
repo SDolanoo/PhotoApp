@@ -59,6 +59,7 @@ import com.example.photoapp.database.DatabaseViewModel
 import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.navigation.PhotoAppDestinations
 import com.example.photoapp.ui.ExcelPacker.ExportRoomViewModel
+import com.example.photoapp.utils.normalizedDate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -250,7 +251,9 @@ fun ScrollContent(innerPadding: PaddingValues,
 
     val groupedRaportFiskalny = raportFiskalnyListToShow
         .sortedByDescending { it.dataDodania }
-        .groupBy { it.dataDodania }
+        .groupBy { raport ->
+            raport.dataDodania?.normalizedDate()
+        }
 
     val calendarIcon = Icons.Default.DateRange
 
@@ -277,7 +280,7 @@ fun ScrollContent(innerPadding: PaddingValues,
                                 .size(24.dp * 0.8f)
                         )
                         Text(
-                            text=dateformat,
+                            text = dateformat,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(top = 9.dp)
                         )
