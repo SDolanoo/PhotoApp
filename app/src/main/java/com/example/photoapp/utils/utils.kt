@@ -2,6 +2,8 @@ package com.example.photoapp.utils
 
 import android.util.Log
 import kotlinx.serialization.json.*
+import java.util.Calendar
+import java.util.Date
 
 fun jsonTransformer(jsonInput: String, defaultValue: String? = null): String {
     Log.i("Dolan", "Json before transformation: $jsonInput")
@@ -26,4 +28,14 @@ fun jsonTransformer(jsonInput: String, defaultValue: String? = null): String {
     val resultJson = Json.encodeToString(transformedJson)
     Log.i("Dolan", "Json after transformation: $resultJson")
     return resultJson
+}
+
+fun Date.normalizedDate(): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = this
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+    return calendar.time
 }
