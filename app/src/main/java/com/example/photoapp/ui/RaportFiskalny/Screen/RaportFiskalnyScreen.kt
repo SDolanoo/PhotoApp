@@ -57,6 +57,7 @@ import androidx.navigation.NavHostController
 import com.example.photoapp.R
 import com.example.photoapp.database.DatabaseViewModel
 import com.example.photoapp.database.data.RaportFiskalny
+import com.example.photoapp.navigation.PhotoAppDestinations
 import com.example.photoapp.ui.ExcelPacker.ExportRoomViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -137,7 +138,7 @@ fun RaportFiskalnyScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.navigate(PhotoAppDestinations.HOME_ROUTE) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },

@@ -470,8 +470,6 @@ interface RaportFiskalnyDao {
 
 @Dao
 interface ProduktRaportFiskalnyDao {
-    @Query("SELECT * FROM ProduktRaportFiskalny")
-    fun getAllLive(): LiveData<List<ProduktRaportFiskalny>>
 
     @Query("SELECT * FROM ProduktRaportFiskalny WHERE raportFiskalnyId = :raportFiskalnyId ORDER BY nrPLU ASC")
     fun getProductForRaportFiskalny(raportFiskalnyId: Int): List<ProduktRaportFiskalny>

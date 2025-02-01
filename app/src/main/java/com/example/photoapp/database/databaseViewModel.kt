@@ -29,7 +29,7 @@ class DatabaseViewModel @Inject constructor(
     val allLiveParagony: LiveData<List<Paragon>> = databaseRepository.allLiveParagony
     val allLiveFaktura: LiveData<List<Faktura>> = databaseRepository.allLiveFaktury
     val allLiveRaportFiskalny: LiveData<List<RaportFiskalny>> = databaseRepository.allLiveRaportFiskalny
-    
+//    val allLiveProduktRaportFiskalny: LiveData<List<ProduktRaportFiskalny>> = databaseRepository.allLiveProduktRaportFiskalny
 
 
     fun addUser(login: String, password: String, email: String) {
@@ -166,6 +166,12 @@ class DatabaseViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 databaseRepository.getProductForRaportFiskalny(raportFiskalnyId)
             }
+        }
+    }
+
+    fun deleteProduktRaportFiskalny(produktRaportFiskalny: ProduktRaportFiskalny) {
+        viewModelScope.launch(Dispatchers.IO) {
+            databaseRepository.deleteProduktRaportFiskalny(produktRaportFiskalny)
         }
     }
 

@@ -6,10 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.photoapp.database.data.DatabaseRepository
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.Callback
 import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
@@ -23,7 +25,7 @@ class RaportFiskalnyViewModel @Inject constructor(
     val produkty: StateFlow<List<ProduktRaportFiskalny>> = _produkty.asStateFlow()
 
     fun loadProducts(raportFiskalnyId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _produkty.value = repository.getProductForRaportFiskalny(raportFiskalnyId)
         }
     }
@@ -32,5 +34,19 @@ class RaportFiskalnyViewModel @Inject constructor(
         return date?.let {
             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it)
         } ?: "N/A"
+    }
+
+    fun deleteProduct(product: ProduktRaportFiskalny, callback:() -> Unit){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteProduktRaportFiskalny(product)
+            callback()
+        }
+    }
+
+    fun updateProduct(product: ProduktRaportFiskalny, callback: () -> Unit){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateProduktRaportFiskalny(product)
+            callback()
+        }
     }
 }

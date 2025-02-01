@@ -1,11 +1,17 @@
 package com.example.photoapp.ui.RaportFiskalny.Details
 
+import android.content.pm.PackageManager
+import android.os.Build
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,6 +20,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -24,12 +32,28 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.DpOffset
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.photoapp.R
 import com.example.photoapp.database.DatabaseViewModel
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.navigation.PhotoAppDestinations
+import com.example.photoapp.ui.ExcelPacker.ExportRoomViewModel
+import com.example.photoapp.ui.RaportFiskalny.Details.composables.Default.RFDefaultDetailsContent
+import com.example.photoapp.ui.RaportFiskalny.Details.composables.Default.RFDefaultTopAppBar
+import com.example.photoapp.ui.RaportFiskalny.Details.composables.IsEditing.RFEditingDetailsContent
+import com.example.photoapp.ui.RaportFiskalny.Details.composables.IsEditing.RFEditingTopAppBar
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -40,9 +64,8 @@ fun RaportFiskalnyDetailsScreen(
     raportFiskalny: RaportFiskalny?,
     viewModel: RaportFiskalnyViewModel = hiltViewModel()
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
-    var expanded by remember { mutableStateOf(false) }
+    var isCircularIndicatorShowing by remember { mutableStateOf(false) }
 
     val produkty by viewModel.produkty.collectAsState()
 
@@ -50,141 +73,62 @@ fun RaportFiskalnyDetailsScreen(
         raportFiskalny?.id?.let { viewModel.loadProducts(it) }
     }
 
+    var isEditing by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
+            if (isEditing == false) {
+                RFDefaultTopAppBar(
+                    navController = navController,
+                    isCircularIndicatorShowing={ trueOrFalse ->
+                        isCircularIndicatorShowing = trueOrFalse},
+                    changeEditingState = { trueOrFalse ->
+                        isEditing = trueOrFalse},
+                    produkty = produkty,
 
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text(
-                        "Centered Top App Bar",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigate(PhotoAppDestinations.RAPORT_FISKALNY_SCREEN_ROUTE) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { expanded = !expanded }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "More options")
-                    }
-                },
-                scrollBehavior = scrollBehavior,
-            )
+                )
+            } else {
+                RFEditingTopAppBar(
+                    navController = navController,
+                    changeEditingState = { trueOrFalse ->
+                        isEditing = trueOrFalse},
+                    produkty = produkty,
+                    viewModel = viewModel
+                )
+            }
         }
     ) { innerPadding ->
         if (raportFiskalny != null) {
-            RaportFiskalnyDetailsContent(
-                innerPadding = innerPadding,
-                raportFiskalny = raportFiskalny,
-                produkty=produkty,
-                viewModel = viewModel)
+            if (isEditing == false) {
+                RFDefaultDetailsContent(
+                    innerPadding = innerPadding,
+                    raportFiskalny = raportFiskalny,
+                    produkty = produkty,
+                    viewModel = viewModel
+                )
+            } else {
+                RFEditingDetailsContent(
+                    innerPadding = innerPadding,
+                    raportFiskalny = raportFiskalny,
+                    produkty = produkty,
+                    viewModel = viewModel
+                )
+            }
         }
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false}
-        ) {
-            DropdownMenuItem(
-                text = { Text("Edytuj")},
-                onClick = { /* TODO */}
-            )
-
-            HorizontalDivider()
-
-            DropdownMenuItem(
-                text = { Text("Usuń pola")},
-                onClick = { /* TODO */}
-            )
-
-            HorizontalDivider()
-
-            DropdownMenuItem(
-                text = { Text("Dodaj więcej")},
-                onClick = { /* TODO */}
-            )
-
-            HorizontalDivider()
-
-            DropdownMenuItem(
-                text = { Text("Przenieś dane")},
-                onClick = { /* TODO */}
-            )
-        }
-    }
-}
-
-@Composable
-fun RaportFiskalnyDetailsContent(
-    innerPadding: PaddingValues,
-    raportFiskalny: RaportFiskalny,
-    produkty: List<ProduktRaportFiskalny>,
-    viewModel: RaportFiskalnyViewModel) {
-    LazyColumn(
-        contentPadding = innerPadding,
-        modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .fillMaxSize()
-    ) {
-        item {
-            RaportFiskalnyDetailsRow(
-                label = "data_zakupu:",
-                value = viewModel.formatDate(raportFiskalny.dataDodania?.time)
-            )
-        }
-
-        item {
-            Text(
-                text = "produkty:",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-        }
-
-        produkty.forEach { product ->
-            item {
-                RaportFiskalnyProductDetails(
-                    nrPLU = product.nrPLU,
-                    quantity = product.ilosc.toString(),
+        if (isCircularIndicatorShowing) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.5f),
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
     }
 }
 
-@Composable
-fun RaportFiskalnyDetailsRow(label: String, value: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = label, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        Text(text = value, fontSize = 16.sp)
-    }
-}
-
-@Composable
-fun RaportFiskalnyProductDetails(nrPLU: String, quantity: String) {
-    Column(
-        modifier = Modifier.padding(vertical = 8.dp)
-    ) {
-        Row{
-            Text(text = "nrPLU", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Text(text = nrPLU, fontSize = 16.sp)
-        }
-        Row{
-            Text(text = "ilosc", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Text(text = quantity, fontSize = 14.sp)
-        }
-
-    }
-}

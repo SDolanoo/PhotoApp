@@ -87,6 +87,8 @@ class DatabaseRepository @Inject constructor(
 
     val allLiveRaportFiskalny: LiveData<List<RaportFiskalny>> = raportFiskalnyDao.getAllLiveRaportFiskalny()
 
+//    val allLiveProduktRaportFiskalny: LiveData<List<ProduktRaportFiskalny>> = produktRaportFiskalnyDao.getAllLiveProduktForRaportFiskalny(raportFiskalnyId = raportFiskalnyId)
+
     fun addUser(login: String, password: String, email: String) {
         uzytkownikDao.addUser(login, password, email)
     }
@@ -262,6 +264,10 @@ class DatabaseRepository @Inject constructor(
 
     fun updateProduktRaportFiskalny(produktRaportFiskalny: ProduktRaportFiskalny) {
         produktRaportFiskalnyDao.update(produktRaportFiskalny)
+    }
+
+    fun deleteProduktRaportFiskalny(produktRaportFiskalny: ProduktRaportFiskalny) {
+        produktRaportFiskalnyDao.delete(produktRaportFiskalny)
     }
 
     fun fetchFilteredRaportFiskalny() {
