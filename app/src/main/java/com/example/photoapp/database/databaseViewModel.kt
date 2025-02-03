@@ -149,6 +149,12 @@ class DatabaseViewModel @Inject constructor(
         }
     }
 
+    fun addProduktyRaportFiskalny(jsonString: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            databaseRepository.addRaportFiskalny(jsonString)
+        }
+    }
+
     fun insertRaportFiskalny(raportFiskalny: RaportFiskalny) {
         viewModelScope.launch(Dispatchers.IO) {
             databaseRepository.insertRaportFiskalny(raportFiskalny)
@@ -181,14 +187,6 @@ class DatabaseViewModel @Inject constructor(
 
     fun updateProduktRaportFiskalny(produktRaportFiskalny: ProduktRaportFiskalny) {
         databaseRepository.updateProduktRaportFiskalny(produktRaportFiskalny)
-    }
-
-    fun fetchFilteredRaportFiskalny() {
-        /* TODO */
-    }
-
-    fun saveRaportFiskalnyToDatabase(jsonString: String) {
-        /* TODO */
     }
 
     // [END] REPORT

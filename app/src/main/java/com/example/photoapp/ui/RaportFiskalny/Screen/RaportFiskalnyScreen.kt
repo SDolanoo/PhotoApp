@@ -79,7 +79,7 @@ fun RaportFiskalnyScreen(
 //    currentlyShowing: String,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    var expanded by remember { mutableStateOf(false) }
+//    var expanded by remember { mutableStateOf(false) }
 
     // hello
     val allRaportFiskalny by databaseViewModel.allLiveRaportFiskalny.observeAsState(emptyList())
@@ -143,67 +143,68 @@ fun RaportFiskalnyScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                actions = {
-                    IconButton(onClick = {
-                        Log.i("Dolan", "ASKING FOR PERMISSIOBNS")
-                        if (Build.VERSION.SDK_INT < 33) {
-                            when (PackageManager.PERMISSION_GRANTED) {
-                                ContextCompat.checkSelfPermission(
-                                    context,
-                                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                ) -> {
-                                    coroutineScope.launch {
-                                        Log.i("Dolan", "Writing to Excel")
-                                        isCircularIndicatorShowing = true
-                                        delay(3000)
-                                        exportRoomViewModel.exportToExcel(
-                                            whatToExport = "raport fiskalny",
-                                            listToExport = raportFiskalnyListToShow
-                                        )
-                                    }.invokeOnCompletion {
-                                        isCircularIndicatorShowing = false
-                                    }
-                                }
-
-                                else -> {
-                                    requestStoragePermission.launch(
-                                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                    )
-                                }
-                            }
-                        } else {
-                            Log.i("Dolan", "Writing to Excel")
-                            coroutineScope.launch {
-                                isCircularIndicatorShowing = true
-                                delay(3000)
-                                exportRoomViewModel.exportToExcel(
-                                    whatToExport = "raport fiskalny",
-                                    listToExport = raportFiskalnyListToShow
-                                )
-                            }.invokeOnCompletion {
-                                isCircularIndicatorShowing = false
-                            }
-                        }
-                        Log.i("Dolan", "NOTHING HAPPENED")
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.upload_file),
-                            contentDescription = "Localized description"
-                        )
-                    }
-                    IconButton(onClick = { navigateToFiltersScreen() }) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                },
+//                actions = {
+//                    IconButton(onClick = {
+//                        Log.i("Dolan", "ASKING FOR PERMISSIOBNS")
+//                        if (Build.VERSION.SDK_INT < 33) {
+//                            when (PackageManager.PERMISSION_GRANTED) {
+//                                ContextCompat.checkSelfPermission(
+//                                    context,
+//                                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+//                                ) -> {
+//                                    coroutineScope.launch {
+//                                        Log.i("Dolan", "Writing to Excel")
+//                                        isCircularIndicatorShowing = true
+//                                        delay(3000)
+//                                        exportRoomViewModel.exportToExcel(
+//                                            whatToExport = "raport fiskalny",
+//                                            listToExport = raportFiskalnyListToShow
+//                                        )
+//                                    }.invokeOnCompletion {
+//                                        isCircularIndicatorShowing = false
+//                                    }
+//                                }
+//
+//                                else -> {
+//                                    requestStoragePermission.launch(
+//                                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+//                                    )
+//                                }
+//                            }
+//                        } else {
+//                            Log.i("Dolan", "Writing to Excel")
+//                            coroutineScope.launch {
+//                                isCircularIndicatorShowing = true
+//                                delay(3000)
+//                                exportRoomViewModel.exportToExcel(
+//                                    whatToExport = "raport fiskalny",
+//                                    listToExport = raportFiskalnyListToShow
+//                                )
+//                            }.invokeOnCompletion {
+//                                isCircularIndicatorShowing = false
+//                            }
+//                        }
+//                        Log.i("Dolan", "NOTHING HAPPENED")
+//                    }) {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.upload_file),
+//                            contentDescription = "Localized description"
+//                        )
+//                    }
+//                    IconButton(onClick = { navigateToFiltersScreen() }) {
+//                        Icon(
+//                            imageVector = Icons.Filled.Add,
+//                            contentDescription = "Localized description"
+//                        )
+//                    }
+//                },
                 scrollBehavior = scrollBehavior,
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                expanded = !expanded
+//                expanded = !expanded
+                navigateToCameraView("raportFiskalny")
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
@@ -216,29 +217,29 @@ fun RaportFiskalnyScreen(
             raportFiskalnyListToShow = raportFiskalnyListToShow,
             navigateToRaportFiskalnyDetailsScreen = navigateToRaportFiskalnyDetailsScreen,
         )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            DropdownMenuItem(
-                text = { Text("Add Paragon") },
-                onClick = { navigateToCameraView("paragon") }
-            )
-
-            HorizontalDivider()
-
-            DropdownMenuItem(
-                text = { Text("Add Faktura") },
-                onClick = { navigateToCameraView("faktura") }
-            )
-
-            HorizontalDivider()
-
-            DropdownMenuItem(
-                text = { Text("Raport Fiskalny") },
-                onClick = { navigateToCameraView("raport fiskalny") }
-            )
-        }
+//        DropdownMenu(
+//            expanded = expanded,
+//            onDismissRequest = { expanded = false }
+//        ) {
+//            DropdownMenuItem(
+//                text = { Text("Add Paragon") },
+//                onClick = { navigateToCameraView("paragon") }
+//            )
+//
+//            HorizontalDivider()
+//
+//            DropdownMenuItem(
+//                text = { Text("Add Faktura") },
+//                onClick = { navigateToCameraView("faktura") }
+//            )
+//
+//            HorizontalDivider()
+//
+//            DropdownMenuItem(
+//                text = { Text("Raport Fiskalny") },
+//                onClick = { navigateToCameraView("raport fiskalny") }
+//            )
+//        }
     }
 }
 //}
@@ -318,6 +319,5 @@ fun RaportFiskalnyItem(raportFiskalny: RaportFiskalny, navigateToRaportFiskalnyD
         modifier = Modifier.clickable { navigateToRaportFiskalnyDetailsScreen(raportFiskalny) },
         // jest clickable -> przenosi nas na inną strone, może navigation
         headlineContent = { Text("Data Zakupu: $dateformat") },
-        supportingContent = { Text("$raportFiskalny.dataDodania") }
     )
 }

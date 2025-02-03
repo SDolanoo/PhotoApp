@@ -276,6 +276,9 @@ fun PhotoAppNavGraph(
             RaportFiskalnyDetailsScreen(
                 navController = navController,
                 raportFiskalny = raportFiskalnyViewedNow,
+                navigateToCameraView = { addingPhotoFor ->
+                    navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
+                    navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
             )
         }
 

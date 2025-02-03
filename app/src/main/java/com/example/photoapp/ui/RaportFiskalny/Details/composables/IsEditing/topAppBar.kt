@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.photoapp.database.data.ProduktRaportFiskalny
@@ -27,7 +28,8 @@ fun RFEditingTopAppBar(
     navController: NavHostController,
     changeEditingState: (Boolean) -> Unit,
     produkty: List<ProduktRaportFiskalny>,
-    viewModel: RaportFiskalnyViewModel
+    onAddingProduct: () -> Unit,
+    viewModel: RaportFiskalnyViewModel = hiltViewModel()
     ) {
 
     CenterAlignedTopAppBar(
@@ -49,7 +51,7 @@ fun RFEditingTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { changeEditingState(false) }) {
+            IconButton(onClick = { onAddingProduct() }) {
                 Icon(Icons.Default.Add, contentDescription = "Add one new Field")
             }
             IconButton(onClick = {

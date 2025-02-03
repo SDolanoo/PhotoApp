@@ -39,11 +39,15 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.photoapp.R
+import com.example.photoapp.database.data.DatabaseRepository
 import com.example.photoapp.database.data.ProduktRaportFiskalny
+import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.navigation.PhotoAppDestinations
 import com.example.photoapp.ui.ExcelPacker.ExportRoomViewModel
+import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -54,8 +58,11 @@ fun RFDefaultTopAppBar(
     navController: NavHostController,
     isCircularIndicatorShowing: (Boolean) -> Unit,
     changeEditingState: (Boolean) -> Unit,
+    raport: RaportFiskalny,
     produkty: List<ProduktRaportFiskalny>,
-    exportRoomViewModel: ExportRoomViewModel = hiltViewModel()
+    navigateToCameraView: (String) -> Unit,
+    exportRoomViewModel: ExportRoomViewModel = hiltViewModel(),
+    viewModel: RaportFiskalnyViewModel = hiltViewModel()
 ){
     //[START] Excel Packer
     val context = LocalContext.current
@@ -197,8 +204,12 @@ fun RFDefaultTopAppBar(
             HorizontalDivider()
 
             DropdownMenuItem(
-                text = { Text("Dodaj więcej") },
-                onClick = { /* TODO */}
+                text = { Text("Dodaj więcej produktów") },
+                onClick = {
+                    viewModel.setRaportInDBReporsitory(raport) // nie ma na razie innej opcji spaghetti AF
+                    navigateToCameraView("produktRaportFiskalny")
+
+                }
             )
         }
     }

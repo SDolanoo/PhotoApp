@@ -69,6 +69,18 @@ data class SprzedawcaDTO(
     @SerialName("adres") val adres: String = "none",
 )
 
+@Serializable
+data class ProduktRaportFiskalnyDTO(
+    @SerialName("nrPLU") val nrPLU: String = "none",
+    @SerialName("ilosc") val ilosc: String = "none"
+)
+
+@Serializable
+data class RaportFiskalnyDTO(
+    @SerialName("dataDodania") val dataDodania: String = "1999-01-01",
+    val produkty: List<ProduktRaportFiskalnyDTO>
+)
+
 class DatabaseRepository @Inject constructor(
     private val uzytkownikDao: UzytkownikDao,
     private val odbiorcaDao: OdbiorcaDao,
@@ -270,13 +282,62 @@ class DatabaseRepository @Inject constructor(
         produktRaportFiskalnyDao.delete(produktRaportFiskalny)
     }
 
-    fun fetchFilteredRaportFiskalny() {
-        /* TODO */
+    fun saveRaportFiskalnyToDatabase(jsonInput: String) {
+        // Deserializacja JSON
+        val coercingJson = Json { coerceInputValues = true }
+        val transformedJson = jsonTransformer(jsonInput)
+        val rfDTO = coercingJson.decodeFromString<RaportFiskalnyDTO>(transformedJson)
+        Log.i("Dolan", rfDTO.dataDodania)
+
+        // Konwersja na obiekty Room
+        val raport = RaportFiskalny(
+            dataDodania = SimpleDateFormat("yyyy-MM-dd").parse(rfDTO.dataDodania)
+        )
+
+        // Zapis do bazy danych
+        val raportId = raportFiskalnyDao.insert(raport)
+        Log.i("Dolan", "Raport inserted $raportId")
+        rfDTO.produkty.forEach { produktDTO ->
+            val produktRF = ProduktRaportFiskalny(
+                raportFiskalnyId = raportId.toInt(),
+                nrPLU = produktDTO.nrPLU,
+                ilosc = produktDTO.ilosc
+            )
+            produktRaportFiskalnyDao.insert(produktRF)
+        }
     }
 
-    fun saveRaportFiskalnyToDatabase(jsonString: String) {
-
+    fun addProduktyRaportFiskalny(jsonInput: String){
+        saveProduktyRaportFiskalnyToDatabase(jsonInput)
     }
+
+    var raportIDToAddProductTo: Int = 0
+
+    fun saveProduktyRaportFiskalnyToDatabase(jsonInput: String) {
+        // Deserializacja JSON
+        val coercingJson = Json { coerceInputValues = true }
+        val transformedJson = jsonTransformer(jsonInput)
+        // Dekodowanie listy produktów z JSON
+        val produktyList: List<ProduktRaportFiskalnyDTO> =
+            coercingJson.decodeFromString<ProduktyRaportFiskalnyWrapper>(transformedJson).produkty
+
+
+        // Zapis do bazy danych
+        val raportId = raportIDToAddProductTo
+        produktyList.forEach { produktDTO ->
+            val produktRF = ProduktRaportFiskalny(
+                raportFiskalnyId = raportId,
+                nrPLU = produktDTO.nrPLU,
+                ilosc = produktDTO.ilosc
+            )
+            produktRaportFiskalnyDao.insert(produktRF)
+        }
+    }
+
+    @Serializable
+    data class ProduktyRaportFiskalnyWrapper(
+        val produkty: List<ProduktRaportFiskalnyDTO>
+    )
 
     // [END] REPORT
 

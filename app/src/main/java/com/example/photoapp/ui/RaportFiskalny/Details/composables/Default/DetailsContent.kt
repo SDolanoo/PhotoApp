@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
@@ -23,7 +24,7 @@ fun RFDefaultDetailsContent(
     innerPadding: PaddingValues,
     raportFiskalny: RaportFiskalny,
     produkty: List<ProduktRaportFiskalny>,
-    viewModel: RaportFiskalnyViewModel
+    viewModel: RaportFiskalnyViewModel = hiltViewModel()
 ) {
     LazyColumn(
         contentPadding = innerPadding,
