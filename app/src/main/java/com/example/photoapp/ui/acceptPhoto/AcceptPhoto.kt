@@ -2,7 +2,7 @@ package com.example.photoapp.ui.acceptPhoto
 
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
+
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -35,138 +35,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
-import com.example.photoapp.AI.chatWithGeminiForFaktura
-import com.example.photoapp.AI.chatWithGeminiForParagon
 import com.example.photoapp.database.DatabaseViewModel
-import com.example.photoapp.database.data.FakturaDTO
-import com.example.photoapp.database.data.ParagonDTO
-import com.example.photoapp.database.data.ProduktFakturaDTO
-import com.example.photoapp.database.data.ProduktParagonDTO
-import kotlinx.serialization.json.Json
-
-class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
-    private var geminiPromptResult: String = ""
-
-    fun retry(imagePath: String) {
-        // Handle retry logic here
-    }
-
-    fun getPrompt(addingPhotoFor: String?, geminiKey: String, bitmapPhoto: Bitmap?, callback: (String) -> Unit) {
-        // Symulacja asynchronicznego pobierania danych
-        bitmapPhoto?.let {
-            if (addingPhotoFor == "paragon") {
-                Log.i("Dolan", "getting Prompt for paragon")
-                // Przykład wywołania asynchronicznej operacji, np. API call do chatWithGemini
-                chatWithGeminiForParagon(geminiKey, bitmapPhoto) { result ->
-                    geminiPromptResult = result
-                    callback(result)
-                }
-            } else if (addingPhotoFor == "faktura") {
-                Log.i("Dolan", "getting Prompt for faktura")
-                // Przykład wywołania asynchronicznej operacji, np. API call do chatWithGemini
-                chatWithGeminiForFaktura(geminiKey, bitmapPhoto) { result ->
-                    geminiPromptResult = result
-                    callback(result)
-                }
-            }
-        } ?: run {
-            callback("No valid image provided")
-        }
-    }
-
-    fun addRecipe() {
-        if (geminiPromptResult != "") {
-            Log.i("Dolan", "Adding Recipe")
-            databaseViewModel.addRecipe(jsonString = geminiPromptResult)
-            Log.i("Dolan", "added Recipe")
-        }
-    }
-
-    fun addInvoice() {
-        if (geminiPromptResult != "") {
-            Log.i("Dolan", "Adding Invoice")
-            databaseViewModel.addFaktura(jsonString = geminiPromptResult)
-            Log.i("Dolan", "added Invoice")
-        }
-    }
-
-    fun formatEachProduktParagon(produkty: List<ProduktParagonDTO>): String{
-        return produkty.joinToString(separator = "\n"){ produkt ->
-            """
-                nazwaProduktu: ${produkt.nazwaProduktu}
-                    cenaSuma: ${produkt.cenaSuma}
-                    ilosc: ${produkt.ilosc}
-            """
-        }
-    }
-
-    fun formatPromptForParagon(): String {
-        val coercingJson = Json { coerceInputValues = true }
-        val p = coercingJson.decodeFromString<ParagonDTO>(geminiPromptResult)
-        val resultString = """
-            Dane paragon:
-                nazwaSklepu: ${p.nazwaSklepu}
-                dataZakupu: ${p.dataZakupu}
-                kwotaCalkowita: ${p.kwotaCalkowita}
-            Produkty:
-                |${formatEachProduktParagon(p.produkty)}          
-        """.trimIndent().trimMargin("|")
-        return resultString
-    }
-
-    fun formatEachProduktFaktura(produkty: List<ProduktFakturaDTO>): String{
-        return produkty.joinToString(separator = "\n"){ produkt ->
-            """
-                nazwaProduktu: ${produkt.nazwaProduktu}
-                    jednostkaMiary: ${produkt.jednostkaMiary}
-                    ilosc: ${produkt.ilosc}
-                    wartoscNetto: ${produkt.wartoscNetto}
-                    stawkaVat: ${produkt.stawkaVat}
-                    podatekVat: ${produkt.podatekVat}
-                    brutto: ${produkt.brutto}
-            """
-        }
-    }
-
-    fun formatPromptForFaktura(): String {
-        val coercingJson = Json { coerceInputValues = true }
-        val f = coercingJson.decodeFromString<FakturaDTO>(geminiPromptResult)
-        val resultString = """
-            Sprzedawca: 
-                nazwa: ${f.sprzedawca.nazwa}
-                nip: ${f.sprzedawca.nip}
-                adres: ${f.sprzedawca.adres}
-            Odbiorca:
-                nazwa: ${f.odbiorca.nazwa}
-                nip: ${f.odbiorca.nip}
-                adres: ${f.odbiorca.adres}
-            Dane faktura:
-                numerFaktury: ${f.numerFaktury}
-                nrRachunkuBankowego: ${f.nrRachunkuBankowego}
-                dataWystawienia: ${f.dataWystawienia}
-                dataSprzedazy: ${f.dataSprzedazy}
-                razemNetto: ${f.razemNetto}
-                razemStawka: ${f.razemStawka}
-                razemPodatek: ${f.razemPodatek}
-                razemBrutto: ${f.razemBrutto}
-                waluta: ${f.waluta}
-                formaPlatnosci: ${f.formaPlatnosci}
-            Produkty:
-                |${formatEachProduktFaktura(f.produkty)}          
-        """.trimIndent().trimMargin("|")
-        return resultString
-    }
-
-    fun closeDialog() {
-        // bla bla
-    }
-}
+import com.example.photoapp.database.data.RaportFiskalny
 
 @Composable
 fun AcceptPhoto(
     photoUri: Uri?,
     bitmapPhoto: Bitmap?,
     addingPhotoFor: String?,
+    raportFiskalnyViewedNow: RaportFiskalny?,
     modifier: Modifier = Modifier.fillMaxSize(),
     contentDescription: String?,
     backToCameraView: () -> Unit,
@@ -224,8 +101,12 @@ fun AcceptPhoto(
                         isLoading = false
                         val textForDialog: String = if (addingPhotoFor == "paragon") {
                             acceptanceController.formatPromptForParagon()
-                        } else { // faktura
+                        } else if (addingPhotoFor == "faktura") { // faktura
                             acceptanceController.formatPromptForFaktura()
+                        } else if (addingPhotoFor == "raportFiskalny") { // faktura
+                            acceptanceController.formatPromptForRaportFiskalny()
+                        } else { // produktRaportFiskalny
+                            acceptanceController.formatPromptForProductRaportFiskalny()
                         }
                         dialogData = textForDialog
                         showDialog = true
@@ -238,7 +119,7 @@ fun AcceptPhoto(
     }
 
     if (showDialog) {
-        showDialog(dialogData, acceptanceController, addingPhotoFor) {
+        showDialog(dialogData, acceptanceController, addingPhotoFor, raportFiskalnyViewedNow) {
             showDialog = false
         }
     }
@@ -268,7 +149,7 @@ fun ButtonsLayout(modifier: Modifier, onRetry: () -> Unit, onOk: () -> Unit) {
 }
 
 @Composable
-fun showDialog(data: String, controller: AcceptanceController, addingPhotoFor: String?, onDismiss: () -> Unit) {
+fun showDialog(data: String, controller: AcceptanceController, addingPhotoFor: String?,raportFiskalnyViewedNow: RaportFiskalny?, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = {
             onDismiss()
@@ -279,6 +160,10 @@ fun showDialog(data: String, controller: AcceptanceController, addingPhotoFor: S
                     controller.addRecipe()
                 } else if (addingPhotoFor == "faktura") {
                     controller.addInvoice()
+                } else if (addingPhotoFor == "raportFiskalny") {
+                    controller.addRaportFiskalny()
+                } else if (addingPhotoFor == "produktRaportFiskalny") {
+                    controller.addProduktRaportFiskalny(raportFiskalnyViewedNow!!)
                 }
                 onDismiss()
             }) {
@@ -287,7 +172,6 @@ fun showDialog(data: String, controller: AcceptanceController, addingPhotoFor: S
         },
         dismissButton = {
             Button(onClick = {
-                controller.closeDialog()
                 onDismiss()
             }) {
                 Text("Cancel")

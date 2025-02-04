@@ -206,6 +206,7 @@ fun PhotoAppNavGraph(
                 photoUri = photoUri,
                 bitmapPhoto = photoBitmap,
                 addingPhotoFor = addingPhotoFor,
+                raportFiskalnyViewedNow = raportFiskalnyViewedNow,
                 contentDescription = null,
                 backToCameraView = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
                 backToHome = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)},
@@ -276,7 +277,7 @@ fun PhotoAppNavGraph(
             RaportFiskalnyDetailsScreen(
                 navController = navController,
                 raportFiskalny = raportFiskalnyViewedNow,
-                navigateToCameraView = { addingPhotoFor ->
+                navigateToCameraAndSetRF = { addingPhotoFor ->
                     navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
                     navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
             )

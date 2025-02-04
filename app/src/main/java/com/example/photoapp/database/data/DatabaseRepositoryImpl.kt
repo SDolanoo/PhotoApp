@@ -1,6 +1,10 @@
 package com.example.photoapp.database.data
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.utils.jsonTransformer
@@ -81,6 +85,11 @@ data class RaportFiskalnyDTO(
     val produkty: List<ProduktRaportFiskalnyDTO>
 )
 
+@Serializable
+data class OnlyProduktyRaportFiskalnyDTO(
+    val produkty: List<ProduktRaportFiskalnyDTO>
+)
+
 class DatabaseRepository @Inject constructor(
     private val uzytkownikDao: UzytkownikDao,
     private val odbiorcaDao: OdbiorcaDao,
@@ -121,35 +130,15 @@ class DatabaseRepository @Inject constructor(
     }
 
     fun addRecipe(jsonString: String) {
-        saveParagonToDatabase(jsonInput = jsonString, uzytkownikId = 1)
-    }
-
-    fun getProductForParagon(paragonID: Int): List<ProduktParagon> {
-        return produktParagonDao.getProductByParagonId(paragonID)
-    }
-
-    fun fetchFilteredParagony(
-        startDate: Date?,
-        endDate: Date?,
-        minPrice: Double?,
-        maxPrice: Double?,
-    ): List<Paragon> {
-        return paragonDao.getFilteredParagony(startDate, endDate, minPrice, maxPrice)
-    }
-
-    fun saveParagonToDatabase(
-        jsonInput: String,
-        uzytkownikId: Int
-    ) {
         // Deserializacja JSON
         val coercingJson = Json { coerceInputValues = true }
-        val transformedJson = jsonTransformer(jsonInput)
+        val transformedJson = jsonTransformer(jsonString)
         val paragonDTO = coercingJson.decodeFromString<ParagonDTO>(transformedJson)
         Log.i("Dolan", paragonDTO.dataZakupu)
 
         // Konwersja na obiekty Room
         val paragon = Paragon(
-            uzytkownikId = uzytkownikId,
+            uzytkownikId = 1,
             dataZakupu = SimpleDateFormat("yyyy-MM-dd").parse(paragonDTO.dataZakupu),
             nazwaSklepu = paragonDTO.nazwaSklepu,
             kwotaCalkowita = paragonDTO.kwotaCalkowita.replace(",", ".").toDouble()
@@ -171,32 +160,26 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    fun getProductForParagon(paragonID: Int): List<ProduktParagon> {
+        return produktParagonDao.getProductByParagonId(paragonID)
+    }
+
+    fun fetchFilteredParagony(
+        startDate: Date?,
+        endDate: Date?,
+        minPrice: Double?,
+        maxPrice: Double?,
+    ): List<Paragon> {
+        return paragonDao.getFilteredParagony(startDate, endDate, minPrice, maxPrice)
+    }
+
     // [END] PARAGON
 
     // [START] FAKTURA
 
     fun addFaktura(jsonString: String) {
-        saveFakturaToDatabase(jsonInput = jsonString, uzytkownikId = 1)
-    }
-
-    fun getProductForFaktura(fakturaId: Int): List<ProduktFaktura> {
-        return produktFakturaDao.getProductByFakturaId(fakturaId)
-    }
-
-    fun fetchFilteredFaktury(
-        startDate: Date?,
-        endDate: Date?,
-        minPrice: Double?,
-        maxPrice: Double?,
-        filterDate: String,
-        filterPrice: String,
-    ): List<Faktura> {
-        return fakturaDao.getFilteredFaktury(startDate, endDate, minPrice, maxPrice, filterDate, filterPrice)
-    }
-
-    fun saveFakturaToDatabase(jsonInput: String, uzytkownikId: Int) {
         val coercingJson = Json { coerceInputValues = true }
-        val transformedJson = jsonTransformer(jsonInput)
+        val transformedJson = jsonTransformer(jsonString)
         val fakturaDTO = coercingJson.decodeFromString<FakturaDTO>(transformedJson)
         Log.i("Dolan", fakturaDTO.dataSprzedazy)
 
@@ -214,7 +197,7 @@ class DatabaseRepository @Inject constructor(
         val newStawka = fakturaDTO.razemStawka ?: "null"
 
         val faktura = Faktura(
-            uzytkownikId = uzytkownikId,
+            uzytkownikId = 1,
             odbiorcaId = odbiorca.id,
             sprzedawcaId = sprzedawca.id,
             numerFaktury = fakturaDTO.numerFaktury,
@@ -246,6 +229,21 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    fun getProductForFaktura(fakturaId: Int): List<ProduktFaktura> {
+        return produktFakturaDao.getProductByFakturaId(fakturaId)
+    }
+
+    fun fetchFilteredFaktury(
+        startDate: Date?,
+        endDate: Date?,
+        minPrice: Double?,
+        maxPrice: Double?,
+        filterDate: String,
+        filterPrice: String,
+    ): List<Faktura> {
+        return fakturaDao.getFilteredFaktury(startDate, endDate, minPrice, maxPrice, filterDate, filterPrice)
+    }
+
     // [END] FAKTURA
 
     // [START] RAPORT FISKALNY
@@ -255,7 +253,28 @@ class DatabaseRepository @Inject constructor(
     }
 
     fun addRaportFiskalny(jsonString: String) {
-        saveRaportFiskalnyToDatabase(jsonString)
+        // Deserializacja JSON
+        val coercingJson = Json { coerceInputValues = true }
+        val transformedJson = jsonTransformer(jsonString)
+        val rfDTO = coercingJson.decodeFromString<RaportFiskalnyDTO>(transformedJson)
+        Log.i("Dolan", rfDTO.dataDodania)
+
+        // Konwersja na obiekty Room
+        val raport = RaportFiskalny(
+            dataDodania = SimpleDateFormat("yyyy-MM-dd").parse(rfDTO.dataDodania)
+        )
+
+        // Zapis do bazy danych
+        val raportId = raportFiskalnyDao.insert(raport)
+        Log.i("Dolan", "Raport inserted $raportId")
+        rfDTO.produkty.forEach { produktDTO ->
+            val produktRF = ProduktRaportFiskalny(
+                raportFiskalnyId = raportId.toInt(),
+                nrPLU = produktDTO.nrPLU,
+                ilosc = produktDTO.ilosc
+            )
+            produktRaportFiskalnyDao.insert(produktRF)
+        }
     }
 
     fun insertRaportFiskalny(raportFiskalny: RaportFiskalny) {
@@ -282,49 +301,17 @@ class DatabaseRepository @Inject constructor(
         produktRaportFiskalnyDao.delete(produktRaportFiskalny)
     }
 
-    fun saveRaportFiskalnyToDatabase(jsonInput: String) {
-        // Deserializacja JSON
-        val coercingJson = Json { coerceInputValues = true }
-        val transformedJson = jsonTransformer(jsonInput)
-        val rfDTO = coercingJson.decodeFromString<RaportFiskalnyDTO>(transformedJson)
-        Log.i("Dolan", rfDTO.dataDodania)
-
-        // Konwersja na obiekty Room
-        val raport = RaportFiskalny(
-            dataDodania = SimpleDateFormat("yyyy-MM-dd").parse(rfDTO.dataDodania)
-        )
-
-        // Zapis do bazy danych
-        val raportId = raportFiskalnyDao.insert(raport)
-        Log.i("Dolan", "Raport inserted $raportId")
-        rfDTO.produkty.forEach { produktDTO ->
-            val produktRF = ProduktRaportFiskalny(
-                raportFiskalnyId = raportId.toInt(),
-                nrPLU = produktDTO.nrPLU,
-                ilosc = produktDTO.ilosc
-            )
-            produktRaportFiskalnyDao.insert(produktRF)
-        }
-    }
-
-    fun addProduktyRaportFiskalny(jsonInput: String){
-        saveProduktyRaportFiskalnyToDatabase(jsonInput)
-    }
-
-    var raportIDToAddProductTo: Int = 0
-
-    fun saveProduktyRaportFiskalnyToDatabase(jsonInput: String) {
+    fun addProduktyRaportFiskalny(jsonInput: String, raport: RaportFiskalny){
         // Deserializacja JSON
         val coercingJson = Json { coerceInputValues = true }
         val transformedJson = jsonTransformer(jsonInput)
         // Dekodowanie listy produktów z JSON
-        val produktyList: List<ProduktRaportFiskalnyDTO> =
-            coercingJson.decodeFromString<ProduktyRaportFiskalnyWrapper>(transformedJson).produkty
+        val produktyList = coercingJson.decodeFromString<OnlyProduktyRaportFiskalnyDTO>(transformedJson)
 
 
         // Zapis do bazy danych
-        val raportId = raportIDToAddProductTo
-        produktyList.forEach { produktDTO ->
+        val raportId = raport.id
+        produktyList.produkty.forEach { produktDTO ->
             val produktRF = ProduktRaportFiskalny(
                 raportFiskalnyId = raportId,
                 nrPLU = produktDTO.nrPLU,
@@ -332,13 +319,26 @@ class DatabaseRepository @Inject constructor(
             )
             produktRaportFiskalnyDao.insert(produktRF)
         }
+
+        checkForProductsRFDuplicates(raport)
     }
 
-    @Serializable
-    data class ProduktyRaportFiskalnyWrapper(
-        val produkty: List<ProduktRaportFiskalnyDTO>
-    )
+    fun checkForProductsRFDuplicates(raportFiskalny: RaportFiskalny) {
+        val allProductsForRF: List<ProduktRaportFiskalny> = getProductForRaportFiskalny(raportFiskalny.id)
 
+        val uniquePLU = mutableListOf<Int>()
+
+        for (product in allProductsForRF) {
+            val n = product.nrPLU.toInt()
+            if (n !in uniquePLU) {
+                uniquePLU.add(n)
+                Log.i("Dolan" , "SAVED PLU NUMBER: $n")
+            } else {
+                deleteProduktRaportFiskalny(product)
+                Log.i("Dolan" , "DELETED PLU NUMBER: $n")
+            }
+        }
+    }
     // [END] REPORT
 
 }

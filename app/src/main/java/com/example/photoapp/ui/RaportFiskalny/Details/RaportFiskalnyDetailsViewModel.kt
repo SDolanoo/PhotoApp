@@ -65,7 +65,10 @@ class RaportFiskalnyViewModel @Inject constructor(
         }
     }
 
-    fun setRaportInDBReporsitory(raport: RaportFiskalny){
-        repository.raportIDToAddProductTo = raport.id
-    }
+//    fun setRaportInDBReporsitory(raport: RaportFiskalny, callback: () -> Unit){
+//        viewModelScope.launch(Dispatchers.Main) {
+//            repository.setRaportID(raport)
+//            callback()
+//        }
+//    }
 }

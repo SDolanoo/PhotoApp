@@ -42,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.photoapp.R
+import com.example.photoapp.database.DatabaseViewModel
 import com.example.photoapp.database.data.DatabaseRepository
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
@@ -58,11 +59,9 @@ fun RFDefaultTopAppBar(
     navController: NavHostController,
     isCircularIndicatorShowing: (Boolean) -> Unit,
     changeEditingState: (Boolean) -> Unit,
-    raport: RaportFiskalny,
     produkty: List<ProduktRaportFiskalny>,
-    navigateToCameraView: (String) -> Unit,
-    exportRoomViewModel: ExportRoomViewModel = hiltViewModel(),
-    viewModel: RaportFiskalnyViewModel = hiltViewModel()
+    navigateToCameraAndSetRF: (String) -> Unit,
+    exportRoomViewModel: ExportRoomViewModel = hiltViewModel()
 ){
     //[START] Excel Packer
     val context = LocalContext.current
@@ -206,9 +205,8 @@ fun RFDefaultTopAppBar(
             DropdownMenuItem(
                 text = { Text("Dodaj więcej produktów") },
                 onClick = {
-                    viewModel.setRaportInDBReporsitory(raport) // nie ma na razie innej opcji spaghetti AF
-                    navigateToCameraView("produktRaportFiskalny")
-
+                    navigateToCameraAndSetRF("produktRaportFiskalny")
+                     // nie ma na razie innej opcji spaghetti AF
                 }
             )
         }

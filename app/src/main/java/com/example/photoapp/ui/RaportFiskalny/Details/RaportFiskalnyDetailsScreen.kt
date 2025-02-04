@@ -31,7 +31,7 @@ import com.example.photoapp.ui.RaportFiskalny.Details.composables.IsEditing.RFEd
 fun RaportFiskalnyDetailsScreen(
     navController: NavHostController,
     raportFiskalny: RaportFiskalny?,
-    navigateToCameraView: (String) -> Unit,
+    navigateToCameraAndSetRF: (String) -> Unit,
     viewModel: RaportFiskalnyViewModel = hiltViewModel()
 ) {
 
@@ -57,8 +57,7 @@ fun RaportFiskalnyDetailsScreen(
                     changeEditingState = { trueOrFalse ->
                         isEditing = trueOrFalse},
                     produkty = produkty,
-                    navigateToCameraView = navigateToCameraView,
-                    raport = raportFiskalny!!
+                    navigateToCameraAndSetRF = navigateToCameraAndSetRF
                 )
             } else {
                 RFEditingTopAppBar(

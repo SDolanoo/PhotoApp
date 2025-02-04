@@ -10,7 +10,9 @@ import com.example.photoapp.database.data.ProduktParagonDTO
 import kotlinx.serialization.json.Json
 import android.util.Log
 import com.example.photoapp.AI.DocumentType
+import com.example.photoapp.database.data.OnlyProduktyRaportFiskalnyDTO
 import com.example.photoapp.database.data.ProduktRaportFiskalnyDTO
+import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalnyDTO
 
 class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
@@ -167,19 +169,19 @@ class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
         return resultString
     }
 
-    fun addProduktRaportFiskalny() {
+    fun addProduktRaportFiskalny(raport: RaportFiskalny) {
         if (geminiPromptResult != "") {
-            databaseViewModel.addProduktyRaportFiskalny(jsonString = geminiPromptResult)
+            databaseViewModel.addProduktyRaportFiskalny(jsonString = geminiPromptResult, raport)
         }
     }
 
     fun formatPromptForProductRaportFiskalny(): String {
         val coercingJson = Json { coerceInputValues = true }
-        val p = coercingJson.decodeFromString<ProduktRaportFiskalnyDTO>(geminiPromptResult)
+        val p = coercingJson.decodeFromString<OnlyProduktyRaportFiskalnyDTO>(geminiPromptResult)
         val resultString = """
-                nrPLU: ${p.nrPLU}
-                    ilosc: ${p.ilosc}
-            """.trimIndent()
+            Produkty:
+                |${formatEachProduktRaportFiskalny(p.produkty)}
+        """.trimIndent().trimMargin("|")
         return resultString
     }
 

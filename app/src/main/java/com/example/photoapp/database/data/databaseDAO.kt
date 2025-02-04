@@ -471,7 +471,7 @@ interface RaportFiskalnyDao {
 @Dao
 interface ProduktRaportFiskalnyDao {
 
-    @Query("SELECT * FROM ProduktRaportFiskalny WHERE raportFiskalnyId = :raportFiskalnyId ORDER BY nrPLU ASC")
+    @Query("SELECT * FROM ProduktRaportFiskalny WHERE raportFiskalnyId = :raportFiskalnyId ORDER BY CAST(nrPLU AS INTEGER) ASC")
     fun getProductForRaportFiskalny(raportFiskalnyId: Int): List<ProduktRaportFiskalny>
 
     @Insert

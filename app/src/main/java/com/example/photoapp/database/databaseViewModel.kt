@@ -149,9 +149,17 @@ class DatabaseViewModel @Inject constructor(
         }
     }
 
-    fun addProduktyRaportFiskalny(jsonString: String) {
+    var currentRaportFiskalny: RaportFiskalny? = null
+        private set
+
+    fun setCurrentRaportFiskalny(raport: RaportFiskalny, callback: () -> Unit) {
+        currentRaportFiskalny = raport
+        callback()
+    }
+
+    fun addProduktyRaportFiskalny(jsonString: String, raport: RaportFiskalny) {
         viewModelScope.launch(Dispatchers.IO) {
-            databaseRepository.addRaportFiskalny(jsonString)
+            databaseRepository.addProduktyRaportFiskalny(jsonString, raport)
         }
     }
 
