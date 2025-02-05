@@ -29,7 +29,7 @@ fun RFEditingTopAppBar(
     changeEditingState: (Boolean) -> Unit,
     produkty: List<ProduktRaportFiskalny>,
     onAddingProduct: () -> Unit,
-    viewModel: RaportFiskalnyViewModel = hiltViewModel()
+    viewModel: RaportFiskalnyViewModel
     ) {
 
     CenterAlignedTopAppBar(
@@ -55,12 +55,15 @@ fun RFEditingTopAppBar(
                 Icon(Icons.Default.Add, contentDescription = "Add one new Field")
             }
             IconButton(onClick = {
-                produkty.forEach { produkt ->
-                    viewModel.updateProduct(product = produkt) {
-                        Log.i("Dolan", "Updated product $produkt")
-                    }
+                viewModel.updateAllProducts {
+                    changeEditingState(false)
                 }
-                changeEditingState(false)
+//                produkty.forEach { produkt ->
+//                    viewModel.updateProduct(product = produkt) {
+//                        Log.i("Dolan", "Updated product $produkt")
+//                    }
+//                }
+//                changeEditingState(false)
             }) {
                 Icon(Icons.Default.Check, contentDescription = "Confirm Action")
             }

@@ -1,5 +1,6 @@
 package com.example.photoapp.ui.RaportFiskalny.Details.composables.IsEditing
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,13 +39,18 @@ import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
 import kotlinx.coroutines.delay
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun RFEditingDetailsContent(
     innerPadding: PaddingValues,
     raportFiskalny: RaportFiskalny,
     produkty: List<ProduktRaportFiskalny>,
-    viewModel: RaportFiskalnyViewModel = hiltViewModel()
+    viewModel: RaportFiskalnyViewModel
 ) {
+
+    Log.i("Dolan", "SHOWING PRODUKTY LIST ${produkty}")
+    Log.i("Dolan", "SHOWING PRODUKTY LIST ${viewModel._editedProducts}")
+
     LazyColumn(
         contentPadding = innerPadding,
         modifier = Modifier
@@ -86,11 +93,14 @@ fun RFEditingDetailsContent(
                         }
                         RaportFiskalnyProductDetails(
                             produkt = product,
-                            onUpdate = { produkt ->
-                                viewModel.updateProduct(produkt) {
-                                    viewModel.loadProducts(raportFiskalnyId = raportFiskalny.id)
+                            onEdit = { updatedProdukt ->
+//                                viewModel._editedProducts[index] = updatedProdukt
+                                viewModel.updateEditedProduct(index, updatedProdukt) {
+//                                    viewModel.loadProducts(raportFiskalnyId = raportFiskalny.id)
                                     Log.i("Dolan", "Updating Product")
                                 }
+                                Log.i("Dolan", "SHOWING PRODUKTY LIST ${produkty}")
+                                Log.i("Dolan", "SHOWING PRODUKTY LIST ${viewModel._editedProducts}")
                             }
                         )
                     }
@@ -117,7 +127,7 @@ fun RaportFiskalnyDetailsRow(label: String, value: String) {
 }
 
 @Composable
-fun RaportFiskalnyProductDetails(produkt: ProduktRaportFiskalny, onUpdate: (ProduktRaportFiskalny) -> Unit) {
+fun RaportFiskalnyProductDetails(produkt: ProduktRaportFiskalny, onEdit: (ProduktRaportFiskalny) -> Unit) {
     Column(
         modifier = Modifier.padding(start = 5.dp, end = 10.dp)
     ) {
@@ -138,7 +148,7 @@ fun RaportFiskalnyProductDetails(produkt: ProduktRaportFiskalny, onUpdate: (Prod
                     value = textPLU,
                     onValueChange = {
                         textPLU = it
-                        onUpdate(
+                        onEdit(
                             ProduktRaportFiskalny(
                                 id = produkt.id,
                                 raportFiskalnyId = produkt.raportFiskalnyId,
@@ -156,9 +166,10 @@ fun RaportFiskalnyProductDetails(produkt: ProduktRaportFiskalny, onUpdate: (Prod
                     value = textQuantity,
                     onValueChange = {
                         textQuantity = it
-                        onUpdate(
+                        onEdit(
                             ProduktRaportFiskalny(
-                                raportFiskalnyId = produkt.id,
+                                id = produkt.id,
+                                raportFiskalnyId = produkt.raportFiskalnyId,
                                 nrPLU = textPLU,
                                 ilosc = it
                             )

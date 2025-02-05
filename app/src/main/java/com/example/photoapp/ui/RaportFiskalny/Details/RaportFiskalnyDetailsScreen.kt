@@ -1,6 +1,7 @@
 package com.example.photoapp.ui.RaportFiskalny.Details
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,6 +21,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.ui.RaportFiskalny.Details.composables.Default.RFDefaultDetailsContent
 import com.example.photoapp.ui.RaportFiskalny.Details.composables.Default.RFDefaultTopAppBar
@@ -41,11 +43,18 @@ fun RaportFiskalnyDetailsScreen(
 
     val produkty by viewModel.produkty.collectAsState()
 
-    LaunchedEffect(raportFiskalny) {
-        raportFiskalny?.id?.let { viewModel.loadProducts(it) }
+    if (raportFiskalny != null) {
+        viewModel.loadProducts(raportFiskalny.id)
+        Log.i("Dolan", "SHOWING PRODUKTY LIST ${produkty}")
     }
 
+
+
     var isEditing by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isEditing) {
+        viewModel.loadProducts(raportFiskalny!!.id)
+    }
 
     Scaffold(
         topBar = {
@@ -65,7 +74,8 @@ fun RaportFiskalnyDetailsScreen(
                     changeEditingState = { trueOrFalse ->
                         isEditing = trueOrFalse},
                     produkty = produkty,
-                    onAddingProduct = { isExpandedAdding = true }
+                    onAddingProduct = { isExpandedAdding = true },
+                    viewModel = viewModel
                 )
             }
         }
@@ -81,7 +91,8 @@ fun RaportFiskalnyDetailsScreen(
                 RFEditingDetailsContent(
                     innerPadding = innerPadding,
                     raportFiskalny = raportFiskalny,
-                    produkty = produkty
+                    produkty = produkty,
+                    viewModel = viewModel
                 )
             }
         }

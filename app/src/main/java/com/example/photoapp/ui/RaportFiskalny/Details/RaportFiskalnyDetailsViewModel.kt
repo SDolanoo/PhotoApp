@@ -1,5 +1,7 @@
 package com.example.photoapp.ui.RaportFiskalny.Details
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +11,7 @@ import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,9 +30,14 @@ class RaportFiskalnyViewModel @Inject constructor(
     private val _produkty = MutableStateFlow<List<ProduktRaportFiskalny>>(emptyList())
     val produkty: StateFlow<List<ProduktRaportFiskalny>> = _produkty.asStateFlow()
 
+    var _editedProducts = mutableStateListOf<ProduktRaportFiskalny>()
+
     fun loadProducts(raportFiskalnyId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            _produkty.value = repository.getProductForRaportFiskalny(raportFiskalnyId)
+            val fetchedProducts = repository.getProductForRaportFiskalny(raportFiskalnyId)
+            _produkty.value = fetchedProducts
+            _editedProducts.clear()
+            _editedProducts.addAll(fetchedProducts)
         }
     }
 
@@ -46,9 +54,25 @@ class RaportFiskalnyViewModel @Inject constructor(
         }
     }
 
-    fun updateProduct(product: ProduktRaportFiskalny, callback: () -> Unit){
+//    fun updateProduct(product: ProduktRaportFiskalny, callback: () -> Unit){
+//        viewModelScope.launch(Dispatchers.IO) {
+//            repository.updateProduktRaportFiskalny(product)
+//            callback()
+//        }
+//    }
+
+    fun updateEditedProduct(index: Int, product: ProduktRaportFiskalny, callback: () -> Unit){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.updateProduktRaportFiskalny(product)
+            _editedProducts[index] = product
+            callback()
+        }
+    }
+
+    fun updateAllProducts(callback: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _editedProducts.forEach { produkt ->
+                repository.updateProduktRaportFiskalny(produkt)
+            }
             callback()
         }
     }
