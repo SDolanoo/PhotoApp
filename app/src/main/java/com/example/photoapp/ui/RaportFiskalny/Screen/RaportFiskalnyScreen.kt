@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,8 +16,12 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -31,12 +36,14 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.navigation.PhotoAppDestinations
@@ -61,6 +68,10 @@ fun RaportFiskalnyScreen(
 
     Log.i("Dolan", "Showing paragony: $allRaportFiskalny")
 
+    val isDeleteMode by viewModel.isDeleteMode
+
+    val selectedItems = viewModel.selectedItems
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
@@ -71,27 +82,54 @@ fun RaportFiskalnyScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text(
-                        "Widok Paragony",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    if (isDeleteMode) {
+                        Text(
+                            "Usuń Raporty Fiskalne",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    } else {
+                        Text(
+                            "Widok Raporty Fiskalne",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(PhotoAppDestinations.HOME_ROUTE) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    if (isDeleteMode) {
+                        IconButton(onClick = { viewModel.deleteSelectedItems() }) {
+                            Icon(Icons.Default.Close, contentDescription = "Cancel Deletion")
+                        }
+                    } else {
+                        IconButton(onClick = { navController.navigate(PhotoAppDestinations.HOME_ROUTE) }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+
+                },
+                actions = {
+                    if (isDeleteMode) {
+                        IconButton(onClick = { viewModel.deleteSelectedItems() }) {
+                            Icon(Icons.Default.Done, contentDescription = "Confirm Deletion")
+                        }
+                    } else {
+                        IconButton(onClick = { viewModel.toggleDeleteMode() }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Enable Delete Mode")
+                        }
                     }
                 },
                 scrollBehavior = scrollBehavior,
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                navigateToCameraView("raportFiskalny")
-            }) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
+            if (!isDeleteMode) {
+                FloatingActionButton(onClick = {
+                    navigateToCameraView("raportFiskalny")
+                }) {
+                    Icon(Icons.Default.Add, contentDescription = "Add")
+                }
             }
-
         },
     ) { innerPadding ->
 
@@ -99,6 +137,10 @@ fun RaportFiskalnyScreen(
             innerPadding,
             groupedRaportFiskalny = groupedRaportFiskalny,
             navigateToRaportFiskalnyDetailsScreen = navigateToRaportFiskalnyDetailsScreen,
+            isDeleteMode = isDeleteMode,
+            selectedItems = selectedItems,
+            onItemSelected = { viewModel.toggleItemSelection(it) },
+            viewModel = viewModel
         )
     }
 }
@@ -108,6 +150,10 @@ fun RaportFiskalnyScreen(
 fun ScrollContent(innerPadding: PaddingValues,
                   groupedRaportFiskalny: Map<Date?, List<RaportFiskalny>>,
                   navigateToRaportFiskalnyDetailsScreen: (RaportFiskalny) -> Unit,
+                  isDeleteMode: Boolean,
+                  selectedItems: List<RaportFiskalny>,
+                  onItemSelected: (RaportFiskalny) -> Unit,
+                  viewModel: RaportFiskalnyScreenViewModel
 ) {
     val calendarIcon = Icons.Default.DateRange
 
@@ -147,7 +193,11 @@ fun ScrollContent(innerPadding: PaddingValues,
                         }
                         RaportFiskalnyItem(
                             raportFiskalny = raportFiskalny,
-                            navigateToRaportFiskalnyDetailsScreen = navigateToRaportFiskalnyDetailsScreen
+                            navigateToRaportFiskalnyDetailsScreen = navigateToRaportFiskalnyDetailsScreen,
+                            isDeleteMode = isDeleteMode,
+                            isSelected = selectedItems.contains(raportFiskalny),
+                            onItemSelected = onItemSelected,
+                            viewModel = viewModel
                         )
                         if (index == raportFiskalnyList.size - 1) {
                             Spacer(modifier = Modifier.height(10.dp))
@@ -163,16 +213,35 @@ fun ScrollContent(innerPadding: PaddingValues,
 @Composable
 fun RaportFiskalnyItem(
     raportFiskalny: RaportFiskalny,
-    navigateToRaportFiskalnyDetailsScreen: (RaportFiskalny) -> Unit
+    navigateToRaportFiskalnyDetailsScreen: (RaportFiskalny) -> Unit,
+    isDeleteMode: Boolean,
+    isSelected: Boolean,
+    onItemSelected: (RaportFiskalny) -> Unit,
+    viewModel: RaportFiskalnyScreenViewModel
 ) {
     val formattedDate  = raportFiskalny.dataDodania?.let {
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             .format(it)
     }
-
-    ListItem(
-        modifier = Modifier.clickable { navigateToRaportFiskalnyDetailsScreen(raportFiskalny) },
-        // jest clickable -> przenosi nas na inną strone, może navigation
-        headlineContent = { Text("Data Zakupu: $formattedDate ") },
-    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { if (!isDeleteMode) navigateToRaportFiskalnyDetailsScreen(raportFiskalny) }
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (isDeleteMode) {
+            Checkbox(
+                checked = isSelected,
+                onCheckedChange = { onItemSelected(raportFiskalny) }
+            )
+        }
+        ListItem(
+            modifier = Modifier
+                .clickable { if (!isDeleteMode) navigateToRaportFiskalnyDetailsScreen(raportFiskalny) },
+            // jest clickable -> przenosi nas na inną strone, może navigation
+            headlineContent = { Text("Data Zakupu: $formattedDate ") },
+            trailingContent = { Text("${viewModel.getCountForProductsForRaport(raport = raportFiskalny)}")}
+        )
+    }
 }

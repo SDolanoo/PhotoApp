@@ -301,6 +301,15 @@ class DatabaseRepository @Inject constructor(
         produktRaportFiskalnyDao.update(produktRaportFiskalny)
     }
 
+    fun deleteRaportFiskalny(raportFiskalny: RaportFiskalny) {
+        Log.i("Dolan", "IM IN REPO NOW, DELETING OBJECT")
+        val productsForRaport = getProductForRaportFiskalny(raportFiskalny.id)
+        productsForRaport.forEach { produkt ->
+            produktRaportFiskalnyDao.delete(produkt)
+        }
+        raportFiskalnyDao.delete(raportFiskalny)
+    }
+
     fun deleteProduktRaportFiskalny(produktRaportFiskalny: ProduktRaportFiskalny) {
         produktRaportFiskalnyDao.delete(produktRaportFiskalny)
     }
