@@ -264,12 +264,7 @@ fun PhotoAppNavGraph(
                     navGraphViewModel.setRaportFiskalnyViewedNow(raport)
                     navController.navigate(PhotoAppDestinations.RAPORT_FISKALNY_DETAILS_SCREEN_ROUTE)
                 },
-                navigateToFiltersScreen = {
-                    navController.navigate(PhotoAppDestinations.FILTERS_SCREEN_ROUTE)
-                },
-                showFilteredRaportyFiskalne = showFilteredRaportyFiskalne,
-                raportFiskalnyFilteredList = raportFiskalnyFilteredList,
-                )
+            )
         }
 
         composable(PhotoAppDestinations.RAPORT_FISKALNY_DETAILS_SCREEN_ROUTE) {

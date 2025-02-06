@@ -39,12 +39,19 @@ fun RaportFiskalnyDetailsScreen(
 
     var isCircularIndicatorShowing by remember { mutableStateOf(false) }
 
+//    var showDatePicker by remember { mutableStateOf(false) }
+
     var isExpandedAdding by remember { mutableStateOf(false) }
 
+    val raport by viewModel.raport
     val produkty by viewModel.produkty.collectAsState()
 
     if (raportFiskalny != null) {
-        viewModel.loadProducts(raportFiskalny.id)
+        viewModel.getRaportByID(raportFiskalny.id) { raport ->
+            viewModel.setRaport(raport)
+            viewModel.loadProducts(raport)
+        }
+
         Log.i("Dolan", "SHOWING PRODUKTY LIST ${produkty}")
     }
 
@@ -53,7 +60,7 @@ fun RaportFiskalnyDetailsScreen(
     var isEditing by remember { mutableStateOf(false) }
 
     LaunchedEffect(isEditing) {
-        viewModel.loadProducts(raportFiskalny!!.id)
+        viewModel.loadProducts(raport!!)
     }
 
     Scaffold(
@@ -80,19 +87,20 @@ fun RaportFiskalnyDetailsScreen(
             }
         }
     ) { innerPadding ->
-        if (raportFiskalny != null) {
+        if (raport != null) {
             if (isEditing == false) {
                 RFDefaultDetailsContent(
                     innerPadding = innerPadding,
-                    raportFiskalny = raportFiskalny,
+                    raportFiskalny = raport!!,
                     produkty = produkty
                 )
             } else {
                 RFEditingDetailsContent(
                     innerPadding = innerPadding,
-                    raportFiskalny = raportFiskalny,
+                    raportFiskalny = raport!!,
                     produkty = produkty,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+//                    showDatePicker = { A -> showDatePicker = A }
                 )
             }
         }
@@ -143,12 +151,12 @@ fun RaportFiskalnyDetailsScreen(
                     Button (
                         onClick = {
                             viewModel.addOneProduct(
-                                rfId = raportFiskalny!!.id,
+                                rfId = raport!!.id,
                                 nrPLU = nrPLU,
                                 ilosc = ilosc,
                             ) {
                                 isExpandedAdding = false
-                                viewModel.loadProducts(raportFiskalnyId = raportFiskalny.id)
+                                viewModel.loadOnlyProducts(raport!!)
                             }
                         },
                     ){

@@ -15,11 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.photoapp.database.data.ProduktRaportFiskalny
-import com.example.photoapp.navigation.PhotoAppDestinations
 import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,7 +30,6 @@ fun RFEditingTopAppBar(
     ) {
 
     CenterAlignedTopAppBar(
-
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary,
@@ -55,7 +51,7 @@ fun RFEditingTopAppBar(
                 Icon(Icons.Default.Add, contentDescription = "Add one new Field")
             }
             IconButton(onClick = {
-                viewModel.updateAllProducts {
+                viewModel.updateAllProductsAndRaports {
                     changeEditingState(false)
                 }
 //                produkty.forEach { produkt ->

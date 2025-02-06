@@ -458,6 +458,9 @@ interface RaportFiskalnyDao {
     @Query("SELECT * FROM RaportFiskalny")
     fun getAll(): List<RaportFiskalny>
 
+    @Query("SELECT * FROM RaportFiskalny WHERE id = :id")
+    fun getRaportByID(id: Int): RaportFiskalny
+
     @Insert
     fun insert(raportFiskalny: RaportFiskalny): Long
 

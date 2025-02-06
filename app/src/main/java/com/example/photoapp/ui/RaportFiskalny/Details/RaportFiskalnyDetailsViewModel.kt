@@ -1,6 +1,7 @@
 package com.example.photoapp.ui.RaportFiskalny.Details
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import okhttp3.Callback
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -27,17 +30,40 @@ class RaportFiskalnyViewModel @Inject constructor(
     private val repository: DatabaseRepository
 ) : ViewModel() {
 
+    private val _raport = mutableStateOf<RaportFiskalny?>(null)
+    val raport = _raport
+
     private val _produkty = MutableStateFlow<List<ProduktRaportFiskalny>>(emptyList())
     val produkty: StateFlow<List<ProduktRaportFiskalny>> = _produkty.asStateFlow()
 
     var _editedProducts = mutableStateListOf<ProduktRaportFiskalny>()
+    var _editedRaport = mutableStateListOf<RaportFiskalny>()
 
-    fun loadProducts(raportFiskalnyId: Int) {
+    fun loadProducts(raport: RaportFiskalny) {
         viewModelScope.launch(Dispatchers.IO) {
-            val fetchedProducts = repository.getProductForRaportFiskalny(raportFiskalnyId)
+            val fetchedProducts = repository.getProductForRaportFiskalny(raportFiskalnyId = raport.id)
             _produkty.value = fetchedProducts
             _editedProducts.clear()
             _editedProducts.addAll(fetchedProducts)
+            _editedRaport.clear()
+            _editedRaport.add(raport)
+        }
+    }
+
+    fun loadOnlyProducts(raport: RaportFiskalny) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val fetchedProducts =
+                repository.getProductForRaportFiskalny(raportFiskalnyId = raport.id)
+            _produkty.value = fetchedProducts
+            _editedProducts.clear()
+            _editedProducts.addAll(fetchedProducts)
+        }
+    }
+
+    fun getRaportByID(id: Int, callback: (RaportFiskalny) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val raport = repository.getRaportFiskalnyByID(id)
+            callback(raport)
         }
     }
 
@@ -47,6 +73,15 @@ class RaportFiskalnyViewModel @Inject constructor(
         } ?: "N/A"
     }
 
+    fun convertMillisToString(millis: Long): String {
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return formatter.format(Date(millis))
+    }
+
+    fun convertMillisToDate(millis: Long): Date {
+        return Date(millis)
+    }
+
     fun deleteProduct(product: ProduktRaportFiskalny, callback:() -> Unit){
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteProduktRaportFiskalny(product)
@@ -54,12 +89,12 @@ class RaportFiskalnyViewModel @Inject constructor(
         }
     }
 
-//    fun updateProduct(product: ProduktRaportFiskalny, callback: () -> Unit){
-//        viewModelScope.launch(Dispatchers.IO) {
-//            repository.updateProduktRaportFiskalny(product)
-//            callback()
-//        }
-//    }
+    fun updateEditedRaport(index: Int, raport: RaportFiskalny, callback: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _editedRaport[index] = raport
+            callback()
+        }
+    }
 
     fun updateEditedProduct(index: Int, product: ProduktRaportFiskalny, callback: () -> Unit){
         viewModelScope.launch(Dispatchers.IO) {
@@ -68,8 +103,11 @@ class RaportFiskalnyViewModel @Inject constructor(
         }
     }
 
-    fun updateAllProducts(callback: () -> Unit) {
+    fun updateAllProductsAndRaports(callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
+            _editedRaport.forEach { raport ->
+                repository.updateRaportFiskalny(raport)
+            }
             _editedProducts.forEach { produkt ->
                 repository.updateProduktRaportFiskalny(produkt)
             }
@@ -89,10 +127,7 @@ class RaportFiskalnyViewModel @Inject constructor(
         }
     }
 
-//    fun setRaportInDBReporsitory(raport: RaportFiskalny, callback: () -> Unit){
-//        viewModelScope.launch(Dispatchers.Main) {
-//            repository.setRaportID(raport)
-//            callback()
-//        }
-//    }
+    fun setRaport(raport: RaportFiskalny) {
+        _raport.value = raport
+    }
 }

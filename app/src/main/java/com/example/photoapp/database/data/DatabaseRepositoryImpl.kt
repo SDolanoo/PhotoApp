@@ -252,6 +252,10 @@ class DatabaseRepository @Inject constructor(
         return raportFiskalnyDao.getAll()
     }
 
+    fun getRaportFiskalnyByID(id: Int): RaportFiskalny {
+        return raportFiskalnyDao.getRaportByID(id)
+    }
+
     fun addRaportFiskalny(jsonString: String) {
         // Deserializacja JSON
         val coercingJson = Json { coerceInputValues = true }
