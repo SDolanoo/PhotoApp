@@ -50,10 +50,13 @@ fun AcceptPhoto(
     backToHome: () -> Unit,
     databaseViewModel: DatabaseViewModel = hiltViewModel(),
     geminiKey: String,
-) {
+    navigateToRFDetailsScreen: (RaportFiskalny) -> Unit,
+    ) {
     var isLoading by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var dialogData by remember { mutableStateOf("") }
+    var isPromptSuccess by remember { mutableStateOf(true) }
+
     val acceptanceController = remember { AcceptanceController(databaseViewModel) }
 
     val alphaAnimation by animateFloatAsState(
@@ -97,18 +100,10 @@ fun AcceptPhoto(
                 onRetry = { backToCameraView() },
                 onOk = {
                     isLoading = true
-                    acceptanceController.getPrompt(addingPhotoFor, geminiKey, bitmapPhoto) { result ->
+                    acceptanceController.processPhoto(addingPhotoFor, geminiKey, bitmapPhoto) { success, result ->
                         isLoading = false
-                        val textForDialog: String = if (addingPhotoFor == "paragon") {
-                            acceptanceController.formatPromptForParagon()
-                        } else if (addingPhotoFor == "faktura") { // faktura
-                            acceptanceController.formatPromptForFaktura()
-                        } else if (addingPhotoFor == "raportFiskalny") { // faktura
-                            acceptanceController.formatPromptForRaportFiskalny()
-                        } else { // produktRaportFiskalny
-                            acceptanceController.formatPromptForProductRaportFiskalny()
-                        }
-                        dialogData = textForDialog
+                        isPromptSuccess = success
+                        dialogData = result
                         showDialog = true
                     }
 //                    databaseViewModel.addRecipe(bitmapPhoto)
@@ -119,7 +114,13 @@ fun AcceptPhoto(
     }
 
     if (showDialog) {
-        showDialog(dialogData, acceptanceController, addingPhotoFor, raportFiskalnyViewedNow) {
+        showDialog(
+            dialogData,
+            acceptanceController,
+            addingPhotoFor, raportFiskalnyViewedNow,
+            isPromptSuccess,
+            navigateToRFDetailsScreen = navigateToRFDetailsScreen
+        ) {
             showDialog = false
         }
     }
@@ -136,49 +137,70 @@ fun ButtonsLayout(modifier: Modifier, onRetry: () -> Unit, onOk: () -> Unit) {
             onClick = onRetry,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black.copy(alpha = 0.3f))
         ) {
-            Text(text = "Retry", color = Color.White)
+            Text(text = "Powtórz", color = Color.White)
         }
 
         Button(
             onClick = onOk,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black.copy(alpha = 0.3f))
         ) {
-            Text(text = "Ok", color = Color.White)
+            Text(text = "Zatwierdź", color = Color.White)
         }
     }
 }
 
 @Composable
-fun showDialog(data: String, controller: AcceptanceController, addingPhotoFor: String?,raportFiskalnyViewedNow: RaportFiskalny?, onDismiss: () -> Unit) {
+fun showDialog(
+    data: String,
+    controller: AcceptanceController,
+    addingPhotoFor: String?,
+    raportFiskalnyViewedNow: RaportFiskalny?,
+    isPromptSuccess: Boolean,
+    navigateToRFDetailsScreen: (RaportFiskalny) -> Unit,
+    onDismiss: () -> Unit,
+) {
     AlertDialog(
         onDismissRequest = {
             onDismiss()
         },
         confirmButton = {
             Button(onClick = {
-                if (addingPhotoFor == "paragon") {
-                    controller.addRecipe()
-                } else if (addingPhotoFor == "faktura") {
-                    controller.addInvoice()
-                } else if (addingPhotoFor == "raportFiskalny") {
-                    controller.addRaportFiskalny()
-                } else if (addingPhotoFor == "produktRaportFiskalny") {
-                    controller.addProduktRaportFiskalny(raportFiskalnyViewedNow!!)
+                if (isPromptSuccess) {
+                    if (addingPhotoFor == "paragon") {
+                        controller.addRecipe()
+                    } else if (addingPhotoFor == "faktura") {
+                        controller.addInvoice()
+                    } else if (addingPhotoFor == "raportFiskalny") {
+                        val raportID = controller.addRaportFiskalny().toInt()
+                        val raportById = controller.getRaportByID(raportID)
+                        navigateToRFDetailsScreen(raportById)
+                    } else if (addingPhotoFor == "produktRaportFiskalny") {
+                        controller.addProduktRaportFiskalny(raportFiskalnyViewedNow!!)
+                        navigateToRFDetailsScreen(raportFiskalnyViewedNow)
+                    }
                 }
                 onDismiss()
             }) {
-                Text("Accept")
+                if (isPromptSuccess) {
+                    Text("Akceptuj")
+                } else {
+                    Text("Ok")
+                }
             }
         },
         dismissButton = {
             Button(onClick = {
                 onDismiss()
             }) {
-                Text("Cancel")
+                Text("Anuluj")
             }
         },
         title = {
-            Text("Confirm data?")
+            if (isPromptSuccess) {
+                Text("Zatwierdzić dane?")
+            } else {
+                Text("Powtórz zapytanie")
+            }
         },
         text = {
             Box(

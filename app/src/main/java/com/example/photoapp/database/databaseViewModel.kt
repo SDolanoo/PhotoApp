@@ -13,6 +13,7 @@ import com.example.photoapp.database.data.ProduktFaktura
 import com.example.photoapp.database.data.ProduktParagon
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
+import com.example.photoapp.ui.RaportFiskalny.Screen.RaportFiskalnyScreenViewModel_Factory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -143,9 +144,22 @@ class DatabaseViewModel @Inject constructor(
         }
     }
 
-    fun addRaportFiskalny(jsonString: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            databaseRepository.addRaportFiskalny(jsonString)
+    fun addRaportFiskalny(jsonString: String): Long {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            databaseRepository.addRaportFiskalny(jsonString)
+//        }
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                databaseRepository.addRaportFiskalny(jsonString)
+            }
+        }
+    }
+
+    fun getRaportByID(id: Int): RaportFiskalny {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                databaseRepository.getRaportFiskalnyByID(id)
+            }
         }
     }
 

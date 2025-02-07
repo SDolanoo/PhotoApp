@@ -211,6 +211,10 @@ fun PhotoAppNavGraph(
                 backToCameraView = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
                 backToHome = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)},
                 geminiKey = geminiKey,
+                navigateToRFDetailsScreen = { raport ->
+                    navGraphViewModel.setRaportFiskalnyViewedNow(raport = raport)
+                    navController.navigate(PhotoAppDestinations.RAPORT_FISKALNY_DETAILS_SCREEN_ROUTE)
+                }
             )
         }
 

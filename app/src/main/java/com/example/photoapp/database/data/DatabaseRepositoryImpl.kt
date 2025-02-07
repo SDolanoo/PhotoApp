@@ -256,7 +256,7 @@ class DatabaseRepository @Inject constructor(
         return raportFiskalnyDao.getRaportByID(id)
     }
 
-    fun addRaportFiskalny(jsonString: String) {
+    fun addRaportFiskalny(jsonString: String): Long {
         // Deserializacja JSON
         val coercingJson = Json { coerceInputValues = true }
         val transformedJson = jsonTransformer(jsonString)
@@ -279,10 +279,11 @@ class DatabaseRepository @Inject constructor(
             )
             produktRaportFiskalnyDao.insert(produktRF)
         }
+        return raportId
     }
 
-    fun insertRaportFiskalny(raportFiskalny: RaportFiskalny) {
-        raportFiskalnyDao.insert(raportFiskalny)
+    fun insertRaportFiskalny(raportFiskalny: RaportFiskalny): Long {
+        return raportFiskalnyDao.insert(raportFiskalny)
     }
 
     fun insertProduktRaportFiskalny(produktRaportFiskalny: ProduktRaportFiskalny) {

@@ -22,40 +22,61 @@ class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
         // Handle retry logic here
     }
 
-    fun getPrompt(addingPhotoFor: String?, geminiKey: String, bitmapPhoto: Bitmap?, callback: (String) -> Unit) {
+    fun processPhoto(
+        addingPhotoFor: String?,
+        geminiKey: String,
+        bitmapPhoto: Bitmap?,
+        onResult: (Boolean, String) -> Unit
+    ) {
+        getPrompt(addingPhotoFor, geminiKey, bitmapPhoto) { response, result ->
+            if (response == 1) {
+                val formattedText = when (addingPhotoFor) {
+                    "paragon" -> formatPromptForParagon()
+                    "faktura" -> formatPromptForFaktura()
+                    "raportFiskalny" -> formatPromptForRaportFiskalny()
+                    else -> formatPromptForProductRaportFiskalny()
+                }
+                onResult(true, formattedText)
+            } else {
+                onResult(false, result)
+            }
+        }
+    }
+
+    fun getPrompt(addingPhotoFor: String?, geminiKey: String, bitmapPhoto: Bitmap?, callback: (Int, String) -> Unit) {
         // Symulacja asynchronicznego pobierania danych
         bitmapPhoto?.let {
             if (addingPhotoFor == "paragon") {
                 Log.i("Dolan", "getting Prompt for paragon")
                 // Przykład wywołania asynchronicznej operacji, np. API call do chatWithGemini
-                chatWithGemini(geminiKey, bitmapPhoto, DocumentType.PARAGON) { result ->
+                chatWithGemini(geminiKey, bitmapPhoto, DocumentType.PARAGON) { response, result ->
                     geminiPromptResult = result
-                    callback(result)
+                    callback(response, result)
                 }
             } else if (addingPhotoFor == "faktura") {
                 Log.i("Dolan", "getting Prompt for faktura")
                 // Przykład wywołania asynchronicznej operacji, np. API call do chatWithGemini
-                chatWithGemini(geminiKey, bitmapPhoto, DocumentType.FAKTURA) { result ->
+                chatWithGemini(geminiKey, bitmapPhoto, DocumentType.FAKTURA) { response, result ->
                     geminiPromptResult = result
-                    callback(result)
+                    callback(response, result)
                 }
             } else if (addingPhotoFor == "raportFiskalny") {
                 Log.i("Dolan", "getting Prompt for faktura")
                 // Przykład wywołania asynchronicznej operacji, np. API call do chatWithGemini
-                chatWithGemini(geminiKey, bitmapPhoto, DocumentType.RAPORT_FISKALNY) { result ->
+                chatWithGemini(geminiKey, bitmapPhoto, DocumentType.RAPORT_FISKALNY) { response, result ->
                     geminiPromptResult = result
-                    callback(result)
+                    callback(response, result)
                 }
             } else if (addingPhotoFor == "produktRaportFiskalny") {
                 Log.i("Dolan", "getting Prompt for faktura")
                 // Przykład wywołania asynchronicznej operacji, np. API call do chatWithGemini
-                chatWithGemini(geminiKey, bitmapPhoto, DocumentType.PRODUCTS_RAPORT_FISKALNY) { result ->
+                chatWithGemini(geminiKey, bitmapPhoto, DocumentType.PRODUCTS_RAPORT_FISKALNY) { response, result ->
                     geminiPromptResult = result
-                    callback(result)
+                    callback(response, result)
                 }
             }
         } ?: run {
-            callback("No valid image provided")
+            callback(2, "No valid image provided")
         }
     }
 
@@ -142,10 +163,15 @@ class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
         return resultString
     }
 
-    fun addRaportFiskalny() {
+    fun addRaportFiskalny(): Long {
         if (geminiPromptResult != "") {
-            databaseViewModel.addRaportFiskalny(jsonString = geminiPromptResult)
+            return databaseViewModel.addRaportFiskalny(jsonString = geminiPromptResult)
         }
+        return 0
+    }
+
+    fun getRaportByID(id: Int): RaportFiskalny {
+        return databaseViewModel.getRaportByID(id)
     }
 
     fun formatEachProduktRaportFiskalny(produkty: List<ProduktRaportFiskalnyDTO>): String {

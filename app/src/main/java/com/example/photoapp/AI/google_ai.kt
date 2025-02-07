@@ -11,12 +11,13 @@ import com.google.ai.client.generativeai.type.generationConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 fun chatWithGemini(
     geminiKey: String,
     bitmap: Bitmap?,
     documentType: DocumentType,
-    callback: (String) -> Unit
+    callback: (Int, String) -> Unit // 1 is good, 2 is bad idk how to handle this for now
 ) {
     if (bitmap != null) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -42,20 +43,25 @@ fun chatWithGemini(
                 },
                 systemInstruction = content { text(systemInstructionText) },
             )
-
-            val response = model.generateContent(
-                content {
-                    image(bitmap)
-                    text(" ")
-                }
-            )
-
-            val result = response.text ?: ""
-            Log.i("Dolan", result)
-            callback(result)
+            try {
+                val response = model.generateContent(
+                    content {
+                        image(bitmap)
+                        text(" ")
+                    }
+                )
+                val result = response.text ?: ""
+                Log.i("Dolan", result)
+                callback(1, result)
+            } catch (e: Exception) {
+                Log.e("GeminiAPI", "Service Unavailable (503): $e")
+                callback(2, "Error: Server is temporarily unavailable. Please try again later.")
+            } catch (e: Exception) {
+                Log.e("GeminiAPI", "Request failed: ${e.localizedMessage}")
+            }
         }
     } else {
-        callback("")
+        callback(2, "")
     }
 }
 
