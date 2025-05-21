@@ -18,12 +18,12 @@ val geminiApikey = gradleLocalProperties(rootDir, providers)
 
 android {
     namespace = "com.example.photoapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.photoapp"
         minSdk = 27
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -63,57 +63,54 @@ android {
     }
 }
 
-val camerax_version = "1.2.2"
-
-val nav_version = "2.8.5"
-
-val room_version = "2.6.1"
-
 dependencies {
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     // Dagger - Hilt Dependency Injection
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-compiler:2.51.1")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 //    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    kapt(libs.androidx.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
-    //Apache Poi for exporting room as excel
-    implementation("org.apache.poi:poi:5.2.5")
+
+    implementation(libs.poi)
+    //noinspection UseTomlInstead
     implementation("org.apache.poi:poi-ooxml:5.2.5")
 
     // Google AI SDK for Android
-    implementation("com.google.ai.client.generativeai:generativeai:0.9.0") // Use the latest version
+    implementation(libs.generativeai) // Use the latest version
     // Kotlin Coroutines (if not already included)
 //    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3") // Use the latest version
 
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation(libs.androidx.navigation.compose)
 
-    implementation("androidx.camera:camera-core:${camerax_version}")
-    implementation("androidx.camera:camera-camera2:${camerax_version}")
-    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
-    implementation("androidx.camera:camera-video:${camerax_version}")
-    implementation("androidx.camera:camera-view:${camerax_version}")
-    implementation("androidx.camera:camera-extensions:${camerax_version}")
+    //noinspection GradleDependency
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.video)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.camera.extensions)
 
-    implementation("androidx.room:room-runtime:$room_version")
+    implementation(libs.androidx.room.runtime)
     implementation(libs.firebase.crashlytics.buildtools)
-    kapt("androidx.room:room-compiler:$room_version")
+    kapt(libs.androidx.room.compiler)
     // If this project only uses Java source, use the Java annotationProcessor
     // No additional plugins are necessary
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+    annotationProcessor(libs.androidx.room.compiler)
     // optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:$room_version")
+    implementation(libs.androidx.room.ktx)
     // optional - Test helpers
-    testImplementation("androidx.room:room-testing:$room_version")
+    testImplementation(libs.androidx.room.testing)
 
+    //noinspection UseTomlInstead
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.6")
-    implementation("io.coil-kt.coil3:coil-compose:3.0.4")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

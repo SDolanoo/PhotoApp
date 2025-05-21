@@ -19,6 +19,7 @@ import androidx.navigation.NavHostController
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
 
+//IsEditing\topAppBar.kt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RFEditingTopAppBar(

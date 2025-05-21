@@ -18,7 +18,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
+import com.example.photoapp.ui.RaportFiskalny.Details.composables.IsEditing.RaportFiskalnyProductDetailsEditing
 
+//Default\DetailsContent.kt
 @Composable
 fun RFDefaultDetailsContent(
     innerPadding: PaddingValues,
@@ -50,7 +52,7 @@ fun RFDefaultDetailsContent(
 
         produkty.forEach { product ->
             item {
-                RaportFiskalnyProductDetails(
+                RaportFiskalnyProductDetailsDefault(
                     nrPLU = product.nrPLU,
                     quantity = product.ilosc.toString(),
                 )
@@ -73,7 +75,7 @@ fun RaportFiskalnyDetailsRow(label: String, value: String) {
 }
 
 @Composable
-fun RaportFiskalnyProductDetails(nrPLU: String, quantity: String) {
+fun RaportFiskalnyProductDetailsDefault(nrPLU: String, quantity: String) {
     Column(
         modifier = Modifier.padding(vertical = 8.dp)
     ) {

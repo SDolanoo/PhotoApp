@@ -55,7 +55,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val geminiKey: String = resources.getString(R.string.geminiKey)
-        Log.i("Dolan", "$geminiKey")
         enableEdgeToEdge()
 
         requestCameraPermission()

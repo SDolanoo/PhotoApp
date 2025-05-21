@@ -46,6 +46,7 @@ import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
 
+//IsEditing\DetailsContent.kt
 @SuppressLint("RememberReturnType")
 @Composable
 fun RFEditingDetailsContent(
@@ -103,7 +104,7 @@ fun RFEditingDetailsContent(
                         }) {
                             Icon(Icons.Default.Clear, contentDescription = "Delete Product")
                         }
-                        RaportFiskalnyProductDetails(
+                        RaportFiskalnyProductDetailsEditing(
                             produkt = product,
                             onEdit = { updatedProdukt ->
 //                                viewModel._editedProducts[index] = updatedProdukt
@@ -192,7 +193,7 @@ fun RaportFiskalnyDetailsRow(
 }
 
 @Composable
-fun RaportFiskalnyProductDetails(produkt: ProduktRaportFiskalny, onEdit: (ProduktRaportFiskalny) -> Unit) {
+fun RaportFiskalnyProductDetailsEditing(produkt: ProduktRaportFiskalny, onEdit: (ProduktRaportFiskalny) -> Unit) {
     Column(
         modifier = Modifier.padding(start = 5.dp, end = 10.dp)
     ) {

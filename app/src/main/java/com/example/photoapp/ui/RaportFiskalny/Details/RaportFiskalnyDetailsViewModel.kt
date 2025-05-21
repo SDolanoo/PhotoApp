@@ -25,6 +25,7 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+//RaportFiskalnyDetailsViewModel
 @HiltViewModel
 class RaportFiskalnyViewModel @Inject constructor(
     private val repository: DatabaseRepository

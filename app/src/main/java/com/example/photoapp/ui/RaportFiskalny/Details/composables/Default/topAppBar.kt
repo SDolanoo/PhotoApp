@@ -52,7 +52,7 @@ import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
+//Default\topAppBar.kt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RFDefaultTopAppBar(
