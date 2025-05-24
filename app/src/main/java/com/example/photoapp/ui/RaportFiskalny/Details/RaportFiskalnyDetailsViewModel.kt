@@ -1,26 +1,19 @@
 package com.example.photoapp.ui.RaportFiskalny.Details
 
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.photoapp.database.data.DatabaseRepository
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.launch
-import okhttp3.Callback
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -31,33 +24,34 @@ class RaportFiskalnyViewModel @Inject constructor(
     private val repository: DatabaseRepository
 ) : ViewModel() {
 
-    private val _raport = mutableStateOf<RaportFiskalny?>(null)
-    val raport = _raport
+    private val _actualRaport = MutableStateFlow<RaportFiskalny?>(null)
+    val actualRaport: StateFlow<RaportFiskalny?> = _actualRaport
 
-    private val _produkty = MutableStateFlow<List<ProduktRaportFiskalny>>(emptyList())
-    val produkty: StateFlow<List<ProduktRaportFiskalny>> = _produkty.asStateFlow()
+    private val _actualProdukty = MutableStateFlow<List<ProduktRaportFiskalny>>(emptyList())
+    val actualProdukty: StateFlow<List<ProduktRaportFiskalny>> = _actualProdukty.asStateFlow()
 
-    var _editedProducts = mutableStateListOf<ProduktRaportFiskalny>()
-    var _editedRaport = mutableStateListOf<RaportFiskalny>()
+    private val _editedProdukty = MutableStateFlow<List<ProduktRaportFiskalny>>(emptyList())
+    val editedProdukty: StateFlow<List<ProduktRaportFiskalny>> = _editedProdukty.asStateFlow()
+
+    var _editedRaport = MutableStateFlow<RaportFiskalny?>(null)
+    val editedRaport: StateFlow<RaportFiskalny?> = _editedRaport
 
     fun loadProducts(raport: RaportFiskalny) {
         viewModelScope.launch(Dispatchers.IO) {
             val fetchedProducts = repository.getProductForRaportFiskalny(raportFiskalnyId = raport.id)
-            _produkty.value = fetchedProducts
-            _editedProducts.clear()
-            _editedProducts.addAll(fetchedProducts)
-            _editedRaport.clear()
-            _editedRaport.add(raport)
+            _actualProdukty.value = fetchedProducts
+            _editedProdukty.value = fetchedProducts
+            _editedRaport.value = raport
         }
     }
+
 
     fun loadOnlyProducts(raport: RaportFiskalny) {
         viewModelScope.launch(Dispatchers.IO) {
             val fetchedProducts =
                 repository.getProductForRaportFiskalny(raportFiskalnyId = raport.id)
-            _produkty.value = fetchedProducts
-            _editedProducts.clear()
-            _editedProducts.addAll(fetchedProducts)
+            _actualProdukty.value = fetchedProducts
+            _editedProdukty.value = fetchedProducts
         }
     }
 
@@ -68,19 +62,17 @@ class RaportFiskalnyViewModel @Inject constructor(
         }
     }
 
-    fun formatDate(date: Long?): String {
-        return date?.let {
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it)
-        } ?: "N/A"
+    fun editingSuccess() {
+        viewModelScope.launch(Dispatchers.IO) {
+            updateToDBProductsAndRaports() {}
+            loadProducts(_editedRaport.value!!)
+        }
     }
 
-    fun convertMillisToString(millis: Long): String {
-        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return formatter.format(Date(millis))
-    }
-
-    fun convertMillisToDate(millis: Long): Date {
-        return Date(millis)
+    fun editingFailed() {
+        viewModelScope.launch(Dispatchers.IO) {
+            loadProducts(_actualRaport.value!!)
+        }
     }
 
     fun deleteProduct(product: ProduktRaportFiskalny, callback:() -> Unit){
@@ -90,26 +82,28 @@ class RaportFiskalnyViewModel @Inject constructor(
         }
     }
 
-    fun updateEditedRaport(index: Int, raport: RaportFiskalny, callback: () -> Unit) {
+    fun updateEditedRaportTemp(raport: RaportFiskalny, callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            _editedRaport[index] = raport
+            _editedRaport.value = raport
             callback()
         }
     }
 
-    fun updateEditedProduct(index: Int, product: ProduktRaportFiskalny, callback: () -> Unit){
+    fun updateEditedProductTemp(index: Int, product: ProduktRaportFiskalny, callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            _editedProducts[index] = product
-            callback()
-        }
-    }
-
-    fun updateAllProductsAndRaports(callback: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _editedRaport.forEach { raport ->
-                repository.updateRaportFiskalny(raport)
+            _editedProdukty.value = _editedProdukty.value.toMutableList().also {
+                it[index] = product
             }
-            _editedProducts.forEach { produkt ->
+            callback()
+        }
+    }
+
+
+    fun updateToDBProductsAndRaports(callback: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateRaportFiskalny(_editedRaport.value!!)
+            setRaport(_editedRaport.value!!)
+            _editedProdukty.value.toMutableList().forEach { produkt ->
                 repository.updateProduktRaportFiskalny(produkt)
             }
             callback()
@@ -129,6 +123,6 @@ class RaportFiskalnyViewModel @Inject constructor(
     }
 
     fun setRaport(raport: RaportFiskalny) {
-        _raport.value = raport
+        _actualRaport.value = raport
     }
 }

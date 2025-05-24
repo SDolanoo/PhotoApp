@@ -1,10 +1,15 @@
 package com.example.photoapp.ui.RaportFiskalny.Screen
 
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,40 +18,91 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.photoapp.R
-import com.example.photoapp.database.data.RaportFiskalny
+import com.example.photoapp.ui.ExcelPacker.ExportRoomViewModel
 import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
 import com.example.photoapp.ui.RaportFiskalny.Details.composables.IsEditing.DatePickerModal
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.example.photoapp.utils.convertMillisToString
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> GenericEditableDetailsScreen(
     title: String,
-    items: List<T>,
+    actualItems: List<T>,
+    editingItems: List<T>,
+    editCanceled: () -> Unit,
+    editAccepted: () -> Unit,
     onAddItem: (String, String) -> Unit,
     onEditItem: (Int, T) -> Unit,
     onDeleteItem: (T) -> Unit,
     onExport: () -> Unit,
-    renderItem: @Composable (T, (T) -> Unit) -> Unit,
+    renderEditableItem: @Composable (T, (T) -> Unit) -> Unit,
     renderReadonlyItem: @Composable (T) -> Unit,
     enableDatePicker: Boolean = false,
-    initialDate: Long?,
+    initialDate: String,
     onDateSelected: (Long) -> Unit,
     renderTopBarActions: @Composable (() -> Unit)? = null,
-    viewModel: RaportFiskalnyViewModel
+    exportRoomViewModel: ExportRoomViewModel = hiltViewModel()
 ) {
+    //[START] Excel Packer
+    var isCircularIndicatorShowing by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val requestStoragePermission = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Log.i("Dolan", "Permission Granted")
+            coroutineScope.launch {
+                isCircularIndicatorShowing = true
+                delay(3000)
+                @Suppress("UNCHECKED_CAST")
+                exportRoomViewModel.exportToExcel(
+                    whatToExport = "raport fiskalny",
+                    listToExport = actualItems as List<Any>
+                )
+                isCircularIndicatorShowing = false
+            }
+        } else {
+            Log.i("Dolan", "NOT Granted")
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = "This feature is unavailable because it requires access to the phone's storage",
+                    duration = SnackbarDuration.Long
+                )
+            }
+        }
+    }
+    val alphaAnimation by animateFloatAsState(
+        targetValue = if (isCircularIndicatorShowing) 1f else 0f,
+        animationSpec = tween(durationMillis = 300) // Animacja przejścia w 300 ms
+    )
+
+    CircularProgressIndicator(
+        modifier = Modifier
+            .graphicsLayer(alpha = alphaAnimation) // Animacja przezroczystości
+    )
+    // [END] Excel Packer
+
     var isEditing by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -55,14 +111,17 @@ fun <T> GenericEditableDetailsScreen(
     var newPLU by remember { mutableStateOf("") }
     var newQty by remember { mutableStateOf("") }
 
-    var customDate by remember { mutableStateOf(viewModel.formatDate(initialDate)) }
+    var customDate by remember { mutableStateOf(initialDate) }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(title) },
                 navigationIcon = {
-                    IconButton(onClick = { isEditing = false }) {
+                    IconButton(onClick = {
+                        isEditing = false
+                        editCanceled()
+                    }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
@@ -73,6 +132,7 @@ fun <T> GenericEditableDetailsScreen(
                         }
                         IconButton(onClick = {
                             isEditing = false
+                            editAccepted()
                         }) {
                             Icon(Icons.Default.Check, contentDescription = "Save")
                         }
@@ -83,12 +143,13 @@ fun <T> GenericEditableDetailsScreen(
                         }) {
                             Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
-                        IconButton(onClick = onExport) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.upload_file),
-                                contentDescription = "Localized description"
-                            )
-                        }
+                        ExportToExcelButton(
+                            data = actualItems as List<Any>,
+                            exportViewModel = exportRoomViewModel,
+                            fileLabel = "raport fiskalny",
+                            snackbarHostState = snackbarHostState,
+                            onLoadingStateChanged = { isCircularIndicatorShowing = it }
+                        )
                     }
                 }
             )
@@ -106,46 +167,56 @@ fun <T> GenericEditableDetailsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        OutlinedTextField(
-                            value = customDate,
-                            onValueChange = {},
-                            label = { Text("Data") },
-                            readOnly = true,
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.DateRange,
-                                    contentDescription = "Pick Date"
-                                )
-                            },
-                            modifier = Modifier
-                                .pointerInput(Unit) {
-                                    awaitEachGesture {
-                                        // Modifier.clickable doesn't work for text fields, so we use Modifier.pointerInput
-                                        // in the Initial pass to observe events before the text field consumes them
-                                        // in the Main pass.
-                                        awaitFirstDown(pass = PointerEventPass.Initial)
-                                        val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
-                                        if (upEvent != null) {
-                                            showDatePicker = true
+                        if (isEditing) {
+                            OutlinedTextField(
+                                value = customDate,
+                                onValueChange = {},
+                                label = { Text("Data") },
+                                readOnly = true,
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.DateRange,
+                                        contentDescription = "Pick Date"
+                                    )
+                                },
+                                modifier = Modifier
+                                    .pointerInput(Unit) {
+                                        awaitEachGesture {
+                                            // Modifier.clickable doesn't work for text fields, so we use Modifier.pointerInput
+                                            // in the Initial pass to observe events before the text field consumes them
+                                            // in the Main pass.
+                                            awaitFirstDown(pass = PointerEventPass.Initial)
+                                            val upEvent =
+                                                waitForUpOrCancellation(pass = PointerEventPass.Initial)
+                                            if (upEvent != null) {
+                                                showDatePicker = true
+                                            }
                                         }
                                     }
-                                }
-                        )
+                            )
+                        } else {
+                            DetailsRow(
+                                label = "data_zakupu:",
+                                value = initialDate
+                            )
+                        }
                     }
                 }
             }
-
-            itemsIndexed(items) { index, item ->
-                if (isEditing) {
+            if (isEditing) {
+                itemsIndexed(editingItems) { index, item ->
                     Row {
                         IconButton(onClick = { onDeleteItem(item) }) {
                             Icon(Icons.Default.Delete, contentDescription = "Delete")
                         }
-                        renderItem(item) {
+                        renderEditableItem(item) {
                             onEditItem(index, it)
+                            Log.i("Dolan", "Zmiana ceny !!!!!!!!!!!!!!!!!!!!!!!!!")
                         }
                     }
-                } else {
+                }
+            } else {
+                itemsIndexed(actualItems) { index, item ->
                     renderReadonlyItem(item)
                 }
             }
@@ -190,7 +261,7 @@ fun <T> GenericEditableDetailsScreen(
             DatePickerModal(
                 onDateSelected = { it ->
                     if (it != null) {
-                        customDate = viewModel.convertMillisToString(it)
+                        customDate = convertMillisToString(it)
                         onDateSelected(it)
                         Log.i("Dolan", "UPDATED RAPORT $customDate")
 
@@ -207,5 +278,18 @@ fun <T> GenericEditableDetailsScreen(
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
         }
+    }
+}
+
+@Composable
+fun DetailsRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = label, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        Text(text = value, fontSize = 16.sp)
     }
 }

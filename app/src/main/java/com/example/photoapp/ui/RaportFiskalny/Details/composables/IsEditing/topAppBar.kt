@@ -52,7 +52,7 @@ fun RFEditingTopAppBar(
                 Icon(Icons.Default.Add, contentDescription = "Add one new Field")
             }
             IconButton(onClick = {
-                viewModel.updateAllProductsAndRaports {
+                viewModel.updateToDBProductsAndRaports{
                     changeEditingState(false)
                 }
 //                produkty.forEach { produkt ->

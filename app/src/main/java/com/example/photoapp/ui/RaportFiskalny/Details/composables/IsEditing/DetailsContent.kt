@@ -45,6 +45,9 @@ import androidx.compose.ui.unit.sp
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
+import com.example.photoapp.utils.convertMillisToDate
+import com.example.photoapp.utils.convertMillisToString
+import com.example.photoapp.utils.formatDate
 
 //IsEditing\DetailsContent.kt
 @SuppressLint("RememberReturnType")
@@ -58,7 +61,7 @@ fun RFEditingDetailsContent(
 ) {
 
     Log.i("Dolan", "SHOWING PRODUKTY LIST ${produkty}")
-    Log.i("Dolan", "SHOWING PRODUKTY LIST ${viewModel._editedProducts}")
+    Log.i("Dolan", "SHOWING PRODUKTY LIST ${viewModel.editedProdukty}")
 
     LazyColumn(
         contentPadding = innerPadding,
@@ -108,12 +111,12 @@ fun RFEditingDetailsContent(
                             produkt = product,
                             onEdit = { updatedProdukt ->
 //                                viewModel._editedProducts[index] = updatedProdukt
-                                viewModel.updateEditedProduct(index, updatedProdukt) {
+                                viewModel.updateEditedProductTemp(index, updatedProdukt) {
 //                                    viewModel.loadProducts(raportFiskalnyId = raportFiskalny.id)
                                     Log.i("Dolan", "Updating Product")
                                 }
                                 Log.i("Dolan", "SHOWING PRODUKTY LIST ${produkty}")
-                                Log.i("Dolan", "SHOWING PRODUKTY LIST ${viewModel._editedProducts}")
+                                Log.i("Dolan", "SHOWING PRODUKTY LIST ${viewModel.editedProdukty.value}")
                             }
                         )
                     }
@@ -135,7 +138,7 @@ fun RaportFiskalnyDetailsRow(
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
 
-    var customDate by remember { mutableStateOf(viewModel.formatDate(raport.dataDodania?.time)) }
+    var customDate by remember { mutableStateOf(formatDate(raport.dataDodania?.time)) }
 
 
     Row(
@@ -178,12 +181,12 @@ fun RaportFiskalnyDetailsRow(
         DatePickerModal(
             onDateSelected = { it ->
                 if (it != null) {
-                    customDate = viewModel.convertMillisToString(it)
+                    customDate = convertMillisToString(it)
                     val editedRaport = RaportFiskalny(
                         id = raport.id,
-                        dataDodania = viewModel.convertMillisToDate(it)
+                        dataDodania = convertMillisToDate(it)
                     )
-                    viewModel.updateEditedRaport(0, editedRaport){
+                    viewModel.updateEditedRaportTemp(editedRaport){
                         Log.i("Dolan", "UPDATED RAPORT $editedRaport")
                     }
                 }
@@ -192,19 +195,12 @@ fun RaportFiskalnyDetailsRow(
     }
 }
 
+
 @Composable
 fun RaportFiskalnyProductDetailsEditing(produkt: ProduktRaportFiskalny, onEdit: (ProduktRaportFiskalny) -> Unit) {
     Column(
         modifier = Modifier.padding(start = 5.dp, end = 10.dp)
     ) {
-//        Row(modifier = Modifier.padding(all = 5.dp)){
-//            Text(text = "nrPLU:    ", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-//            Text(text = nrPLU, fontSize = 16.sp)
-//        }
-//        Row(modifier = Modifier.padding(all = 5.dp)){
-//            Text(text = "ilosc:    ", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-//            Text(text = quantity, fontSize = 14.sp)
-//        }
         var textPLU by remember { mutableStateOf(produkt.nrPLU) }
         var textQuantity by remember { mutableStateOf((produkt.ilosc).toString()) }
         Row(modifier = Modifier.padding(all = 5.dp)){

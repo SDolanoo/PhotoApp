@@ -18,7 +18,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
+import com.example.photoapp.ui.RaportFiskalny.Details.composables.IsEditing.RaportFiskalnyDetailsRow
 import com.example.photoapp.ui.RaportFiskalny.Details.composables.IsEditing.RaportFiskalnyProductDetailsEditing
+import com.example.photoapp.ui.RaportFiskalny.Screen.DetailsRow
+import com.example.photoapp.utils.formatDate
 
 //Default\DetailsContent.kt
 @Composable
@@ -35,9 +38,9 @@ fun RFDefaultDetailsContent(
             .fillMaxSize()
     ) {
         item {
-            RaportFiskalnyDetailsRow(
+            DetailsRow(
                 label = "data_zakupu:",
-                value = viewModel.formatDate(raportFiskalny.dataDodania?.time)
+                value = formatDate(raportFiskalny.dataDodania?.time)
             )
         }
 
@@ -61,18 +64,7 @@ fun RFDefaultDetailsContent(
     }
 }
 
-@Composable
-fun RaportFiskalnyDetailsRow(label: String, value: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = label, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        Text(text = value, fontSize = 16.sp)
-    }
-}
+
 
 @Composable
 fun RaportFiskalnyProductDetailsDefault(nrPLU: String, quantity: String) {
