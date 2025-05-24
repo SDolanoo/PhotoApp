@@ -1,5 +1,6 @@
-package com.example.photoapp.ui.RaportFiskalny.Screen
+package com.example.photoapp.generalComposables
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -59,12 +60,12 @@ fun ExportToExcelButton(
         if (Build.VERSION.SDK_INT < 33) {
             if (ContextCompat.checkSelfPermission(
                     context,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 coroutineScope.launch { exportJob() }
             } else {
-                requestPermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
         } else {
             coroutineScope.launch { exportJob() }

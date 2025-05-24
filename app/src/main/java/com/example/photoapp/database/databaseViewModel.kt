@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.photoapp.AppApplication
-import com.example.photoapp.database.di.AppDatabase
 import com.example.photoapp.database.data.DatabaseRepository
 import com.example.photoapp.database.data.Faktura
 import com.example.photoapp.database.data.Paragon
@@ -13,7 +11,6 @@ import com.example.photoapp.database.data.ProduktFaktura
 import com.example.photoapp.database.data.ProduktParagon
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
-import com.example.photoapp.ui.RaportFiskalny.Screen.RaportFiskalnyScreenViewModel_Factory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

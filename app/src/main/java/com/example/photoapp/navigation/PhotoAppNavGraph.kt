@@ -23,7 +23,7 @@ import com.example.photoapp.ui.fakturaView.FakturaDetailsScreen
 import com.example.photoapp.ui.paragonView.ParagonDetailsScreen
 import com.example.photoapp.ui.FilterScreen.FilterScreen
 import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyDetailsScreen
-import com.example.photoapp.ui.RaportFiskalny.Screen.RaportFiskalnyScreen
+import com.example.photoapp.ui.RaportFiskalny.screen.RaportFiskalnyScreen
 import com.example.photoapp.ui.fakturaView.FakturaScreen
 import com.example.photoapp.ui.home.HomeDrawer
 import com.example.photoapp.ui.home.HomeScreen
@@ -276,9 +276,11 @@ fun PhotoAppNavGraph(
             RaportFiskalnyDetailsScreen(
                 navController = navController,
                 raportFiskalny = raportFiskalnyViewedNow,
-                navigateToCameraAndSetRF = { addingPhotoFor ->
-                    navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
-                    navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
+                leaveDetailsScreen = {navController.navigate(PhotoAppDestinations.RAPORT_FISKALNY_SCREEN_ROUTE)},
+                navigateToCameraAndSetRF = {
+                    navGraphViewModel.setAddingPhotoFor("produktRaportFiskalny")
+                    navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)
+                                           },
             )
         }
 

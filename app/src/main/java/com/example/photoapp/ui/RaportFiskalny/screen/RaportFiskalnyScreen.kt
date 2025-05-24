@@ -1,4 +1,4 @@
-package com.example.photoapp.ui.RaportFiskalny.Screen
+package com.example.photoapp.ui.RaportFiskalny.screen
 
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -43,11 +43,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.photoapp.database.data.RaportFiskalny
 import com.example.photoapp.navigation.PhotoAppDestinations
-import com.example.photoapp.utils.normalizedDate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

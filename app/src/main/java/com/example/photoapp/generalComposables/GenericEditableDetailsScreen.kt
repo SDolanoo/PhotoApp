@@ -1,10 +1,6 @@
-package com.example.photoapp.ui.RaportFiskalny.Screen
+package com.example.photoapp.generalComposables
 
-import android.content.pm.PackageManager
-import android.os.Build
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -15,36 +11,34 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.photoapp.R
 import com.example.photoapp.ui.ExcelPacker.ExportRoomViewModel
-import com.example.photoapp.ui.RaportFiskalny.Details.RaportFiskalnyViewModel
-import com.example.photoapp.ui.RaportFiskalny.Details.composables.IsEditing.DatePickerModal
+import com.example.photoapp.ui.RaportFiskalny.Details.DatePickerModal
 import com.example.photoapp.utils.convertMillisToString
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
+@Suppress("UNCHECKED_CAST")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> GenericEditableDetailsScreen(
     title: String,
+    leaveDetailsScreen: () -> Unit,
+    navigateToCameraAndSetRF: () -> Unit,
     actualItems: List<T>,
     editingItems: List<T>,
     editCanceled: () -> Unit,
@@ -52,7 +46,6 @@ fun <T> GenericEditableDetailsScreen(
     onAddItem: (String, String) -> Unit,
     onEditItem: (Int, T) -> Unit,
     onDeleteItem: (T) -> Unit,
-    onExport: () -> Unit,
     renderEditableItem: @Composable (T, (T) -> Unit) -> Unit,
     renderReadonlyItem: @Composable (T) -> Unit,
     enableDatePicker: Boolean = false,
@@ -63,35 +56,7 @@ fun <T> GenericEditableDetailsScreen(
 ) {
     //[START] Excel Packer
     var isCircularIndicatorShowing by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
-    val requestStoragePermission = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            Log.i("Dolan", "Permission Granted")
-            coroutineScope.launch {
-                isCircularIndicatorShowing = true
-                delay(3000)
-                @Suppress("UNCHECKED_CAST")
-                exportRoomViewModel.exportToExcel(
-                    whatToExport = "raport fiskalny",
-                    listToExport = actualItems as List<Any>
-                )
-                isCircularIndicatorShowing = false
-            }
-        } else {
-            Log.i("Dolan", "NOT Granted")
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = "This feature is unavailable because it requires access to the phone's storage",
-                    duration = SnackbarDuration.Long
-                )
-            }
-        }
-    }
     val alphaAnimation by animateFloatAsState(
         targetValue = if (isCircularIndicatorShowing) 1f else 0f,
         animationSpec = tween(durationMillis = 300) // Animacja przejścia w 300 ms
@@ -118,11 +83,19 @@ fun <T> GenericEditableDetailsScreen(
             CenterAlignedTopAppBar(
                 title = { Text(title) },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        isEditing = false
-                        editCanceled()
-                    }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    if (isEditing) {
+                        IconButton(onClick = {
+                            isEditing = false
+                            editCanceled()
+                        }) {
+                            Icon(Icons.Default.Close, contentDescription = "Back")
+                        }
+                    } else {
+                        IconButton(onClick = {
+                            leaveDetailsScreen()
+                        }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
                     }
                 },
                 actions = {
@@ -153,7 +126,16 @@ fun <T> GenericEditableDetailsScreen(
                     }
                 }
             )
-        }
+        },
+        floatingActionButton = {
+            if (!isEditing) {
+                FloatingActionButton(onClick = {
+                    navigateToCameraAndSetRF()
+                }) {
+                    Icon(Icons.Default.Add, contentDescription = "Add")
+                }
+            }
+        },
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -161,7 +143,7 @@ fun <T> GenericEditableDetailsScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            if (enableDatePicker && initialDate != null) {
+            if (enableDatePicker) {
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -293,3 +275,4 @@ fun DetailsRow(label: String, value: String) {
         Text(text = value, fontSize = 16.sp)
     }
 }
+
