@@ -1,4 +1,4 @@
-package com.example.photoapp.database.data.entities
+package com.example.photoapp.ui.raportFiskalny.data
 
 import androidx.room.*
 import java.util.*
