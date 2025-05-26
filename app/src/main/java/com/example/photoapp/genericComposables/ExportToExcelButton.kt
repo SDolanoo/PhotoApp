@@ -1,4 +1,4 @@
-package com.example.photoapp.generalComposables
+package com.example.photoapp.genericComposables
 
 import android.Manifest
 import android.content.pm.PackageManager

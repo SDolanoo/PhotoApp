@@ -1,16 +1,11 @@
-package com.example.photoapp.ui.RaportFiskalny.Details
+package com.example.photoapp.ui.raportFiskalny.Details
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -19,16 +14,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.example.photoapp.database.data.ProduktRaportFiskalny
 import com.example.photoapp.database.data.RaportFiskalny
-import com.example.photoapp.generalComposables.GenericEditableDetailsScreen
+import com.example.photoapp.genericComposables.GenericEditableDetailsScreen
 import com.example.photoapp.utils.convertMillisToDate
 import com.example.photoapp.utils.formatDate
 
 @Composable
 fun RaportFiskalnyDetailsScreen(
-    navController: NavHostController,
     raportFiskalny: RaportFiskalny?,
     leaveDetailsScreen: () -> Unit,
     navigateToCameraAndSetRF: () -> Unit,
@@ -153,35 +146,6 @@ fun RaportFiskalnyProductDetailsEditing(produkt: ProduktRaportFiskalny, onEdit: 
         }
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerModal(
-    onDateSelected: (Long?) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val datePickerState = rememberDatePickerState()
-
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
-                onDismiss()
-            }) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    ) {
-        DatePicker(state = datePickerState)
-    }
-}
-
 
 @Composable
 fun RaportFiskalnyProductDetailsDefault(nrPLU: String, quantity: String) {

@@ -1,4 +1,4 @@
-package com.example.photoapp.ui.RaportFiskalny.screen
+package com.example.photoapp.ui.raportFiskalny.screen
 
 import android.util.Log
 import androidx.compose.runtime.State

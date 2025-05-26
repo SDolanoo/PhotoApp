@@ -1,4 +1,4 @@
-package com.example.photoapp.generalComposables
+package com.example.photoapp.genericComposables
 
 import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.photoapp.ui.ExcelPacker.ExportRoomViewModel
-import com.example.photoapp.ui.RaportFiskalny.Details.DatePickerModal
 import com.example.photoapp.utils.convertMillisToString
 
 

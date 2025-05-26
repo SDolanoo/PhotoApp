@@ -1,4 +1,4 @@
-package com.example.photoapp.ui.paragonView
+package com.example.photoapp.ui.paragon.details
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,7 +21,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.photoapp.database.DatabaseViewModel
 import com.example.photoapp.database.data.Paragon
 import com.example.photoapp.database.data.ProduktParagon
 import java.text.SimpleDateFormat
@@ -32,20 +31,28 @@ import java.util.Locale
 fun ParagonDetailsScreen(
     navController: NavHostController,
     paragon: Paragon?,
-    databaseViewModel: DatabaseViewModel = hiltViewModel()
+    viewModel: ParagonDetailsScreenViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val products by viewModel.products.collectAsState()
+
+    // Load products once when screen opens
+    LaunchedEffect(paragon) {
+        paragon?.let {
+            viewModel.loadProductsForParagon(it.id)
+        }
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary,
-                    ),
+                ),
                 title = {
                     Text(
-                    "Centered Top App Bar",
+                        "Szczegóły Paragonu",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -59,19 +66,28 @@ fun ParagonDetailsScreen(
             )
         }
     ) { innerPadding ->
-        if (paragon != null) {
-            ParagonDetailsContent(innerPadding = innerPadding, paragon = paragon, databaseViewModel=databaseViewModel)
+        paragon?.let {
+            ParagonDetailsContent(
+                innerPadding = innerPadding,
+                paragon = it,
+                produkty = products
+            )
         }
     }
 }
 
+
 @Composable
-fun ParagonDetailsContent(innerPadding: PaddingValues, paragon: Paragon, databaseViewModel: DatabaseViewModel) {
+fun ParagonDetailsContent(
+    innerPadding: PaddingValues,
+    paragon: Paragon,
+    produkty: List<ProduktParagon>
+) {
     val dateformat = paragon.dataZakupu?.let {
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             .format(it)
     }
-    val produkty: List<ProduktParagon> = databaseViewModel.getProductForParagon(paragon.id)
+
     LazyColumn(
         contentPadding = innerPadding,
         modifier = Modifier
@@ -79,31 +95,31 @@ fun ParagonDetailsContent(innerPadding: PaddingValues, paragon: Paragon, databas
             .fillMaxSize()
     ) {
         item {
-            ParagonDetailsRow(label = "data_zakupu:", value = dateformat.toString())
-            ParagonDetailsRow(label = "nazwa_sklepu:", value = paragon.nazwaSklepu)
-            ParagonDetailsRow(label = "kwota_calkowita:", value = paragon.kwotaCalkowita.toString())
+            ParagonDetailsRow(label = "Data zakupu:", value = dateformat.orEmpty())
+            ParagonDetailsRow(label = "Nazwa sklepu:", value = paragon.nazwaSklepu)
+            ParagonDetailsRow(label = "Kwota całkowita:", value = paragon.kwotaCalkowita.toString())
         }
 
         item {
             Text(
-                text = "produkty:",
+                text = "Produkty:",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(top = 16.dp)
             )
         }
 
-        produkty.forEach { product ->
-            item {
-                ParagonProductDetails(
-                    name = product.nazwaProduktu,
-                    quantity = product.ilosc.toString(),
-                    price = product.cenaSuma.toString(),
-                )
-            }
+        items(produkty.size) { index ->
+            val product = produkty[index]
+            ParagonProductDetails(
+                name = product.nazwaProduktu,
+                quantity = product.ilosc.toString(),
+                price = product.cenaSuma.toString()
+            )
         }
     }
 }
+
 
 @Composable
 fun ParagonDetailsRow(label: String, value: String) {

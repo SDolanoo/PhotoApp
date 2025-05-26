@@ -1,4 +1,4 @@
-package com.example.photoapp.ui.fakturaView
+package com.example.photoapp.ui.faktura.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -31,8 +30,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,11 +43,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil3.compose.AsyncImage
-import com.example.photoapp.database.DatabaseViewModel
 import com.example.photoapp.database.data.Faktura
-import com.example.photoapp.utils.normalizedDate
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 
@@ -55,20 +53,25 @@ import java.util.Locale
 @Composable
 fun FakturaScreen(
     navController: NavHostController,
-    databaseViewModel: DatabaseViewModel = hiltViewModel(),
-    navigateToCameraView: (String)-> Unit,
+    navigateToCameraView: (String) -> Unit,
     navigateToFakturaDetailsScreen: (Faktura) -> Unit,
     navigateToFiltersScreen: () -> Unit,
-//    currentlyShowing: String,
     showFilteredFaktury: Boolean,
     fakturaFilteredList: List<Faktura>,
+    viewModel: FakturaScreenViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     var expanded by remember { mutableStateOf(false) }
 
+    val groupedFaktury by viewModel.groupedFaktury.collectAsState()
+
+    // Load data on recomposition
+    LaunchedEffect(showFilteredFaktury, fakturaFilteredList) {
+        viewModel.loadFaktury(showFilteredFaktury, fakturaFilteredList)
+    }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -76,11 +79,7 @@ fun FakturaScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text(
-                        "Widok Faktury",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Text("Widok Faktury", maxLines = 1, overflow = TextOverflow.Ellipsis)
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -88,40 +87,28 @@ fun FakturaScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = "Localized description"
-                        )
+                    IconButton(onClick = { /* future: settings or export */ }) {
+                        Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings")
                     }
                     IconButton(onClick = { navigateToFiltersScreen() }) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = "Localized description"
-                        )
+                        Icon(Icons.Filled.Add, contentDescription = "Filter")
                     }
                 },
                 scrollBehavior = scrollBehavior,
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                expanded = !expanded
-//                navigateToCameraView()
-            }) {
+            FloatingActionButton(onClick = { expanded = !expanded }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
-
         },
     ) { innerPadding ->
-
-        ScrollContent(
-            innerPadding,
-            databaseViewModel = databaseViewModel,
-            navigateToFakturaDetailsScreen = navigateToFakturaDetailsScreen,
-            showFilteredFaktury = showFilteredFaktury,
-            fakturaFilteredList = fakturaFilteredList,
+        FakturaScrollContent(
+            innerPadding = innerPadding,
+            groupedFaktury = groupedFaktury,
+            navigateToFakturaDetailsScreen = navigateToFakturaDetailsScreen
         )
+
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
@@ -130,9 +117,7 @@ fun FakturaScreen(
                 text = { Text("Add Paragon") },
                 onClick = { navigateToCameraView("paragon") }
             )
-
             HorizontalDivider()
-
             DropdownMenuItem(
                 text = { Text("Add Faktura") },
                 onClick = { navigateToCameraView("faktura") }
@@ -140,55 +125,37 @@ fun FakturaScreen(
         }
     }
 }
-//}
 
 @Composable
-fun ScrollContent(innerPadding: PaddingValues,
-                  databaseViewModel: DatabaseViewModel,
-                  navigateToFakturaDetailsScreen: (Faktura) -> Unit,
-                  showFilteredFaktury: Boolean,
-                  fakturaFilteredList: List<Faktura>,
+fun FakturaScrollContent(
+    innerPadding: PaddingValues,
+    groupedFaktury: Map<Date?, List<Faktura>>,
+    navigateToFakturaDetailsScreen: (Faktura) -> Unit
 ) {
-
-    val allFakturys by databaseViewModel.allLiveFaktura.observeAsState(emptyList())
-    val faktury = if (showFilteredFaktury) {
-        fakturaFilteredList
-    } else {
-        allFakturys
-    }
-
-    val groupedFaktury = faktury
-        .sortedByDescending { it.dataWystawienia }
-        .groupBy { faktura -> faktura.dataWystawienia?.normalizedDate() }
-
     val calendarIcon = Icons.Default.DateRange
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(1),
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = innerPadding,
         verticalItemSpacing = 2.dp,
     ) {
         groupedFaktury.forEach { (date, fakturaList) ->
             if (date != null) {
-                val dateformat = date.let {
-                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it)
-                }
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)
                 item {
-                    Row( modifier = Modifier.padding(start = 15.dp, top = 5.dp) ) {
+                    Row(modifier = Modifier.padding(start = 15.dp, top = 5.dp)) {
                         Icon(
                             imageVector = calendarIcon,
                             contentDescription = "Calendar icon",
                             modifier = Modifier.padding(start = 1.dp, end = 5.dp)
                         )
                         Text(
-                            text=dateformat,
+                            text = dateFormat,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(start = 5.dp, end = 5.dp)
                         )
                     }
-
                 }
                 items(fakturaList.size) { index ->
                     val faktura = fakturaList[index]
@@ -207,21 +174,18 @@ fun ScrollContent(innerPadding: PaddingValues,
                 }
             }
         }
-
     }
 }
 
 @Composable
 fun FakturaItem(faktura: Faktura, navigateToFakturaDetailsScreen: (Faktura) -> Unit) {
-    val dateformat = faktura.dataWystawienia?.let {
-        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            .format(it)
+    val dateFormat = faktura.dataWystawienia?.let {
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it)
     }
 
     ListItem(
         modifier = Modifier.clickable { navigateToFakturaDetailsScreen(faktura) },
-        // jest clickable -> przenosi nas na inną strone, może navigation
-        headlineContent = { Text("Data Wystawienia: $dateformat") },
+        headlineContent = { Text("Data Wystawienia: $dateFormat") },
         supportingContent = { Text("Netto ${faktura.razemNetto}") },
         trailingContent = { Text(faktura.razemBrutto) }
     )
