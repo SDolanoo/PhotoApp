@@ -1,6 +1,8 @@
-package com.example.photoapp.database.data.entities
+package com.example.photoapp.ui.paragon.data
 
 import androidx.room.*
+import com.example.photoapp.database.data.entities.Kategoria
+import com.example.photoapp.database.data.entities.Uzytkownik
 import java.util.*
 
 @Entity(
