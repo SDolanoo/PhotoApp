@@ -1,9 +1,8 @@
 package com.example.photoapp.core.database.data.dao
 
-import com.example.photoapp.database.data.entities.Odbiorca
-
 import android.util.Log
 import androidx.room.*
+import com.example.photoapp.core.database.data.entities.Odbiorca
 
 @Dao
 interface OdbiorcaDao {
@@ -22,15 +21,4 @@ interface OdbiorcaDao {
 
     @Delete
     fun delete(odbiorca: Odbiorca)
-
-    @Transaction
-    fun addOrGetOdbiorca(nazwa: String, nip: String, adres: String): Odbiorca {
-        var odbiorca = getByNip(nip)
-        if (odbiorca == null) {
-            odbiorca = Odbiorca(nazwa, nip, adres)
-            odbiorca.id = insert(odbiorca).toInt()
-        }
-        Log.i("Dolan", "Odbiorca ID: ${odbiorca.id}, NIP: ${odbiorca.nip}")
-        return odbiorca
-    }
 }

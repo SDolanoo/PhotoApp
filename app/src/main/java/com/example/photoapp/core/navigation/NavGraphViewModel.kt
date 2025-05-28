@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import coil3.Bitmap
 import android.net.Uri
-import com.example.photoapp.database.data.Faktura
-import com.example.photoapp.database.data.Paragon
-import com.example.photoapp.database.data.RaportFiskalny
+import com.example.photoapp.features.faktura.data.Faktura
+import com.example.photoapp.features.paragon.data.Paragon
+import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
 
 class NavGraphViewModel : ViewModel() {
     // State for photo URI and Bitmap

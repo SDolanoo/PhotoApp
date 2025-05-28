@@ -1,7 +1,7 @@
 package com.example.photoapp.core.database.data.repos
 
-import com.example.photoapp.database.data.dao.KategoriaDao
-import com.example.photoapp.database.data.entities.Kategoria
+import com.example.photoapp.core.database.data.dao.KategoriaDao
+import com.example.photoapp.core.database.data.entities.Kategoria
 import javax.inject.Inject
 
 class KategoriaRepository @Inject constructor(

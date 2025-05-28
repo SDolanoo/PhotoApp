@@ -4,12 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.content.FileProvider
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.photoapp.BuildConfig
-import com.example.photoapp.database.data.DatabaseRepository
-import com.example.photoapp.database.data.Faktura
-import com.example.photoapp.database.data.Paragon
-import com.example.photoapp.database.data.ProduktRaportFiskalny
+import com.example.photoapp.features.faktura.data.Faktura
+import com.example.photoapp.features.paragon.data.Paragon
+import com.example.photoapp.features.paragon.data.ParagonRepository
+import com.example.photoapp.features.raportFiskalny.data.ProduktRaportFiskalny
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -22,16 +24,17 @@ import org.apache.poi.xssf.usermodel.XSSFFont
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.reflect.Field
 import javax.inject.Inject
 
 @HiltViewModel
 class ExportRoomViewModel @Inject constructor(
-    private val repository: DatabaseRepository,
-    private val context: Context,
+    private val paragonRepository: ParagonRepository,
+    val context: Context,
 ): ViewModel() {
 
     val baseApplication = context.applicationContext
+
+    val allParagony: LiveData<List<Paragon>> = paragonRepository.getAllLiveParagony()
 
     fun <T : Any> exportListToExcel(
         workbook: XSSFWorkbook,

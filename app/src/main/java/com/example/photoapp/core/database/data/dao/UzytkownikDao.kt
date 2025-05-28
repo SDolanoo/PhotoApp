@@ -3,7 +3,7 @@ package com.example.photoapp.core.database.data.dao
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.photoapp.database.data.entities.Uzytkownik
+import com.example.photoapp.core.database.data.entities.Uzytkownik
 
 @Dao
 interface UzytkownikDao {
@@ -22,11 +22,4 @@ interface UzytkownikDao {
 
     @Delete
     fun delete(uzytkownik: Uzytkownik)
-
-    @Transaction
-    fun addUser(login: String, password: String, email: String) {
-        val newUser = Uzytkownik(login = login, password = password, email = email)
-        val id = insert(newUser)
-        Log.i("Dolan", "Użytkownik '$login' został dodany z ID: $id")
-    }
 }

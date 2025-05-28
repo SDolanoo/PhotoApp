@@ -52,19 +52,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.photoapp.database.DatabaseViewModel
-import com.example.photoapp.database.data.Paragon
+import com.example.photoapp.features.paragon.data.Paragon
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.collections.sortedByDescending
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExcelPacker(
     navController: NavHostController,
-    databaseViewModel: DatabaseViewModel = hiltViewModel(),
     exportRoomViewModel: ExportRoomViewModel = hiltViewModel(),
 
     navigateToParagonDetailsScreen: (Paragon) -> Unit,
@@ -77,13 +77,13 @@ fun ExcelPacker(
     val coroutineScope = rememberCoroutineScope()
 
     // hello
-    val allParagons by databaseViewModel.allLiveParagony.observeAsState(emptyList())
-    Log.i("Dolan", "Showing paragony: $allParagons")
+    val allParagony by exportRoomViewModel.allParagony.observeAsState(emptyList())
+    Log.i("Dolan", "Showing paragony: $allParagony")
 
     val paragonListToShow = if (showFilteredParagons) {
         paragonFilteredList
     } else {
-        allParagons
+        allParagony
     }
     // world
 

@@ -4,7 +4,7 @@ import androidx.room.*
 
 @Entity
 data class Sprzedawca(
-    @PrimaryKey(autoGenerate = true) var id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "nazwa") val nazwa: String,
     @ColumnInfo(name = "nip") val nip: String,
     @ColumnInfo(name = "adres") val adres: String

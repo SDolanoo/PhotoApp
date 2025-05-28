@@ -2,7 +2,7 @@ package com.example.photoapp.core.database.data.dao
 
 import android.util.Log
 import androidx.room.*
-import com.example.photoapp.database.data.entities.Sprzedawca
+import com.example.photoapp.core.database.data.entities.Sprzedawca
 
 @Dao
 interface SprzedawcaDao {
@@ -24,15 +24,4 @@ interface SprzedawcaDao {
 
     @Delete
     fun delete(sprzedawca: Sprzedawca)
-
-    @Transaction
-    fun addOrGetSprzedawca(nazwa: String, nip: String, adres: String): Sprzedawca {
-        var sprzedawca = getByNip(nip)
-        if (sprzedawca == null) {
-            sprzedawca = Sprzedawca(1, nazwa, nip, adres)
-            sprzedawca.id = insert(sprzedawca).toInt()
-        }
-        Log.i("Dolan", "Sprzedawca ID: ${sprzedawca.id}, NIP: ${sprzedawca.nip}")
-        return sprzedawca
-    }
 }

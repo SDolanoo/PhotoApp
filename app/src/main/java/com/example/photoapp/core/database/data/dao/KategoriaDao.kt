@@ -1,8 +1,7 @@
 package com.example.photoapp.core.database.data.dao
 
-import com.example.photoapp.database.data.entities.Kategoria
-
 import androidx.room.*
+import com.example.photoapp.core.database.data.entities.Kategoria
 
 @Dao
 interface KategoriaDao {
