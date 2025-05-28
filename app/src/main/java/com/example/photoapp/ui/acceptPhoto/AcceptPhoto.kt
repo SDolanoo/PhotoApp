@@ -35,8 +35,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
-import com.example.photoapp.database.DatabaseViewModel
-import com.example.photoapp.database.data.RaportFiskalny
+import com.example.photoapp.core.database.DatabaseViewModel
+import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun AcceptPhoto(
@@ -48,16 +49,14 @@ fun AcceptPhoto(
     contentDescription: String?,
     backToCameraView: () -> Unit,
     backToHome: () -> Unit,
-    databaseViewModel: DatabaseViewModel = hiltViewModel(),
     geminiKey: String,
     navigateToRFDetailsScreen: (RaportFiskalny) -> Unit,
+    acceptanceController: AcceptanceController = hiltViewModel()
     ) {
     var isLoading by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var dialogData by remember { mutableStateOf("") }
     var isPromptSuccess by remember { mutableStateOf(true) }
-
-    val acceptanceController = remember { AcceptanceController(databaseViewModel) }
 
     val alphaAnimation by animateFloatAsState(
         targetValue = if (isLoading) 1f else 0f,

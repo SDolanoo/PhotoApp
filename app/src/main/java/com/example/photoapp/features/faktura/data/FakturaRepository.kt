@@ -1,12 +1,13 @@
 package com.example.photoapp.features.faktura.data
 
-import com.example.photoapp.database.data.FakturaDTO
 import android.util.Log
-import com.example.photoapp.database.data.dao.OdbiorcaDao
-import com.example.photoapp.database.data.dao.SprzedawcaDao
-import com.example.photoapp.database.data.entities.Odbiorca
-import com.example.photoapp.database.data.entities.Sprzedawca
-import com.example.photoapp.utils.jsonTransformer
+import com.example.photoapp.core.database.data.FakturaDTO
+import com.example.photoapp.core.database.data.dao.OdbiorcaDao
+import com.example.photoapp.core.database.data.dao.SprzedawcaDao
+import com.example.photoapp.core.database.data.entities.Odbiorca
+import com.example.photoapp.core.database.data.entities.Sprzedawca
+import com.example.photoapp.core.utils.jsonTransformer
+import com.example.photoapp.features.raportFiskalny.data.ProduktRaportFiskalny
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.*
@@ -21,26 +22,38 @@ class FakturaRepository @Inject constructor(
 
     fun getAllLiveFaktury() = fakturaDao.getAllLive()
 
-    fun getProductForFaktura(fakturaId: Int): List<ProduktFaktura> {
-        return produktFakturaDao.getByFakturaId(fakturaId)
+    fun getFakturaByID(id: Int): Faktura? = fakturaDao.getById(id)
+
+    fun getProduktyForFaktura(fakturaId: Int): List<ProduktFaktura> {
+        return produktFakturaDao.getProductsByFakturaId(fakturaId)
     }
 
-    fun fetchFilteredFaktury(
-        startDate: Date?,
-        endDate: Date?,
-        minPrice: Double?,
-        maxPrice: Double?,
-        filterDate: String,
-        filterPrice: String
-    ): List<Faktura> {
-        return fakturaDao.getFilteredFaktury(
-            startDate,
-            endDate,
-            minPrice,
-            maxPrice,
-            filterDate,
-            filterPrice
-        )
+    fun insertFaktura(faktura: Faktura) {
+        fakturaDao.insert(faktura)
+    }
+
+    fun insertProdukt(produkt: ProduktFaktura) {
+        produktFakturaDao.insert(produkt)
+    }
+
+    fun updateFaktura(faktura: Faktura) {
+        fakturaDao.delete(faktura)
+    }
+
+    fun updateProdukt(produkt: ProduktFaktura) {
+        produktFakturaDao.delete(produkt)
+    }
+
+    fun deleteFaktura(faktura: Faktura) {
+        Log.i("RaportRepo", "Deleting Raport: ${faktura.id}")
+        getProduktyForFaktura(faktura.id).forEach {
+            produktFakturaDao.delete(it)
+        }
+        fakturaDao.delete(faktura)
+    }
+
+    fun deleteProdukt(produkt: ProduktFaktura) {
+        produktFakturaDao.delete(produkt)
     }
 
     fun addFakturaFromJson(jsonString: String) {
@@ -88,9 +101,30 @@ class FakturaRepository @Inject constructor(
                 podatekVat = produktDTO.podatekVat,
                 brutto = produktDTO.brutto
             )
-            produktFakturaDao.insert(produkt)
+            insertProdukt(produkt)
         }
 
         Log.i("FakturaRepository", "Inserted Faktura and ${fakturaDTO.produkty.size} products")
     }
+
+    fun fetchFilteredFaktury(
+        startDate: Date?,
+        endDate: Date?,
+        minPrice: Double?,
+        maxPrice: Double?,
+        filterDate: String,
+        filterPrice: String
+    ): List<Faktura> {
+        return fakturaDao.getFilteredFaktury(
+            startDate,
+            endDate,
+            minPrice,
+            maxPrice,
+            filterDate,
+            filterPrice
+        )
+    }
+
+    // TODO check for duplicate
+    // TODO add products for faktura - jak to będzie robione to trzeba w ai zrobić prompta - a narazie nie ma dodawania produktórw do faktury
 }

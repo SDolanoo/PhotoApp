@@ -1,9 +1,9 @@
 package com.example.photoapp.features.raportFiskalny.data
 
-import com.example.photoapp.database.data.OnlyProduktyRaportFiskalnyDTO
-import com.example.photoapp.database.data.RaportFiskalnyDTO
 import android.util.Log
-import com.example.photoapp.utils.jsonTransformer
+import com.example.photoapp.core.database.data.OnlyProduktyRaportFiskalnyDTO
+import com.example.photoapp.core.database.data.RaportFiskalnyDTO
+import com.example.photoapp.core.utils.jsonTransformer
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -15,12 +15,10 @@ class RaportFiskalnyRepository @Inject constructor(
 
     fun getAllLiveRaporty() = raportDao.getAllLive()
 
-    fun getAllRaporty(): List<RaportFiskalny> = raportDao.getAll()
-
     fun getRaportById(id: Int): RaportFiskalny = raportDao.getById(id)
 
-    fun getProduktyForRaport(id: Int): List<ProduktRaportFiskalny> =
-        produktDao.getByRaportId(id)
+    fun getProduktyForRaportId(id: Int): List<ProduktRaportFiskalny> =
+        produktDao.getProductsByRaportId(id)
 
     fun insertRaport(raport: RaportFiskalny): Long = raportDao.insert(raport)
 
@@ -38,7 +36,7 @@ class RaportFiskalnyRepository @Inject constructor(
 
     fun deleteRaport(raport: RaportFiskalny) {
         Log.i("RaportRepo", "Deleting Raport: ${raport.id}")
-        getProduktyForRaport(raport.id).forEach {
+        getProduktyForRaportId(raport.id).forEach {
             produktDao.delete(it)
         }
         raportDao.delete(raport)
@@ -91,7 +89,7 @@ class RaportFiskalnyRepository @Inject constructor(
     }
 
     private fun checkForDuplicatePLU(raportId: Int) {
-        val produkty = produktDao.getByRaportId(raportId)
+        val produkty = getProduktyForRaportId(raportId)
         val seen = mutableSetOf<Int>()
 
         produkty.forEach { produkt ->
@@ -105,4 +103,6 @@ class RaportFiskalnyRepository @Inject constructor(
             }
         }
     }
+
+
 }

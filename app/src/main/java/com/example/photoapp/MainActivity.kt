@@ -9,7 +9,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
@@ -20,10 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
-import com.example.photoapp.database.DatabaseViewModel
-import com.example.photoapp.navigation.NavGraphViewModel
-import com.example.photoapp.navigation.PhotoAppNavGraph
-import com.example.photoapp.navigation.PhotoAppNavigationActions
+import com.example.photoapp.core.navigation.NavGraphViewModel
+import com.example.photoapp.core.navigation.PhotoAppNavGraph
+import com.example.photoapp.core.navigation.PhotoAppNavigationActions
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.util.concurrent.ExecutorService

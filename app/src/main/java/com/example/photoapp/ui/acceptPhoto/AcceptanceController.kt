@@ -1,21 +1,32 @@
 package com.example.photoapp.ui.acceptPhoto
 
 import android.graphics.Bitmap
-import com.example.photoapp.AI.chatWithGemini
-import com.example.photoapp.database.DatabaseViewModel
-import com.example.photoapp.database.data.FakturaDTO
-import com.example.photoapp.database.data.ParagonDTO
-import com.example.photoapp.database.data.ProduktFakturaDTO
-import com.example.photoapp.database.data.ProduktParagonDTO
+import com.example.photoapp.core.AI.chatWithGemini
 import kotlinx.serialization.json.Json
 import android.util.Log
-import com.example.photoapp.AI.DocumentType
-import com.example.photoapp.database.data.OnlyProduktyRaportFiskalnyDTO
-import com.example.photoapp.database.data.ProduktRaportFiskalnyDTO
-import com.example.photoapp.database.data.RaportFiskalny
-import com.example.photoapp.database.data.RaportFiskalnyDTO
+import androidx.lifecycle.ViewModel
+import com.example.photoapp.core.AI.DocumentType
+import com.example.photoapp.core.database.data.FakturaDTO
+import com.example.photoapp.core.database.data.OnlyProduktyRaportFiskalnyDTO
+import com.example.photoapp.core.database.data.ParagonDTO
+import com.example.photoapp.core.database.data.ProduktFakturaDTO
+import com.example.photoapp.core.database.data.ProduktParagonDTO
+import com.example.photoapp.core.database.data.ProduktRaportFiskalnyDTO
+import com.example.photoapp.core.database.data.RaportFiskalnyDTO
+import com.example.photoapp.features.faktura.data.FakturaRepository
+import com.example.photoapp.features.paragon.data.ParagonRepository
+import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
+import com.example.photoapp.features.raportFiskalny.data.RaportFiskalnyRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlin.collections.joinToString
 
-class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
+@HiltViewModel
+class AcceptanceController @Inject constructor(
+    private val paragonRepository: ParagonRepository,
+    private val fakturaRepository: FakturaRepository,
+    private val raportFiskalnyRepository: RaportFiskalnyRepository
+) : ViewModel() {
     private var geminiPromptResult: String = ""
 
     fun retry(imagePath: String) {
@@ -61,14 +72,14 @@ class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
                     callback(response, result)
                 }
             } else if (addingPhotoFor == "raportFiskalny") {
-                Log.i("Dolan", "getting Prompt for faktura")
+                Log.i("Dolan", "getting Prompt for raportFiskalny")
                 // Przykład wywołania asynchronicznej operacji, np. API call do chatWithGemini
                 chatWithGemini(geminiKey, bitmapPhoto, DocumentType.RAPORT_FISKALNY) { response, result ->
                     geminiPromptResult = result
                     callback(response, result)
                 }
             } else if (addingPhotoFor == "produktRaportFiskalny") {
-                Log.i("Dolan", "getting Prompt for faktura")
+                Log.i("Dolan", "getting Prompt for produktRaportFiskalny")
                 // Przykład wywołania asynchronicznej operacji, np. API call do chatWithGemini
                 chatWithGemini(geminiKey, bitmapPhoto, DocumentType.PRODUCTS_RAPORT_FISKALNY) { response, result ->
                     geminiPromptResult = result
@@ -83,7 +94,7 @@ class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
     fun addRecipe() {
         if (geminiPromptResult != "") {
             Log.i("Dolan", "Adding Recipe")
-            databaseViewModel.addRecipe(jsonString = geminiPromptResult)
+            paragonRepository.addRecipeFromJson(jsonString = geminiPromptResult)
             Log.i("Dolan", "added Recipe")
         }
     }
@@ -115,7 +126,7 @@ class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
     fun addInvoice() {
         if (geminiPromptResult != "") {
             Log.i("Dolan", "Adding Invoice")
-            databaseViewModel.addFaktura(jsonString = geminiPromptResult)
+            fakturaRepository.addFakturaFromJson(jsonString = geminiPromptResult)
             Log.i("Dolan", "added Invoice")
         }
     }
@@ -165,13 +176,15 @@ class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
 
     fun addRaportFiskalny(): Long {
         if (geminiPromptResult != "") {
-            return databaseViewModel.addRaportFiskalny(jsonString = geminiPromptResult)
+            val coercingJson = Json { coerceInputValues = true }
+            val f = coercingJson.decodeFromString<RaportFiskalnyDTO>(geminiPromptResult)
+            return raportFiskalnyRepository.addRaportFromJson(jsonString = geminiPromptResult)
         }
         return 0
     }
 
     fun getRaportByID(id: Int): RaportFiskalny {
-        return databaseViewModel.getRaportByID(id)
+        return raportFiskalnyRepository.getRaportById(id)
     }
 
     fun formatEachProduktRaportFiskalny(produkty: List<ProduktRaportFiskalnyDTO>): String {
@@ -197,7 +210,7 @@ class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
 
     fun addProduktRaportFiskalny(raport: RaportFiskalny) {
         if (geminiPromptResult != "") {
-            databaseViewModel.addProduktyRaportFiskalny(jsonString = geminiPromptResult, raport)
+            raportFiskalnyRepository.addProduktyFromJson(jsonInput = geminiPromptResult, raport = raport)
         }
     }
 
@@ -212,3 +225,5 @@ class AcceptanceController(private val databaseViewModel: DatabaseViewModel) {
     }
 
 }
+
+

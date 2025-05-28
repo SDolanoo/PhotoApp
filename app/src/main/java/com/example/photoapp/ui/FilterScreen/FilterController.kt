@@ -2,7 +2,6 @@ package com.example.photoapp.ui.FilterScreen
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import com.example.photoapp.database.DatabaseViewModel
 import com.example.photoapp.database.data.Faktura

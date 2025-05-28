@@ -13,9 +13,6 @@ interface RaportFiskalnyDao {
     @Query("SELECT * FROM RaportFiskalny ORDER BY dataDodania")
     fun getAllLive(): LiveData<List<RaportFiskalny>>
 
-    @Query("SELECT * FROM RaportFiskalny")
-    fun getAll(): List<RaportFiskalny>
-
     @Query("SELECT * FROM RaportFiskalny WHERE id = :id")
     fun getById(id: Int): RaportFiskalny
 

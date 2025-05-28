@@ -10,7 +10,7 @@ import androidx.room.Update
 interface ProduktRaportFiskalnyDao {
 
     @Query("SELECT * FROM ProduktRaportFiskalny WHERE raportFiskalnyId = :raportFiskalnyId ORDER BY CAST(nrPLU AS INTEGER) ASC")
-    fun getByRaportId(raportFiskalnyId: Int): List<ProduktRaportFiskalny>
+    fun getProductsByRaportId(raportFiskalnyId: Int): List<ProduktRaportFiskalny>
 
     @Insert
     fun insert(produkt: ProduktRaportFiskalny): Long

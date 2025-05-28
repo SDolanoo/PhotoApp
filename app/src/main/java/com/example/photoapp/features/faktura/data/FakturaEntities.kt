@@ -1,6 +1,9 @@
 package com.example.photoapp.features.faktura.data
 
 import androidx.room.*
+import com.example.photoapp.core.database.data.entities.Odbiorca
+import com.example.photoapp.core.database.data.entities.Sprzedawca
+import com.example.photoapp.core.database.data.entities.Uzytkownik
 import java.util.*
 
 @Entity(
