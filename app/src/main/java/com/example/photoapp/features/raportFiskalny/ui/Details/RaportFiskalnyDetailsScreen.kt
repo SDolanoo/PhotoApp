@@ -108,10 +108,11 @@ fun RaportFiskalnyDetailsScreen(
                             ilosc = newQty.value
                         )
                     },
-                    onAdd = onAdd,
+                    onAction = onAdd,
                     onDismiss = onDismiss
                 )
-            }
+            },
+            renderEditItemDialog = null
 
         )
     }

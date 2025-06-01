@@ -54,7 +54,7 @@ fun <T> DefaultAddItemDialog(
     fields: List<Pair<String, MutableState<String>>>,
     kategorie: List<Kategoria>? = null,
     onBuildItem: () -> T,
-    onAdd: (T) -> Unit,
+    onAction: (T) -> Unit,
     onDismiss: () -> Unit
 ) {
     val kategorieList: List<String> = kategorie!!.map { it.nazwa }
@@ -86,7 +86,7 @@ fun <T> DefaultAddItemDialog(
         confirmButton = {
             Button(onClick = {
                 val item = onBuildItem()
-                onAdd(item)
+                onAction(item)
             }) {
                 Text("Add")
             }

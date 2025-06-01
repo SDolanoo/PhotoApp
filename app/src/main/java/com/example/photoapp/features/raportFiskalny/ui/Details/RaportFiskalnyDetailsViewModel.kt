@@ -95,6 +95,8 @@ class RaportFiskalnyViewModel @Inject constructor(
     }
 
 
+
+
     fun updateToDBProductsAndRaports(callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.updateRaport(_editedRaport.value!!)

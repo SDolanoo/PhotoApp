@@ -11,6 +11,8 @@ class KategoriaRepository @Inject constructor(
 
     fun getById(id: Int): Kategoria? = kategoriaDao.getById(id)
 
+    fun getByName(name: String): Kategoria? = kategoriaDao.getByName(name)
+
     fun insert(kategoria: Kategoria): Long = kategoriaDao.insert(kategoria)
 
     fun update(kategoria: Kategoria) = kategoriaDao.update(kategoria)

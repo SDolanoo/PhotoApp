@@ -108,6 +108,22 @@ class ParagonDetailsScreenViewModel @Inject constructor(
         }
     }
 
+    fun getKategoriaById(id: Int): Kategoria? {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                kategoriaRepository.getById(id)
+            }
+        }
+    }
+
+    fun getKategoriaByName(name: String): Kategoria? {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                kategoriaRepository.getByName(name)
+            }
+        }
+    }
+
     fun updateToDBProductsAndParagon(callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             paragonRepository.updateParagon(_editedParagon.value!!)

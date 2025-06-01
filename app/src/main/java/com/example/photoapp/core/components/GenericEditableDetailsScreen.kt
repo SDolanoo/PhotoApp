@@ -26,8 +26,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.photoapp.ui.ExcelPacker.ExportRoomViewModel
 import com.example.photoapp.core.utils.convertMillisToString
 
 
@@ -47,7 +45,8 @@ fun <T> GenericEditableDetailsScreen(
     onDeleteItem: (T) -> Unit,
     renderEditableItem: @Composable (T, (T) -> Unit) -> Unit,
     renderReadonlyItem: @Composable (T) -> Unit,
-    renderAddItemDialog: @Composable ((odAdd: (T) -> Unit, onDismiss: () -> Unit) -> Unit)? = null,
+    renderAddItemDialog: @Composable ((onAdd: (T) -> Unit, onDismiss: () -> Unit) -> Unit)? = null,
+    renderEditItemDialog: @Composable ((itemToEdit: T, onEdit: (T) -> Unit, onDismiss: () -> Unit) -> Unit)? = null,
     enableDatePicker: Boolean = false,
     initialDate: String,
     onDateSelected: (Long) -> Unit,
@@ -68,7 +67,11 @@ fun <T> GenericEditableDetailsScreen(
     // [END] Excel Packer
 
     var isEditing by remember { mutableStateOf(false) }
-    var showAddDialog by remember { mutableStateOf(false) }
+    var showAddItemDialog by remember { mutableStateOf(false) }
+
+    var showEditItemDialog by remember { mutableStateOf(false) }
+    var currentlyEdited by remember { mutableStateOf(1)}
+
     var showDatePicker by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
@@ -96,7 +99,7 @@ fun <T> GenericEditableDetailsScreen(
                 },
                 actions = {
                     if (isEditing) {
-                        IconButton(onClick = { showAddDialog = true }) {
+                        IconButton(onClick = { showAddItemDialog = true }) {
                             Icon(Icons.Default.Add, contentDescription = "Add")
                         }
                         IconButton(onClick = {
@@ -173,7 +176,7 @@ fun <T> GenericEditableDetailsScreen(
                             )
                         } else {
                             DetailsRow(
-                                label = "data_zakupu:",
+                                label = "Data:",
                                 value = initialDate
                             )
                         }
@@ -186,10 +189,13 @@ fun <T> GenericEditableDetailsScreen(
                         IconButton(onClick = { onDeleteItem(item) }) {
                             Icon(Icons.Default.Delete, contentDescription = "Delete")
                         }
-                        renderEditableItem(item) {
-                            onEditItem(index, it)
-                            Log.i("Dolan", "Zmiana ceny !!!!!!!!!!!!!!!!!!!!!!!!!")
+                        IconButton(onClick = {
+                            showEditItemDialog = true
+                            currentlyEdited = index
+                        }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
+                        renderReadonlyItem(item)
                     }
                 }
             } else {
@@ -199,14 +205,27 @@ fun <T> GenericEditableDetailsScreen(
             }
         }
 
-        if (showAddDialog && renderAddItemDialog != null) {
+        if (showAddItemDialog && renderAddItemDialog != null) {
             renderAddItemDialog( // IDK WHY THIS CANNOT HAVE ARGUMENTS!!!
                 { item -> //onAdd
                     onAddItem(item)
-                    showAddDialog = false
+                    showAddItemDialog = false
                 },
                 { // onDismiss
-                    showAddDialog = false
+                    showAddItemDialog = false
+                }
+            )
+        }
+
+        if (showEditItemDialog && renderEditItemDialog != null) {
+            renderEditItemDialog( // IDK WHY THIS CANNOT HAVE ARGUMENTS!!!
+                editingItems[currentlyEdited],
+                { item -> //onEdit
+                    onEditItem(currentlyEdited, item)
+                    showEditItemDialog = false
+                },
+                { // onDismiss
+                    showEditItemDialog = false
                 }
             )
         }

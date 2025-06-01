@@ -129,33 +129,31 @@ fun PhotoAppNavGraph(
             }
         }
 
-//        composable(PhotoAppDestinations.PARAGON_SCREEN_ROUTE) {
-//            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
-//            ParagonScreen(
-//                navController = navController,
-//                navigateToCameraView = { addingPhotoFor ->
-//                    navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
-//                    navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
-//                navigateToParagonDetailsScreen = { paragon ->
-//                    navGraphViewModel.setParagonViewedNow(paragon)
-//                    navController.navigate(PhotoAppDestinations.PARAGON_DETAILS_SCREEN_ROUTE)
-//                },
-//                navigateToFiltersScreen = {
-//                    navController.navigate(PhotoAppDestinations.FILTERS_SCREEN_ROUTE)
-//                },
-////                currentlyShowing = currentlyShowing,
-//                showFilteredParagons = showFilteredParagons,
-//                paragonFilteredList = paragonFilteredList,
-//            )
-//        }
-//
-//        composable(PhotoAppDestinations.PARAGON_DETAILS_SCREEN_ROUTE) {
-//            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
-//            ParagonDetailsScreen(
-//                navController = navController,
-//                paragon = paragonViewedNow,
-//            )
-//        }
+        composable(PhotoAppDestinations.PARAGON_SCREEN_ROUTE) {
+            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
+            ParagonScreen(
+                navController = navController,
+                navigateToCameraView = { addingPhotoFor ->
+                    navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
+                    navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
+                navigateToParagonDetailsScreen = { paragon ->
+                    navGraphViewModel.setParagonViewedNow(paragon)
+                    navController.navigate(PhotoAppDestinations.PARAGON_DETAILS_SCREEN_ROUTE)
+                }
+            )
+        }
+
+        composable(PhotoAppDestinations.PARAGON_DETAILS_SCREEN_ROUTE) {
+            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
+            ParagonDetailsScreen(
+                paragon = paragonViewedNow,
+                leaveDetailsScreen = { navController.navigate(PhotoAppDestinations.PARAGON_SCREEN_ROUTE)},
+                navigateToCameraAndSetRF = {
+                    navGraphViewModel.setAddingPhotoFor("produktParagon")
+                    navController.navigate(PhotoAppDestinations.PARAGON_SCREEN_ROUTE)
+                }
+            )
+        }
 //
 //        composable(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) {
 //            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
