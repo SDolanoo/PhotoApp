@@ -14,6 +14,9 @@ interface FakturaDao {
     @Query("SELECT * FROM Faktura ORDER BY dataSprzedazy DESC")
     fun getAllLive(): LiveData<List<Faktura>>
 
+    @Query("SELECT * FROM Faktura")
+    fun getAllFaktury(): List<Faktura>
+
     @Query("SELECT * FROM Faktura WHERE id = :id")
     fun getById(id: Int): Faktura?
 

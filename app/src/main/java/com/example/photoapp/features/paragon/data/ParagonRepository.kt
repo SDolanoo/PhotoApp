@@ -1,6 +1,7 @@
 package com.example.photoapp.features.paragon.data
 
 import android.util.Log
+import com.example.photoapp.core.database.data.OnlyProduktyRaportFiskalnyDTO
 import com.example.photoapp.core.database.data.ParagonDTO
 import com.example.photoapp.core.utils.jsonTransformer
 import kotlinx.serialization.json.Json
@@ -83,46 +84,16 @@ class ParagonRepository @Inject constructor(
         Log.i("ParagonRepository", "Inserted Paragon + Produkty with ID: $paragonId")
     }
 
-//    fun addParagonFromJson(jsonString: String): Long {
-//        val coercingJson = Json { coerceInputValues = true }
-//        val transformedJson = jsonTransformer(jsonString)
-//        val dto = coercingJson.decodeFromString<ParagonDTO>(transformedJson)
-//
-//        val paragon = Paragon(
-//            uzytkownikId = 1,
-//            dataZakupu = SimpleDateFormat("yyyy-MM-dd").parse(dto.dataZakupu),
-//            nazwaSklepu = dto.nazwaSklepu,
-//            kwotaCalkowita = dto.kwotaCalkowita.replace(",", ".").toDouble()
-//        )
-//
-//        val paragonId = paragonDao.insert(paragon)
-//        Log.i("ParagonRepo", "Inserted Paragon: $paragonId")
-//
-//        dto.produkty.forEach { produktDTO ->
-//            val produkt = ProduktParagon(
-//                paragonId = paragonId.toInt(),
-//                kategoriaId = null,
-//                nazwaProduktu = produktDTO.nazwaProduktu,
-//                ilosc = produktDTO.ilosc.toDouble().toInt(),
-//                cenaSuma = produktDTO.cenaSuma.replace(",", ".").toDouble()
-//            )
-//            produktParagonDao.insert(produkt)
-//        }
-//
-////        checkForDuplicateNames(paragonId.toInt())
-//        return paragonId
-//    }
-
 //    fun addProduktyFromJson(jsonInput: String, paragon: Paragon) {
 //        val coercingJson = Json { coerceInputValues = true }
 //        val transformedJson = jsonTransformer(jsonInput)
-//        val produkty = coercingJson.decodeFromString<OnlyProduktyParagonDTO>(transformedJson)
+//        val produkty = coercingJson.decodeFromString<ProduktParagon>(transformedJson)
 //
 //        produkty.produkty.forEach { produktDTO ->
 //            val produkt = ProduktParagon(
 //                paragonId = paragon.id,
 //                kategoriaId = null,
-//                nazwaProduktu = produktDTO.nazwaProduktu,
+//                nazwaProduktu = produktDTO.,
 //                ilosc = produktDTO.ilosc.toDouble().toInt(),
 //                cenaSuma = produktDTO.cenaSuma.replace(",", ".").toDouble()
 //            )
@@ -131,7 +102,7 @@ class ParagonRepository @Inject constructor(
 //
 //        checkForDuplicateNames(paragon.id)
 //    }
-
+//
 //    private fun checkForDuplicateNames(paragonId: Int) {
 //        val produkty = getProduktyForParagonId(paragonId)
 //        val seen = mutableSetOf<String>()

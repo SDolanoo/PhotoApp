@@ -42,16 +42,16 @@ fun <T> GenericEditableDetailsScreen(
     editingItems: List<T>,
     editCanceled: () -> Unit,
     editAccepted: () -> Unit,
-    onAddItem: (String, String) -> Unit,
+    onAddItem: (T) -> Unit,
     onEditItem: (Int, T) -> Unit,
     onDeleteItem: (T) -> Unit,
     renderEditableItem: @Composable (T, (T) -> Unit) -> Unit,
     renderReadonlyItem: @Composable (T) -> Unit,
+    renderAddItemDialog: @Composable ((odAdd: (T) -> Unit, onDismiss: () -> Unit) -> Unit)? = null,
     enableDatePicker: Boolean = false,
     initialDate: String,
     onDateSelected: (Long) -> Unit,
-    renderTopBarActions: @Composable (() -> Unit)? = null,
-    exportRoomViewModel: ExportRoomViewModel = hiltViewModel()
+    renderTopBarActions: @Composable (() -> Unit)? = null
 ) {
     //[START] Excel Packer
     var isCircularIndicatorShowing by remember { mutableStateOf(false) }
@@ -71,9 +71,6 @@ fun <T> GenericEditableDetailsScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
-
-    var newPLU by remember { mutableStateOf("") }
-    var newQty by remember { mutableStateOf("") }
 
     var customDate by remember { mutableStateOf(initialDate) }
 
@@ -117,7 +114,6 @@ fun <T> GenericEditableDetailsScreen(
                         }
                         ExportToExcelButton(
                             data = actualItems as List<Any>,
-                            exportViewModel = exportRoomViewModel,
                             fileLabel = "raport fiskalny",
                             snackbarHostState = snackbarHostState,
                             onLoadingStateChanged = { isCircularIndicatorShowing = it }
@@ -203,37 +199,14 @@ fun <T> GenericEditableDetailsScreen(
             }
         }
 
-        if (showAddDialog) {
-            AlertDialog(
-                onDismissRequest = { showAddDialog = false },
-                title = { Text("Add Product") },
-                text = {
-                    Column {
-                        OutlinedTextField(
-                            value = newPLU,
-                            onValueChange = { newPLU = it },
-                            label = { Text("PLU") }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedTextField(
-                            value = newQty,
-                            onValueChange = { newQty = it },
-                            label = { Text("Quantity") }
-                        )
-                    }
+        if (showAddDialog && renderAddItemDialog != null) {
+            renderAddItemDialog( // IDK WHY THIS CANNOT HAVE ARGUMENTS!!!
+                { item -> //onAdd
+                    onAddItem(item)
+                    showAddDialog = false
                 },
-                confirmButton = {
-                    Button(onClick = {
-                        onAddItem(newPLU, newQty)
-                        showAddDialog = false
-                    }) {
-                        Text("Add")
-                    }
-                },
-                dismissButton = {
-                    Button(onClick = { showAddDialog = false }) {
-                        Text("Cancel")
-                    }
+                { // onDismiss
+                    showAddDialog = false
                 }
             )
         }

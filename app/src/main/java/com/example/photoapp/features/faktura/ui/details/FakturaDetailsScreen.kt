@@ -37,52 +37,52 @@ fun FakturaDetailsScreen(
         }
     }
 
-    key(refreshKey) {
-        GenericEditableDetailsScreen(
-            title = "Faktura",
-            leaveDetailsScreen = leaveDetailsScreen,
-            navigateToCameraAndSetRF = navigateToCameraAndSetRF,
-            actualItems = actualProdukty,
-            editingItems = editingProdukty,
-            editCanceled = {
-                viewModel.editingFailed()
-                refreshKey++
-            },
-            editAccepted = {
-                viewModel.editingSuccess()
-                refreshKey++
-            },
-            onAddItem = { name, qty ->
-                editedFaktura?.let {
-                    viewModel.addOneProduct(it.id, name, qty) {
-                        viewModel.loadProducts(it)
-                    }
-                }
-            },
-            onEditItem = { index, produkt ->
-                viewModel.updateEditedProductTemp(index, produkt) {}
-            },
-            onDeleteItem = { produkt ->
-                viewModel.deleteProduct(produkt) {
-                    editedFaktura?.let { viewModel.loadProducts(it) }
-                }
-            },
-            enableDatePicker = true,
-            initialDate = formatDate(faktura?.dataWystawienia?.time),
-            onDateSelected = { millis ->
-                val newDate = convertMillisToDate(millis)
-                editedFaktura?.let {
-                    viewModel.updateEditedFakturaTemp(it.copy(dataWystawienia = newDate)) {}
-                }
-            },
-            renderEditableItem = { produkt, onEdit ->
-                FakturaProductEditor(produkt = produkt, onEdit = onEdit)
-            },
-            renderReadonlyItem = { produkt ->
-                FakturaProductReadonly(produkt)
-            }
-        )
-    }
+//    key(refreshKey) {
+//        GenericEditableDetailsScreen(
+//            title = "Faktura",
+//            leaveDetailsScreen = leaveDetailsScreen,
+//            navigateToCameraAndSetRF = navigateToCameraAndSetRF,
+//            actualItems = actualProdukty,
+//            editingItems = editingProdukty,
+//            editCanceled = {
+//                viewModel.editingFailed()
+//                refreshKey++
+//            },
+//            editAccepted = {
+//                viewModel.editingSuccess()
+//                refreshKey++
+//            },
+//            onAddItem = { name, qty ->
+//                editedFaktura?.let {
+//                    viewModel.addOneProduct(it.id, name, qty) {
+//                        viewModel.loadProducts(it)
+//                    }
+//                }
+//            },
+//            onEditItem = { index, produkt ->
+//                viewModel.updateEditedProductTemp(index, produkt) {}
+//            },
+//            onDeleteItem = { produkt ->
+//                viewModel.deleteProduct(produkt) {
+//                    editedFaktura?.let { viewModel.loadProducts(it) }
+//                }
+//            },
+//            enableDatePicker = true,
+//            initialDate = formatDate(faktura?.dataWystawienia?.time),
+//            onDateSelected = { millis ->
+//                val newDate = convertMillisToDate(millis)
+//                editedFaktura?.let {
+//                    viewModel.updateEditedFakturaTemp(it.copy(dataWystawienia = newDate)) {}
+//                }
+//            },
+//            renderEditableItem = { produkt, onEdit ->
+//                FakturaProductEditor(produkt = produkt, onEdit = onEdit)
+//            },
+//            renderReadonlyItem = { produkt ->
+//                FakturaProductReadonly(produkt)
+//            }
+//        )
+//    }
 }
 
 @Composable

@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.photoapp.core.components.DefaultAddItemDialog
 import com.example.photoapp.features.raportFiskalny.data.ProduktRaportFiskalny
 import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
 import com.example.photoapp.core.components.GenericEditableDetailsScreen
@@ -58,8 +59,8 @@ fun RaportFiskalnyDetailsScreen(
                     refreshKey++
                 }
                            },
-            onAddItem = { plu, qty ->
-                viewModel.addOneProduct(raport!!.id, plu, qty) {
+            onAddItem = { produkt ->
+                viewModel.addOneProduct(raport!!.id, produkt.nrPLU, produkt.ilosc.toString()) {
                     viewModel.loadProducts(raport!!)
                 }
             },
@@ -73,8 +74,8 @@ fun RaportFiskalnyDetailsScreen(
             },
             enableDatePicker = true,
             initialDate = formatDate(raportFiskalny?.dataDodania?.time),
-            onDateSelected = { it ->
-                val newDate = convertMillisToDate(it)
+            onDateSelected = { millis ->
+                val newDate = convertMillisToDate(millis)
                 viewModel.updateEditedRaportTemp(raport!!.copy(dataDodania = newDate)) {}
             },
             renderEditableItem = { product, onEdit ->
@@ -88,7 +89,30 @@ fun RaportFiskalnyDetailsScreen(
                     nrPLU = product.nrPLU,
                     quantity = product.ilosc.toString()
                 )
+            },
+            renderAddItemDialog = { onAdd, onDismiss ->
+                val newPLU = remember { mutableStateOf("") }
+                val newQty = remember { mutableStateOf("") }
+
+                DefaultAddItemDialog(
+                    title = "Dodaj Produkt",
+                    fields = listOf(
+                        "PLU" to newPLU,
+                        "Ilość" to newQty
+                    ),
+                    onBuildItem = {
+                        ProduktRaportFiskalny(
+                            id = 0,
+                            raportFiskalnyId = raport!!.id,
+                            nrPLU = newPLU.value,
+                            ilosc = newQty.value
+                        )
+                    },
+                    onAdd = onAdd,
+                    onDismiss = onDismiss
+                )
             }
+
         )
     }
 }
@@ -163,3 +187,4 @@ fun RaportFiskalnyProductDetailsDefault(nrPLU: String, quantity: String) {
 
     }
 }
+

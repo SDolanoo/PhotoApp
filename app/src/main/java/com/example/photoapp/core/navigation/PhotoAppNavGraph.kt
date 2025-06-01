@@ -129,61 +129,61 @@ fun PhotoAppNavGraph(
             }
         }
 
-        composable(PhotoAppDestinations.PARAGON_SCREEN_ROUTE) {
-            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
-            ParagonScreen(
-                navController = navController,
-                navigateToCameraView = { addingPhotoFor ->
-                    navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
-                    navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
-                navigateToParagonDetailsScreen = { paragon ->
-                    navGraphViewModel.setParagonViewedNow(paragon)
-                    navController.navigate(PhotoAppDestinations.PARAGON_DETAILS_SCREEN_ROUTE)
-                },
-                navigateToFiltersScreen = {
-                    navController.navigate(PhotoAppDestinations.FILTERS_SCREEN_ROUTE)
-                },
-//                currentlyShowing = currentlyShowing,
-                showFilteredParagons = showFilteredParagons,
-                paragonFilteredList = paragonFilteredList,
-            )
-        }
-
-        composable(PhotoAppDestinations.PARAGON_DETAILS_SCREEN_ROUTE) {
-            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
-            ParagonDetailsScreen(
-                navController = navController,
-                paragon = paragonViewedNow,
-            )
-        }
-
-        composable(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) {
-            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
-            FakturaScreen(
-                navController = navController,
-                navigateToCameraView = { addingPhotoFor ->
-                    navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
-                    navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
-                navigateToFakturaDetailsScreen = { faktura ->
-                    navGraphViewModel.setFakturaViewedNow(faktura)
-                    navController.navigate(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE)
-                },
-                navigateToFiltersScreen = {
-                    navController.navigate(PhotoAppDestinations.FILTERS_SCREEN_ROUTE)
-                },
-//                currentlyShowing = currentlyShowing,
-                showFilteredFaktury = showFilteredFaktury,
-                fakturaFilteredList = fakturaFilteredList
-            )
-        }
-
-        composable(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE) {
-            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
-            FakturaDetailsScreen(
-                navController = navController,
-                faktura = fakturaViewedNow,
-            )
-        }
+//        composable(PhotoAppDestinations.PARAGON_SCREEN_ROUTE) {
+//            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
+//            ParagonScreen(
+//                navController = navController,
+//                navigateToCameraView = { addingPhotoFor ->
+//                    navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
+//                    navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
+//                navigateToParagonDetailsScreen = { paragon ->
+//                    navGraphViewModel.setParagonViewedNow(paragon)
+//                    navController.navigate(PhotoAppDestinations.PARAGON_DETAILS_SCREEN_ROUTE)
+//                },
+//                navigateToFiltersScreen = {
+//                    navController.navigate(PhotoAppDestinations.FILTERS_SCREEN_ROUTE)
+//                },
+////                currentlyShowing = currentlyShowing,
+//                showFilteredParagons = showFilteredParagons,
+//                paragonFilteredList = paragonFilteredList,
+//            )
+//        }
+//
+//        composable(PhotoAppDestinations.PARAGON_DETAILS_SCREEN_ROUTE) {
+//            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
+//            ParagonDetailsScreen(
+//                navController = navController,
+//                paragon = paragonViewedNow,
+//            )
+//        }
+//
+//        composable(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) {
+//            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
+//            FakturaScreen(
+//                navController = navController,
+//                navigateToCameraView = { addingPhotoFor ->
+//                    navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
+//                    navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
+//                navigateToFakturaDetailsScreen = { faktura ->
+//                    navGraphViewModel.setFakturaViewedNow(faktura)
+//                    navController.navigate(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE)
+//                },
+//                navigateToFiltersScreen = {
+//                    navController.navigate(PhotoAppDestinations.FILTERS_SCREEN_ROUTE)
+//                },
+////                currentlyShowing = currentlyShowing,
+//                showFilteredFaktury = showFilteredFaktury,
+//                fakturaFilteredList = fakturaFilteredList
+//            )
+//        }
+//
+//        composable(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE) {
+//            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
+//            FakturaDetailsScreen(
+//                navController = navController,
+//                faktura = fakturaViewedNow,
+//            )
+//        }
 
         composable(PhotoAppDestinations.MAKE_PHOTO_ROUTE) {
             Log.i("Dolan", "Odpalam MAKE_PHOTO w navGraph")
@@ -274,7 +274,7 @@ fun PhotoAppNavGraph(
         composable(PhotoAppDestinations.RAPORT_FISKALNY_DETAILS_SCREEN_ROUTE) {
             Log.i("Dolan", "Odpalam RAPORT_FISKALNY_DETAILS_SCREEN_ROUTE w navGraph")
             RaportFiskalnyDetailsScreen(
-                navController = navController,
+//                navController = navController,
                 raportFiskalny = raportFiskalnyViewedNow,
                 leaveDetailsScreen = {navController.navigate(PhotoAppDestinations.RAPORT_FISKALNY_SCREEN_ROUTE)},
                 navigateToCameraAndSetRF = {

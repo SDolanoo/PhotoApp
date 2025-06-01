@@ -12,9 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.photoapp.database.DatabaseViewModel
-import com.example.photoapp.database.data.Faktura
-import com.example.photoapp.database.data.Paragon
+import com.example.photoapp.features.faktura.data.Faktura
+import com.example.photoapp.features.paragon.data.Paragon
 import com.example.photoapp.ui.FilterScreen.expandableSections.ExpandableSection
 
 
@@ -25,12 +24,11 @@ fun FilterScreen(
     onBackClick: () -> Unit,
     onParagonsFiltersApplied: (String, Boolean, List<Paragon>) -> Unit,
     onFakturyFiltersApplied: (String, Boolean, List<Faktura>) -> Unit,
-    databaseViewModel: DatabaseViewModel = hiltViewModel(),
+    filterController: FilterController = hiltViewModel(),
     ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val filterController = remember { FilterController(databaseViewModel) }
     val currentFilter by filterController.currentFilter
 //    val dateRange by filterController.dateRange.collectAsState()
 //    val priceRange by filterController.priceRange.collectAsState()

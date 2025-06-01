@@ -2,6 +2,8 @@ package com.example.photoapp.features.paragon.ui.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.photoapp.core.database.data.entities.Kategoria
+import com.example.photoapp.core.database.data.repos.KategoriaRepository
 import com.example.photoapp.features.paragon.data.Paragon
 import com.example.photoapp.features.paragon.data.ParagonRepository
 import com.example.photoapp.features.paragon.data.ProduktParagon
@@ -11,11 +13,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class ParagonDetailsScreenViewModel @Inject constructor(
-    private val repository: ParagonRepository
+    private val paragonRepository: ParagonRepository,
+    private val kategoriaRepository: KategoriaRepository
 ) : ViewModel() {
 
     private val _actualParagon = MutableStateFlow<Paragon?>(null)
@@ -36,7 +41,7 @@ class ParagonDetailsScreenViewModel @Inject constructor(
 
     fun loadProducts(paragon: Paragon) {
         viewModelScope.launch(Dispatchers.IO) {
-            val products = repository.getProductForParagon(paragon.id)
+            val products = paragonRepository.getProduktyForParagonId(paragon.id)
             _actualProdukty.value = products
             _editedProdukty.value = products
             _editedParagon.value = paragon
@@ -45,7 +50,7 @@ class ParagonDetailsScreenViewModel @Inject constructor(
 
     fun loadOnlyProducts(paragon: Paragon) {
         viewModelScope.launch(Dispatchers.IO) {
-            val products = repository.getProductForParagon(paragon.id)
+            val products = paragonRepository.getProduktyForParagonId(paragon.id)
             _actualProdukty.value = products
             _editedProdukty.value = products
         }
@@ -53,8 +58,8 @@ class ParagonDetailsScreenViewModel @Inject constructor(
 
     fun getParagonByID(id: Int, callback: (Paragon) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            val paragon = repository.getParagonById(id)
-            callback(paragon)
+            val paragon = paragonRepository.getParagonById(id)
+            callback(paragon!!)
         }
     }
 
@@ -76,30 +81,39 @@ class ParagonDetailsScreenViewModel @Inject constructor(
 
     fun deleteProduct(product: ProduktParagon, callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteProduktParagon(product)
+            paragonRepository.deleteProdukt(product)
             callback()
         }
     }
 
-    fun addOneProduct(paragonId: Int, name: String, qty: String, callback: () -> Unit) {
+    fun addOneProduct(paragonId: Int, nazwaProduktu: String, ilosc: String, callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val produkt = ProduktParagon(
                 paragonId = paragonId,
-                nazwaProduktu = name,
-                ilosc = qty.toIntOrNull() ?: 1,
-                cenaSuma = 0.0 // Adjust pricing logic as needed
+                nazwaProduktu = nazwaProduktu,
+                ilosc = ilosc.toIntOrNull() ?: 1,
+                cenaSuma = 0.0,
+                kategoriaId = 1
             )
-            repository.insertProduktParagon(produkt)
+            paragonRepository.insertProdukt(produkt)
             callback()
+        }
+    }
+
+    fun getAllKategoria(): List<Kategoria> {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                kategoriaRepository.getAllKategorii()
+            }
         }
     }
 
     fun updateToDBProductsAndParagon(callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.updateParagon(_editedParagon.value!!)
+            paragonRepository.updateParagon(_editedParagon.value!!)
             setParagon(_editedParagon.value!!)
             _editedProdukty.value.forEach {
-                repository.updateProduktParagon(it)
+                paragonRepository.updateProdukt(it)
             }
             callback()
         }

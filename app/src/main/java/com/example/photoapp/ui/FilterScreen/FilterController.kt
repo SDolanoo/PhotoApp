@@ -3,16 +3,22 @@ package com.example.photoapp.ui.FilterScreen
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.photoapp.database.DatabaseViewModel
-import com.example.photoapp.database.data.Faktura
-import com.example.photoapp.database.data.Paragon
+import com.example.photoapp.features.faktura.data.Faktura
+import com.example.photoapp.features.faktura.data.FakturaRepository
+import com.example.photoapp.features.paragon.data.Paragon
+import com.example.photoapp.features.paragon.data.ParagonRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
 // FilterController Class
-class FilterController(databaseViewModel: DatabaseViewModel) : ViewModel() {
-    private val databaseViewModel = databaseViewModel
+@HiltViewModel
+class FilterController @Inject constructor(
+    paragonRepository: ParagonRepository,
+    fakturaRepository: FakturaRepository
+) : ViewModel() {
 
     private val _currentFilter = mutableStateOf("paragon")
     val currentFilter = _currentFilter
@@ -107,40 +113,65 @@ class FilterController(databaseViewModel: DatabaseViewModel) : ViewModel() {
     }
 
     fun applyParagonsFilters():Pair<Boolean, List<Paragon>> {
-        Log.i("Dolan", "applyFilters FUNCTION")
-        val (startDate, endDate) = dateRange.value
-        Log.i("Dolan", "startDate: $startDate, endDate: $endDate")
-        val (minPrice, maxPrice) = priceRange.value
-        Log.i("Dolan", "minPrice: $minPrice, maxPrice: $maxPrice")
-        val resultList = databaseViewModel.fetchFilteredParagony(
-            startDate = startDate,
-            endDate = endDate,
-            minPrice = minPrice,
-            maxPrice = maxPrice,)
-        val doShowFilters = canShowFilters()
-        Log.i("Dolan", "doShowFilters: $doShowFilters, resultList: $resultList")
+//        Log.i("Dolan", "applyFilters FUNCTION")
+//        val (startDate, endDate) = dateRange.value
+//        Log.i("Dolan", "startDate: $startDate, endDate: $endDate")
+//        val (minPrice, maxPrice) = priceRange.value
+//        Log.i("Dolan", "minPrice: $minPrice, maxPrice: $maxPrice")
+//        val resultList = paragonRepository.fetchFilteredParagony(
+//            startDate = startDate,
+//            endDate = endDate,
+//            minPrice = minPrice,
+//            maxPrice = maxPrice,)
+//        val doShowFilters = canShowFilters()
+//        Log.i("Dolan", "doShowFilters: $doShowFilters, resultList: $resultList")
+        var doShowFilters = true
+        var resultList: List<Paragon> = listOf(Paragon(
+            id = TODO(),
+            uzytkownikId = TODO(),
+            dataZakupu = TODO(),
+            nazwaSklepu = TODO(),
+            kwotaCalkowita = TODO()
+        ))
         return Pair(doShowFilters, resultList)
     }
 
     fun applyFakturysFilters():Pair<Boolean, List<Faktura>> {
-        Log.i("Dolan", "applyFilters FUNCTION")
-        val (startDate, endDate) = dateRange.value
-        Log.i("Dolan", "startDate: $startDate, endDate: $endDate")
-        val (minPrice, maxPrice) = priceRange.value
-        Log.i("Dolan", "minPrice: $minPrice, maxPrice: $maxPrice")
-
-
-        val resultList = databaseViewModel.fetchFilteredFaktury(
-            startDate = startDate,
-            endDate = endDate,
-            minPrice = minPrice,
-            maxPrice = maxPrice,
-            filterDate = currentFakturyDateFilter.value,
-            filterPrice = currentFakturyPriceFilter.value
-        )
-
-        val doShowFilters = canShowFilters()
-        Log.i("Dolan", "doShowFilters: $doShowFilters, resultList: $resultList")
+//        Log.i("Dolan", "applyFilters FUNCTION")
+//        val (startDate, endDate) = dateRange.value
+//        Log.i("Dolan", "startDate: $startDate, endDate: $endDate")
+//        val (minPrice, maxPrice) = priceRange.value
+//        Log.i("Dolan", "minPrice: $minPrice, maxPrice: $maxPrice")
+//
+//
+//        val resultList = fakturaRepository.fetchFilteredFaktury(
+//            startDate = startDate,
+//            endDate = endDate,
+//            minPrice = minPrice,
+//            maxPrice = maxPrice,
+//            filterDate = currentFakturyDateFilter.value,
+//            filterPrice = currentFakturyPriceFilter.value
+//        )
+//
+//        val doShowFilters = canShowFilters()
+//        Log.i("Dolan", "doShowFilters: $doShowFilters, resultList: $resultList")
+        var doShowFilters = true
+        var resultList: List<Faktura> = listOf(Faktura(
+            id = TODO(),
+            uzytkownikId = TODO(),
+            odbiorcaId = TODO(),
+            sprzedawcaId = TODO(),
+            numerFaktury = TODO(),
+            nrRachunkuBankowego = TODO(),
+            dataWystawienia = TODO(),
+            dataSprzedazy = TODO(),
+            razemNetto = TODO(),
+            razemStawka = TODO(),
+            razemPodatek = TODO(),
+            razemBrutto = TODO(),
+            waluta = TODO(),
+            formaPlatnosci = TODO()
+        ))
         return Pair(doShowFilters, resultList)
     }
 }

@@ -6,6 +6,8 @@ import com.example.photoapp.core.database.data.dao.OdbiorcaDao
 import com.example.photoapp.core.database.data.dao.SprzedawcaDao
 import com.example.photoapp.core.database.data.entities.Odbiorca
 import com.example.photoapp.core.database.data.entities.Sprzedawca
+import com.example.photoapp.core.database.data.repos.OdbiorcaRepository
+import com.example.photoapp.core.database.data.repos.SprzedawcaRepository
 import com.example.photoapp.core.utils.jsonTransformer
 import com.example.photoapp.features.raportFiskalny.data.ProduktRaportFiskalny
 import kotlinx.serialization.json.Json
@@ -16,8 +18,8 @@ import javax.inject.Inject
 class FakturaRepository @Inject constructor(
     private val fakturaDao: FakturaDao,
     private val produktFakturaDao: ProduktFakturaDao,
-    private val odbiorcaDao: OdbiorcaDao,
-    private val sprzedawcaDao: SprzedawcaDao
+    private val odbiorcaRepository: OdbiorcaRepository,
+    private val sprzedawcaRepository: SprzedawcaRepository
 ) {
 
     fun getAllLiveFaktury() = fakturaDao.getAllLive()
@@ -61,12 +63,12 @@ class FakturaRepository @Inject constructor(
         val transformedJson = jsonTransformer(jsonString)
         val fakturaDTO = coercingJson.decodeFromString<FakturaDTO>(transformedJson)
 
-        val odbiorca: Odbiorca = odbiorcaDao.addOrGetOdbiorca(
+        val odbiorca: Odbiorca = odbiorcaRepository.addOrGetOdbiorca(
             fakturaDTO.odbiorca.nazwa,
             fakturaDTO.odbiorca.nip,
             fakturaDTO.odbiorca.adres
         )
-        val sprzedawca: Sprzedawca = sprzedawcaDao.addOrGetSprzedawca(
+        val sprzedawca: Sprzedawca = sprzedawcaRepository.addOrGetSprzedawca(
             fakturaDTO.sprzedawca.nazwa,
             fakturaDTO.sprzedawca.nip,
             fakturaDTO.sprzedawca.adres
@@ -124,7 +126,4 @@ class FakturaRepository @Inject constructor(
             filterPrice
         )
     }
-
-    // TODO check for duplicate
-    // TODO add products for faktura - jak to będzie robione to trzeba w ai zrobić prompta - a narazie nie ma dodawania produktórw do faktury
 }
