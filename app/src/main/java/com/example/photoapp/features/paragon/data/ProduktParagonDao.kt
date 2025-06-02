@@ -13,7 +13,7 @@ interface ProduktParagonDao {
     fun getAll(): List<ProduktParagon>
 
     @Query("SELECT * FROM ProduktParagon WHERE paragonId = :paragonId")
-    fun getByParagonId(paragonId: Int): List<ProduktParagon>
+    fun getByParagonId(paragonId: Long): List<ProduktParagon>
 
     @Insert
     fun insert(produkt: ProduktParagon): Long
