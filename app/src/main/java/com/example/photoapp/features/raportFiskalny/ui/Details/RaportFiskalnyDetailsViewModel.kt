@@ -51,7 +51,7 @@ class RaportFiskalnyViewModel @Inject constructor(
         }
     }
 
-    fun getRaportByID(id: Int, callback: (RaportFiskalny) -> Unit) {
+    fun getRaportByID(id: Long, callback: (RaportFiskalny) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val raport = repository.getRaportById(id)
             callback(raport)
@@ -108,7 +108,7 @@ class RaportFiskalnyViewModel @Inject constructor(
         }
     }
 
-    fun addOneProduct(rfId: Int, nrPLU: String, ilosc: String, callback: () -> Unit) {
+    fun addOneProduct(rfId: Long, nrPLU: String, ilosc: String, callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val produkt = ProduktRaportFiskalny(
                 raportFiskalnyId = rfId,

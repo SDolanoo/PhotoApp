@@ -13,7 +13,7 @@ interface ProduktFakturaDao {
     fun getAll(): List<ProduktFaktura>
 
     @Query("SELECT * FROM ProduktFaktura WHERE fakturaId = :fakturaId")
-    fun getProductsByFakturaId(fakturaId: Int): List<ProduktFaktura>
+    fun getProductsByFakturaId(fakturaId: Long): List<ProduktFaktura>
 
     @Insert
     fun insert(produkt: ProduktFaktura): Long

@@ -14,7 +14,7 @@ interface RaportFiskalnyDao {
     fun getAllLive(): LiveData<List<RaportFiskalny>>
 
     @Query("SELECT * FROM RaportFiskalny WHERE id = :id")
-    fun getById(id: Int): RaportFiskalny
+    fun getById(id: Long): RaportFiskalny
 
     @Insert
     fun insert(raport: RaportFiskalny): Long

@@ -5,7 +5,7 @@ import java.util.*
 
 @Entity
 data class RaportFiskalny(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "dataDodania") val dataDodania: Date?
 )
 
@@ -15,8 +15,8 @@ data class RaportFiskalny(
     ]
 )
 data class ProduktRaportFiskalny(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "raportFiskalnyId") val raportFiskalnyId: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "raportFiskalnyId") val raportFiskalnyId: Long = 0,
     @ColumnInfo(name = "nrPLU") val nrPLU: String,
     @ColumnInfo(name = "ilosc") val ilosc: String?
 )

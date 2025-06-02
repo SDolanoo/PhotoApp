@@ -15,9 +15,9 @@ class RaportFiskalnyRepository @Inject constructor(
 
     fun getAllLiveRaporty() = raportDao.getAllLive()
 
-    fun getRaportById(id: Int): RaportFiskalny = raportDao.getById(id)
+    fun getRaportById(id: Long): RaportFiskalny = raportDao.getById(id)
 
-    fun getProduktyForRaportId(id: Int): List<ProduktRaportFiskalny> =
+    fun getProduktyForRaportId(id: Long): List<ProduktRaportFiskalny> =
         produktDao.getProductsByRaportId(id)
 
     fun insertRaport(raport: RaportFiskalny): Long = raportDao.insert(raport)
@@ -60,14 +60,14 @@ class RaportFiskalnyRepository @Inject constructor(
 
         dto.produkty.forEach { produktDTO ->
             val produkt = ProduktRaportFiskalny(
-                raportFiskalnyId = raportId.toInt(),
+                raportFiskalnyId = raportId,
                 nrPLU = produktDTO.nrPLU,
                 ilosc = produktDTO.ilosc
             )
             produktDao.insert(produkt)
         }
 
-        checkForDuplicatePLU(raportId.toInt())
+        checkForDuplicatePLU(raportId)
         return raportId
     }
 
@@ -88,7 +88,7 @@ class RaportFiskalnyRepository @Inject constructor(
         checkForDuplicatePLU(raport.id)
     }
 
-    private fun checkForDuplicatePLU(raportId: Int) {
+    private fun checkForDuplicatePLU(raportId: Long) {
         val produkty = getProduktyForRaportId(raportId)
         val seen = mutableSetOf<Int>()
 
