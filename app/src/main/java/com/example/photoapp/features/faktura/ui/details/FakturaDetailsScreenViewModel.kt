@@ -51,7 +51,7 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun getFakturaByID(id: Int, callback: (Faktura) -> Unit) {
+    fun getFakturaByID(id: Long, callback: (Faktura) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val faktura = repository.getFakturaByID(id)
             callback(faktura!!)
@@ -81,7 +81,7 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun addOneProduct(fakturaId: Int, name: String, qty: String, callback: () -> Unit) {
+    fun addOneProduct(fakturaId: Long, name: String, qty: String, callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val produkt = ProduktFaktura(
                 fakturaId = fakturaId,

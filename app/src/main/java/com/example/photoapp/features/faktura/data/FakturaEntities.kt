@@ -14,10 +14,10 @@ import java.util.*
     ]
 )
 data class Faktura(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "uzytkownikId") val uzytkownikId: Int,
-    @ColumnInfo(name = "odbiorcaId") val odbiorcaId: Int,
-    @ColumnInfo(name = "sprzedawcaId") val sprzedawcaId: Int,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "uzytkownikId") val uzytkownikId: Long,
+    @ColumnInfo(name = "odbiorcaId") val odbiorcaId: Long,
+    @ColumnInfo(name = "sprzedawcaId") val sprzedawcaId: Long,
     @ColumnInfo(name = "numerFaktury") val numerFaktury: String,
     @ColumnInfo(name = "nrRachunkuBankowego") val nrRachunkuBankowego: String?,
     @ColumnInfo(name = "dataWystawienia") val dataWystawienia: Date?,
@@ -36,8 +36,8 @@ data class Faktura(
     ]
 )
 data class ProduktFaktura(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "fakturaId") val fakturaId: Int,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "fakturaId") val fakturaId: Long,
     @ColumnInfo(name = "nazwaProduktu") val nazwaProduktu: String,
     @ColumnInfo(name = "jednostkaMiary") val jednostkaMiary: String?,
     @ColumnInfo(name = "ilosc") val ilosc: String?,

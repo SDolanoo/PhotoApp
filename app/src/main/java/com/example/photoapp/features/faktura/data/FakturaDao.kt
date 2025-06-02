@@ -18,7 +18,7 @@ interface FakturaDao {
     fun getAllFaktury(): List<Faktura>
 
     @Query("SELECT * FROM Faktura WHERE id = :id")
-    fun getById(id: Int): Faktura?
+    fun getById(id: Long): Faktura?
 
     @Insert
     fun insert(faktura: Faktura): Long

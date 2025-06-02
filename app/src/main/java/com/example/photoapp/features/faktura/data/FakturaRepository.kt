@@ -24,9 +24,9 @@ class FakturaRepository @Inject constructor(
 
     fun getAllLiveFaktury() = fakturaDao.getAllLive()
 
-    fun getFakturaByID(id: Int): Faktura? = fakturaDao.getById(id)
+    fun getFakturaByID(id: Long): Faktura? = fakturaDao.getById(id)
 
-    fun getProduktyForFaktura(fakturaId: Int): List<ProduktFaktura> {
+    fun getProduktyForFaktura(fakturaId: Long): List<ProduktFaktura> {
         return produktFakturaDao.getProductsByFakturaId(fakturaId)
     }
 
@@ -90,7 +90,7 @@ class FakturaRepository @Inject constructor(
             formaPlatnosci = fakturaDTO.formaPlatnosci
         )
 
-        val fakturaId = fakturaDao.insert(faktura).toInt()
+        val fakturaId = fakturaDao.insert(faktura)
 
         fakturaDTO.produkty.forEach { produktDTO ->
             val produkt = ProduktFaktura(
