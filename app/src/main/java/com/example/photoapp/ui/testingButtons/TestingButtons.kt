@@ -1,5 +1,6 @@
 package com.example.photoapp.ui.testingButtons
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,17 +13,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.core.database.data.entities.Kategoria
+import com.example.photoapp.core.database.data.entities.Uzytkownik
 import com.example.photoapp.core.database.data.repos.KategoriaRepository
 import com.example.photoapp.core.database.data.repos.OdbiorcaRepository
 import com.example.photoapp.core.database.data.repos.SprzedawcaRepository
+import com.example.photoapp.core.database.data.repos.UzytkownikRepository
 import com.example.photoapp.features.faktura.data.Faktura
 import com.example.photoapp.features.faktura.data.FakturaRepository
 import com.example.photoapp.features.faktura.data.ProduktFaktura
 import com.example.photoapp.features.paragon.data.Paragon
 import com.example.photoapp.features.paragon.data.ParagonRepository
 import com.example.photoapp.features.paragon.data.ProduktParagon
-import com.example.photoapp.features.raportFiskalny.data.ProduktRaportFiskalny
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,6 +45,24 @@ fun TestingButtons(
                 .padding(top = 30.dp, bottom = 8.dp)
         ) {
             Text(text = "Cofnij stronę")
+        }
+
+        Button(
+            onClick = { databaseViewModel.addTestUzytkownik() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        ) {
+            Text(text = "Add Test Uzytkownik")
+        }
+
+        Button(
+            onClick = { databaseViewModel.addTestOdbiorcaAndSprzedawca() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        ) {
+            Text(text = "Add Test Odbiorca & Sprzedawca")
         }
 
         Button(
@@ -72,34 +91,29 @@ fun TestingButtons(
         ) {
             Text(text = "Add Test Invoices Products")
         }
+
+        Button(
+            onClick = { databaseViewModel.addTestParagony() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        ) {
+            Text(text = "Add Test Paragony")
+        }
+
+        Button(
+            onClick = { databaseViewModel.addTestParagonProdukty() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        ) {
+            Text(text = "Add Test Produkty Paragon")
+        }
+
+
     }
 
-    Button(
-        onClick = { databaseViewModel.addTestParagony() },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
-    ) {
-        Text(text = "Add Test Paragony")
-    }
 
-    Button(
-        onClick = { databaseViewModel.addTestParagonProdukty() },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
-    ) {
-        Text(text = "Add Test Produkty Paragon")
-    }
-
-    Button(
-        onClick = { databaseViewModel.addTestOdbiorcaAndSprzedawca() },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
-    ) {
-        Text(text = "Add Test Odbiorca & Sprzedawca")
-    }
 
 }
 
@@ -110,7 +124,14 @@ class TestingButtonVM @Inject constructor(
     private val kategoriaRepository: KategoriaRepository,
     private val odbiorcaRepository: OdbiorcaRepository,
     private val sprzedawcaRepository: SprzedawcaRepository,
+    private val uzytkownikRepository: UzytkownikRepository
 ) : ViewModel() {
+
+    fun addTestUzytkownik() {
+        viewModelScope.launch(Dispatchers.IO) {
+            uzytkownikRepository.insert(login = "stasio", "stasio", "stasio@gmail.com")
+        }
+    }
 
     fun addTestKategorias() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -177,6 +198,7 @@ class TestingButtonVM @Inject constructor(
 
     fun addTestParagony() {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.i("Dolan", "adding test paragony")
             val now = Date()
             repeat(3) { index ->
                 val paragon = Paragon(
@@ -186,6 +208,7 @@ class TestingButtonVM @Inject constructor(
                     kwotaCalkowita = 59.99 + index * 10
                 )
                 paragonRepository.insertParagon(paragon)
+                Log.i("Dolan", "added one ${paragon}")
             }
         }
     }

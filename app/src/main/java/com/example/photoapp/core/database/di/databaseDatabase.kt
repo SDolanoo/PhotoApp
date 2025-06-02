@@ -85,6 +85,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             "paragon_database"
         )
+            .fallbackToDestructiveMigration()
             .build()
     }
 
