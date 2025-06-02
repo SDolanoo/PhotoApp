@@ -68,6 +68,7 @@ fun <T> DefaultAddItemDialog(
                     if (label == "Kategoria") {
                         ExposedDropdownMenu(
                             options = kategorieList,
+                            label = label,
                             selected = { state.value = it },
                         )
                     } else {

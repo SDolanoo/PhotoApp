@@ -1,5 +1,6 @@
 package com.example.photoapp.core.components
 
+import android.R.attr.label
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,7 +17,7 @@ import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExposedDropdownMenu(options:List<String>, selected: (String) -> Unit) {
+fun ExposedDropdownMenu(options:List<String>, label: String, selected: (String) -> Unit) {
     // State management
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember { mutableStateOf("") }
@@ -30,7 +31,7 @@ fun ExposedDropdownMenu(options:List<String>, selected: (String) -> Unit) {
             value = selectedOptionText,
             onValueChange = { },
             readOnly = true,
-            label = { Text("Choose an option") },
+            label = { Text(label) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
