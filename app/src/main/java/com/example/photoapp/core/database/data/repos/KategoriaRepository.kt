@@ -9,7 +9,7 @@ class KategoriaRepository @Inject constructor(
 ) {
     fun getAllKategorii(): List<Kategoria> = kategoriaDao.getAll()
 
-    fun getById(id: Int): Kategoria? = kategoriaDao.getById(id)
+    fun getById(id: Long): Kategoria? = kategoriaDao.getById(id)
 
     fun getByName(name: String): Kategoria? = kategoriaDao.getByName(name)
 

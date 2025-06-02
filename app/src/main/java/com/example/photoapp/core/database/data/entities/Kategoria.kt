@@ -4,6 +4,6 @@ import androidx.room.*
 
 @Entity
 data class Kategoria(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "nazwa") val nazwa: String
 )

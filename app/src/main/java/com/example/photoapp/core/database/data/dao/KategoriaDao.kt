@@ -10,7 +10,7 @@ interface KategoriaDao {
     fun getAll(): List<Kategoria>
 
     @Query("SELECT * FROM Kategoria WHERE id = :id")
-    fun getById(id: Int): Kategoria?
+    fun getById(id: Long): Kategoria?
 
     @Query("SELECT * FROM Kategoria WHERE nazwa = :name LIMIT 1")
     fun getByName(name: String): Kategoria?
