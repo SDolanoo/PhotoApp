@@ -10,7 +10,7 @@ class UzytkownikRepository @Inject constructor(
 ) {
     fun getAll() = uzytkownikDao.getAll()
 
-    fun getById(id: Int) = uzytkownikDao.getById(id)
+    fun getById(id: Long) = uzytkownikDao.getById(id)
 
     fun insert(login: String, password: String, email: String): Long {
         val newUser = Uzytkownik(login = login, password = password, email = email)

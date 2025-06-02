@@ -12,7 +12,7 @@ interface UzytkownikDao {
     fun getAll(): LiveData<List<Uzytkownik>>
 
     @Query("SELECT * FROM Uzytkownik WHERE id = :id")
-    fun getById(id: Int): Uzytkownik?
+    fun getById(id: Long): Uzytkownik?
 
     @Insert
     fun insert(uzytkownik: Uzytkownik): Long
