@@ -18,9 +18,9 @@ class ParagonRepository @Inject constructor(
 
     fun getAllParagony(): List<Paragon> = paragonDao.getAll()
 
-    fun getParagonById(id: Int): Paragon? = paragonDao.getById(id)
+    fun getParagonById(id: Long): Paragon? = paragonDao.getById(id)
 
-    fun getProduktyForParagonId(id: Int): List<ProduktParagon> =
+    fun getProduktyForParagonId(id: Long): List<ProduktParagon> =
         produktParagonDao.getByParagonId(id)
 
     fun insertParagon(paragon: Paragon): Long = paragonDao.insert(paragon)
@@ -68,7 +68,7 @@ class ParagonRepository @Inject constructor(
             kwotaCalkowita = paragonDTO.kwotaCalkowita.replace(",", ".").toDouble()
         )
 
-        val paragonId = paragonDao.insert(paragon).toInt()
+        val paragonId = paragonDao.insert(paragon)
 
         paragonDTO.produkty.forEach { produktDTO ->
             val produktParagon = ProduktParagon(

@@ -18,7 +18,7 @@ interface ParagonDao {
     fun getAll(): List<Paragon>
 
     @Query("SELECT * FROM Paragon WHERE id = :id")
-    fun getById(id: Int): Paragon?
+    fun getById(id: Long): Paragon?
 
     @Insert
     fun insert(paragon: Paragon): Long
