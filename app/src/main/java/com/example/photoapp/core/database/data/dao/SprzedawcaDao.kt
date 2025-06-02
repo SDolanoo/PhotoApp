@@ -11,7 +11,7 @@ interface SprzedawcaDao {
     fun getAll(): List<Sprzedawca>
 
     @Query("SELECT * FROM Sprzedawca WHERE id = :id")
-    fun getById(id: Int): Sprzedawca?
+    fun getById(id: Long): Sprzedawca?
 
     @Query("SELECT * FROM Sprzedawca WHERE nip = :nip LIMIT 1")
     fun getByNip(nip: String): Sprzedawca?

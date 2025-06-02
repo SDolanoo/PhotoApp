@@ -17,7 +17,7 @@ class SprzedawcaRepository @Inject constructor(
             Log.i("Dolan", "Existing Sprzedawca ID: ${it.id}, NIP: ${it.nip}")
         } ?: run {
             val sprzedawca = Sprzedawca(nazwa = nazwa, nip = nip, adres = adres)
-            var id = insert(sprzedawca).toInt()
+            var id = insert(sprzedawca)
             var newSprzedawca = sprzedawca.copy(id = id)
             Log.i("Dolan", "Inserted new Odbiorca ID: ${newSprzedawca.id}, NIP: ${newSprzedawca.nip}")
             newSprzedawca
