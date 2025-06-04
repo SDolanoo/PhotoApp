@@ -168,7 +168,7 @@ fun showDialog(
                     } else if (addingPhotoFor == "faktura") {
                         controller.addInvoice()
                     } else if (addingPhotoFor == "raportFiskalny") {
-                        val raportID = controller.addRaportFiskalny().toInt()
+                        val raportID = controller.addRaportFiskalny()
                         val raportById = controller.getRaportByID(raportID)
                         navigateToRFDetailsScreen(raportById)
                     } else if (addingPhotoFor == "produktRaportFiskalny") {

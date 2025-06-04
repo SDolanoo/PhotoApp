@@ -9,12 +9,17 @@ import androidx.lifecycle.viewModelScope
 import com.example.photoapp.features.paragon.data.Paragon
 import com.example.photoapp.features.paragon.data.ParagonRepository
 import com.example.photoapp.core.utils.normalizedDate
+import com.example.photoapp.ui.FilterScreen.FilterResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
 import kotlin.collections.sortedByDescending
+
+
 
 @HiltViewModel
 class ParagonScreenViewModel @Inject constructor(
@@ -22,6 +27,9 @@ class ParagonScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     val allParagony: LiveData<List<Paragon>> = repository.getAllLiveParagony()
+
+    private val _filteredParagony = MutableStateFlow<List<Paragon>>(emptyList())
+    val filteredParagony: StateFlow<List<Paragon>> = _filteredParagony
 
     private val _isDeleteMode = mutableStateOf(false)
     val isDeleteMode: State<Boolean> = _isDeleteMode
@@ -55,4 +63,34 @@ class ParagonScreenViewModel @Inject constructor(
             _isDeleteMode.value = false
         }
     }
+
+    fun applyParagonFilters(filterResult: FilterResult) {
+        val (startDate, endDate) = filterResult.startDate to filterResult.endDate
+        val (minPrice, maxPrice) = filterResult.minPrice to filterResult.maxPrice
+
+        val filtered = allParagony.value.filter { paragon ->
+            val matchesDate = when {
+                startDate == null && endDate == null -> true
+                startDate != null && endDate != null ->
+                    paragon.dataZakupu?.after(startDate) == true &&
+                            paragon.dataZakupu?.before(endDate) == true
+                else -> true
+            }
+
+            val matchesPrice = when {
+                minPrice == null && maxPrice == null -> true
+                minPrice != null && maxPrice != null ->
+                    paragon.kwotaCalkowita in minPrice..maxPrice
+                minPrice != null -> paragon.kwotaCalkowita >= minPrice
+                maxPrice != null -> paragon.kwotaCalkowita <= maxPrice
+                else -> true
+            }
+
+            matchesDate && matchesPrice
+        }
+
+        // Update filtered UI state
+        _filteredParagony.value = filtered
+    }
+
 }

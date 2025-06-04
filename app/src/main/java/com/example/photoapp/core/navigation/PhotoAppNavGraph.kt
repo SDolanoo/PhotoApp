@@ -25,7 +25,7 @@ import com.example.photoapp.features.raportFiskalny.ui.screen.RaportFiskalnyScre
 import com.example.photoapp.ui.ExcelPacker.ExcelPacker
 import com.example.photoapp.ui.acceptPhoto.AcceptPhoto
 import com.example.photoapp.ui.cameraView.CameraView
-import com.example.photoapp.ui.FilterScreen.FilterScreen
+//import com.example.photoapp.ui.FilterScreen.FilterScreen
 import com.example.photoapp.ui.home.HomeDrawer
 import com.example.photoapp.ui.home.HomeScreen
 import com.example.photoapp.ui.testingButtons.TestingButtons
@@ -216,21 +216,21 @@ fun PhotoAppNavGraph(
             )
         }
 
-        composable (PhotoAppDestinations.FILTERS_SCREEN_ROUTE) {
-            Log.i("Dolan", "Odpalam FILTERS_SCREEN_ROUTE w navGraph")
-            FilterScreen (
-                onBackClick = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)},
-                onParagonsFiltersApplied = { currentFilter, showFilters, lista ->
-                    navGraphViewModel.setFilters(showFilters, lista)
-                    navController.navigate(PhotoAppDestinations.PARAGON_SCREEN_ROUTE)
-                },
-                onFakturyFiltersApplied = { currentFilter, showFilters, lista ->
-                    navGraphViewModel.setCurrenltyShowing(currentFilter)
-                    navGraphViewModel.setFakturyFilters(showFilters, lista)
-                    navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)
-                },
-            )
-        }
+//        composable (PhotoAppDestinations.FILTERS_SCREEN_ROUTE) {
+//            Log.i("Dolan", "Odpalam FILTERS_SCREEN_ROUTE w navGraph")
+//            FilterScreen (
+//                onBackClick = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)},
+//                onParagonsFiltersApplied = { currentFilter, showFilters, lista ->
+//                    navGraphViewModel.setFilters(showFilters, lista)
+//                    navController.navigate(PhotoAppDestinations.PARAGON_SCREEN_ROUTE)
+//                },
+//                onFakturyFiltersApplied = { currentFilter, showFilters, lista ->
+//                    navGraphViewModel.setCurrenltyShowing(currentFilter)
+//                    navGraphViewModel.setFakturyFilters(showFilters, lista)
+//                    navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)
+//                },
+//            )
+//        }
 
         composable (PhotoAppDestinations.EXCEL_PACKER_ROUTE) {
             Log.i("Dolan", "Odpalam EXCEL_PACKER_ROUTE w navGraph")

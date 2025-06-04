@@ -162,13 +162,14 @@ class FilterController @Inject constructor(
             odbiorcaId = TODO(),
             sprzedawcaId = TODO(),
             numerFaktury = TODO(),
-            nrRachunkuBankowego = TODO(),
+            status = TODO(),
             dataWystawienia = TODO(),
             dataSprzedazy = TODO(),
+            terminPlatnosci = TODO(),
             razemNetto = TODO(),
-            razemStawka = TODO(),
-            razemPodatek = TODO(),
+            razemVAT = TODO(),
             razemBrutto = TODO(),
+            doZaplaty = TODO(),
             waluta = TODO(),
             formaPlatnosci = TODO()
         ))
