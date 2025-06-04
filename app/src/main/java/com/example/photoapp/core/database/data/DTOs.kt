@@ -23,22 +23,23 @@ data class ProduktFakturaDTO(
     @SerialName("nazwaProduktu") val nazwaProduktu: String = "none",
     @SerialName("jednostkaMiary") val jednostkaMiary: String = "none",
     @SerialName("ilosc") val ilosc: String = "999",
+    @SerialName("cenaNetto") val cenaNetto: String = "999",
     @SerialName("wartoscNetto") val wartoscNetto: String = "999",
-    @SerialName("stawkaVat") val stawkaVat: String = "999",
-    @SerialName("podatekVat") val podatekVat: String = "999",
-    @SerialName("brutto") val brutto: String = "999",
+    @SerialName("wartoscBrutto") val wartoscBrutto: String = "999",
+    @SerialName("stawkaVat") val stawkaVat: String = "999"
 )
 
 @Serializable
 data class FakturaDTO(
     @SerialName("numerFaktury") val numerFaktury: String = "none",
-    @SerialName("nrRachunkuBankowego") val nrRachunkuBankowego: String = "none",
+    @SerialName("status") val status: String = "none",
     @SerialName("dataWystawienia") val dataWystawienia: String = "1999-01-01",
     @SerialName("dataSprzedazy") val dataSprzedazy: String = "1999-01-01",
+    @SerialName("terminPlatnosci") val terminPlatnosci: String = "1999-01-01",
     @SerialName("razemNetto") val razemNetto: String = "999",
-    @SerialName("razemStawka") val razemStawka: String? = "999",
-    @SerialName("razemPodatek") val razemPodatek: String = "999",
+    @SerialName("razemVAT") val razemVAT: String? = "999",
     @SerialName("razemBrutto") val razemBrutto: String = "999",
+    @SerialName("doZaplaty") val doZaplaty: String = "999",
     @SerialName("waluta") val waluta: String = "999",
     @SerialName("formaPlatnosci") val formaPlatnosci: String = "none",
     val odbiorca: OdbiorcaDTO,
