@@ -19,13 +19,14 @@ data class Faktura(
     @ColumnInfo(name = "odbiorcaId") val odbiorcaId: Long,
     @ColumnInfo(name = "sprzedawcaId") val sprzedawcaId: Long,
     @ColumnInfo(name = "numerFaktury") val numerFaktury: String,
-    @ColumnInfo(name = "nrRachunkuBankowego") val nrRachunkuBankowego: String?,
+    @ColumnInfo(name = "status") val status: String,
     @ColumnInfo(name = "dataWystawienia") val dataWystawienia: Date?,
     @ColumnInfo(name = "dataSprzedazy") val dataSprzedazy: Date?,
+    @ColumnInfo(name = "terminPlatnosci") val terminPlatnosci: Date?,
     @ColumnInfo(name = "razemNetto") val razemNetto: String,
-    @ColumnInfo(name = "razemStawka") val razemStawka: String,
-    @ColumnInfo(name = "razemPodatek") val razemPodatek: String,
+    @ColumnInfo(name = "razemVAT") val razemVAT: String,
     @ColumnInfo(name = "razemBrutto") val razemBrutto: String,
+    @ColumnInfo(name = "doZaplaty") val doZaplaty: String,
     @ColumnInfo(name = "waluta") val waluta: String,
     @ColumnInfo(name = "formaPlatnosci") val formaPlatnosci: String
 )
@@ -39,10 +40,10 @@ data class ProduktFaktura(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "fakturaId") val fakturaId: Long,
     @ColumnInfo(name = "nazwaProduktu") val nazwaProduktu: String,
-    @ColumnInfo(name = "jednostkaMiary") val jednostkaMiary: String?,
-    @ColumnInfo(name = "ilosc") val ilosc: String?,
+    @ColumnInfo(name = "jednostkaMiary") val jednostkaMiary: String,
+    @ColumnInfo(name = "ilosc") val ilosc: String,
+    @ColumnInfo(name = "cenaNetto") val cenaNetto: String,
     @ColumnInfo(name = "wartoscNetto") val wartoscNetto: String,
-    @ColumnInfo(name = "stawkaVat") val stawkaVat: String,
-    @ColumnInfo(name = "podatekVat") val podatekVat: String,
-    @ColumnInfo(name = "brutto") val brutto: String
+    @ColumnInfo(name = "wartoscBrutto") val wartoscBrutto: String,
+    @ColumnInfo(name = "stawkaVat") val stawkaVat: String
 )

@@ -159,13 +159,14 @@ class TestingButtonVM @Inject constructor(
                     odbiorcaId = odbiorca.id,
                     sprzedawcaId = sprzedawca.id,
                     numerFaktury = "FV-TEST-00$index",
-                    nrRachunkuBankowego = "PL12345678901234567890123456",
+                    status = "Wystawiona",
                     dataWystawienia = now,
                     dataSprzedazy = now,
+                    terminPlatnosci = now,
                     razemNetto = "100.00",
-                    razemStawka = "23",
-                    razemPodatek = "23.00",
+                    razemVAT = "23",
                     razemBrutto = "123.00",
+                    doZaplaty = "123.00",
                     waluta = "PLN",
                     formaPlatnosci = "Przelew"
                 )
@@ -185,10 +186,10 @@ class TestingButtonVM @Inject constructor(
                         nazwaProduktu = "Produkt ${i + 1}",
                         jednostkaMiary = "szt",
                         ilosc = "${i + 1}",
-                        wartoscNetto = "50.00",
+                        cenaNetto = "50.00",
+                        wartoscNetto = "11.50",
+                        wartoscBrutto = "61.50",
                         stawkaVat = "23",
-                        podatekVat = "11.50",
-                        brutto = "61.50"
                     )
                     fakturaRepository.insertProdukt(produkt)
                 }

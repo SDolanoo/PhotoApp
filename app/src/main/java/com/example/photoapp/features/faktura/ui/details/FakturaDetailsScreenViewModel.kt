@@ -1,5 +1,6 @@
 package com.example.photoapp.features.faktura.ui.details
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.features.faktura.data.Faktura
@@ -19,7 +20,10 @@ class FakturaDetailsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _actualFaktura = MutableStateFlow<Faktura?>(null)
-    val actualFaktura: StateFlow<Faktura?> = _actualFaktura
+    val actualFaktura: StateFlow<Faktura?> = _actualFaktura.asStateFlow()
+
+    private val _editedFaktura = MutableStateFlow<Faktura?>(null)
+    val editedFaktura: StateFlow<Faktura?> = _editedFaktura.asStateFlow()
 
     private val _actualProdukty = MutableStateFlow<List<ProduktFaktura>>(emptyList())
     val actualProdukty: StateFlow<List<ProduktFaktura>> = _actualProdukty.asStateFlow()
@@ -27,12 +31,6 @@ class FakturaDetailsViewModel @Inject constructor(
     private val _editedProdukty = MutableStateFlow<List<ProduktFaktura>>(emptyList())
     val editedProdukty: StateFlow<List<ProduktFaktura>> = _editedProdukty.asStateFlow()
 
-    private val _editedFaktura = MutableStateFlow<Faktura?>(null)
-    val editedFaktura: StateFlow<Faktura?> = _editedFaktura.asStateFlow()
-
-    fun setFaktura(faktura: Faktura) {
-        _actualFaktura.value = faktura
-    }
 
     fun loadProducts(faktura: Faktura) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -58,57 +56,6 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun updateEditedProductTemp(index: Int, produkt: ProduktFaktura, callback: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _editedProdukty.value = _editedProdukty.value.toMutableList().also {
-                it[index] = produkt
-            }
-            callback()
-        }
-    }
-
-    fun updateEditedFakturaTemp(faktura: Faktura, callback: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _editedFaktura.value = faktura
-            callback()
-        }
-    }
-
-    fun deleteProduct(product: ProduktFaktura, callback: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteProdukt(product)
-            callback()
-        }
-    }
-
-    fun addOneProduct(fakturaId: Long, name: String, qty: String, callback: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val produkt = ProduktFaktura(
-                fakturaId = fakturaId,
-                nazwaProduktu = name,
-                jednostkaMiary = "szt.",
-                ilosc = qty,
-                wartoscNetto = "0",
-                stawkaVat = "0%",
-                podatekVat = "0",
-                brutto = "0"
-            )
-            repository.insertProdukt(produkt)
-            callback()
-        }
-    }
-
-    fun updateToDBProductsAndFaktura(callback: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.updateFaktura(_editedFaktura.value!!)
-            setFaktura(_editedFaktura.value!!)
-            _editedProdukty.value.forEach {
-                repository.updateProdukt(it)
-            }
-            callback()
-        }
-    }
-
     fun editingSuccess() {
         viewModelScope.launch(Dispatchers.IO) {
             updateToDBProductsAndFaktura {
@@ -121,5 +68,63 @@ class FakturaDetailsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             loadProducts(_actualFaktura.value!!)
         }
+    }
+
+    fun updateEditedFakturaTemp(faktura: Faktura, callback: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _editedFaktura.value = faktura
+            callback()
+        }
+    }
+
+    fun updateEditedProductTemp(index: Int, produkt: ProduktFaktura, callback: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _editedProdukty.value = _editedProdukty.value.toMutableList().also {
+                it[index] = produkt
+            }
+            callback()
+        }
+    }
+
+    fun deleteProduct(product: ProduktFaktura, callback: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteProdukt(product)
+            callback()
+        }
+    }
+
+    fun updateToDBProductsAndFaktura(callback: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateFaktura(_editedFaktura.value!!)
+            setFaktura(_editedFaktura.value!!)
+            _editedProdukty.value.toMutableList().forEach { produkt ->
+                Log.i("Dolan", "nazwaProduktu ${ produkt }")
+                repository.updateProdukt(produkt)
+                val faktury = repository.getProduktyForFaktura(_editedFaktura.value!!.id)
+                Log.i("Dolan", "${faktury}")
+            }
+            callback()
+        }
+    }
+
+    fun addOneProduct(fakturaId: Long, nazwaProduktu: String, ilosc: String, callback: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val produkt = ProduktFaktura(
+                fakturaId = fakturaId,
+                nazwaProduktu = nazwaProduktu,
+                jednostkaMiary = "szt.",
+                ilosc = ilosc,
+                cenaNetto = "0",
+                wartoscNetto = "0",
+                wartoscBrutto = "0",
+                stawkaVat = "0%"
+            )
+            repository.insertProdukt(produkt)
+            callback()
+        }
+    }
+
+    fun setFaktura(faktura: Faktura) {
+        _actualFaktura.value = faktura
     }
 }

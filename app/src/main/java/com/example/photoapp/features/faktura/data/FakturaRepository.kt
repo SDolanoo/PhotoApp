@@ -8,6 +8,7 @@ import com.example.photoapp.core.database.data.entities.Odbiorca
 import com.example.photoapp.core.database.data.entities.Sprzedawca
 import com.example.photoapp.core.database.data.repos.OdbiorcaRepository
 import com.example.photoapp.core.database.data.repos.SprzedawcaRepository
+import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.core.utils.jsonTransformer
 import com.example.photoapp.features.raportFiskalny.data.ProduktRaportFiskalny
 import kotlinx.serialization.json.Json
@@ -79,13 +80,14 @@ class FakturaRepository @Inject constructor(
             odbiorcaId = odbiorca.id,
             sprzedawcaId = sprzedawca.id,
             numerFaktury = fakturaDTO.numerFaktury,
-            nrRachunkuBankowego = fakturaDTO.nrRachunkuBankowego,
-            dataWystawienia = SimpleDateFormat("yyyy-MM-dd").parse(fakturaDTO.dataWystawienia),
-            dataSprzedazy = SimpleDateFormat("yyyy-MM-dd").parse(fakturaDTO.dataSprzedazy),
+            status = fakturaDTO.status,
+            dataWystawienia = convertStringToDate(fakturaDTO.dataWystawienia),
+            dataSprzedazy = convertStringToDate(fakturaDTO.dataSprzedazy),
+            terminPlatnosci = convertStringToDate(fakturaDTO.terminPlatnosci),
             razemNetto = fakturaDTO.razemNetto,
-            razemStawka = fakturaDTO.razemStawka ?: "null",
-            razemPodatek = fakturaDTO.razemPodatek,
+            razemVAT = fakturaDTO.razemVAT ?: "null",
             razemBrutto = fakturaDTO.razemBrutto,
+            doZaplaty = fakturaDTO.doZaplaty,
             waluta = fakturaDTO.waluta,
             formaPlatnosci = fakturaDTO.formaPlatnosci
         )
@@ -98,10 +100,10 @@ class FakturaRepository @Inject constructor(
                 nazwaProduktu = produktDTO.nazwaProduktu,
                 jednostkaMiary = produktDTO.jednostkaMiary,
                 ilosc = produktDTO.ilosc,
+                cenaNetto = produktDTO.cenaNetto,
                 wartoscNetto = produktDTO.wartoscNetto,
-                stawkaVat = produktDTO.stawkaVat,
-                podatekVat = produktDTO.podatekVat,
-                brutto = produktDTO.brutto
+                wartoscBrutto = produktDTO.wartoscBrutto,
+                stawkaVat = produktDTO.stawkaVat
             )
             insertProdukt(produkt)
         }

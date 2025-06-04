@@ -137,10 +137,10 @@ class AcceptanceController @Inject constructor(
                 nazwaProduktu: ${produkt.nazwaProduktu}
                     jednostkaMiary: ${produkt.jednostkaMiary}
                     ilosc: ${produkt.ilosc}
+                    cenaNetto: ${produkt.cenaNetto}
                     wartoscNetto: ${produkt.wartoscNetto}
+                    wartoscBrutto: ${produkt.wartoscBrutto}
                     stawkaVat: ${produkt.stawkaVat}
-                    podatekVat: ${produkt.podatekVat}
-                    brutto: ${produkt.brutto}
             """
         }
     }
@@ -159,13 +159,14 @@ class AcceptanceController @Inject constructor(
                 adres: ${f.odbiorca.adres}
             Dane faktura:
                 numerFaktury: ${f.numerFaktury}
-                nrRachunkuBankowego: ${f.nrRachunkuBankowego}
+                status: ${f.status}
                 dataWystawienia: ${f.dataWystawienia}
                 dataSprzedazy: ${f.dataSprzedazy}
+                terminPlatnosci: ${f.terminPlatnosci}
                 razemNetto: ${f.razemNetto}
-                razemStawka: ${f.razemStawka}
-                razemPodatek: ${f.razemPodatek}
+                razemVAT: ${f.razemVAT}
                 razemBrutto: ${f.razemBrutto}
+                doZaplaty: ${f.doZaplaty}
                 waluta: ${f.waluta}
                 formaPlatnosci: ${f.formaPlatnosci}
             Produkty:
@@ -183,7 +184,7 @@ class AcceptanceController @Inject constructor(
         return 0
     }
 
-    fun getRaportByID(id: Int): RaportFiskalny {
+    fun getRaportByID(id: Long): RaportFiskalny {
         return raportFiskalnyRepository.getRaportById(id)
     }
 
