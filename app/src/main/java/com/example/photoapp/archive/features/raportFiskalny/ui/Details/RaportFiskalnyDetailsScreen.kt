@@ -1,4 +1,4 @@
-package com.example.photoapp.features.raportFiskalny.ui.Details
+package com.example.photoapp.archive.features.raportFiskalny.ui.Details
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,9 +14,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.photoapp.archive.features.raportFiskalny.data.ProduktRaportFiskalny
+import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalny
 import com.example.photoapp.core.components.DefaultAddItemDialog
-import com.example.photoapp.features.raportFiskalny.data.ProduktRaportFiskalny
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
 import com.example.photoapp.core.components.GenericEditableDetailsScreen
 import com.example.photoapp.core.utils.convertMillisToDate
 import com.example.photoapp.core.utils.formatDate

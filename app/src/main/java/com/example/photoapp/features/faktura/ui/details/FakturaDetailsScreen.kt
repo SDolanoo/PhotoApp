@@ -1,6 +1,5 @@
 package com.example.photoapp.features.faktura.ui.details
 
-import android.R.attr.name
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -16,13 +15,11 @@ import com.example.photoapp.features.faktura.data.ProduktFaktura
 import com.example.photoapp.core.components.GenericEditableDetailsScreen
 import com.example.photoapp.core.utils.convertMillisToDate
 import com.example.photoapp.core.utils.formatDate
-import com.example.photoapp.features.paragon.data.ProduktParagon
 
 @Composable
 fun FakturaDetailsScreen(
-    faktura: Faktura?,
+    faktura: Faktura,
     leaveDetailsScreen: () -> Unit,
-    navigateToCameraAndSetRF: () -> Unit,
     viewModel: FakturaDetailsViewModel = hiltViewModel()
 ) {
     val actualProdukty by viewModel.actualProdukty.collectAsState()
@@ -33,19 +30,17 @@ fun FakturaDetailsScreen(
     var refreshKey by remember { mutableStateOf(0) }
 
     LaunchedEffect(faktura) {
-        if (faktura != null) {
-            viewModel.getFakturaByID(faktura.id) { f ->
-                viewModel.setFaktura(f)
-                viewModel.loadProducts(f)
-            }
+        viewModel.getFakturaByID(faktura.id) { f ->
+            viewModel.setFaktura(f)
+            viewModel.loadProducts(f)
         }
     }
 
     key(refreshKey) {
         GenericEditableDetailsScreen(
-            title = "Faktura",
+            title = "Szczegóły Faktury",
             leaveDetailsScreen = leaveDetailsScreen,
-            navigateToCameraAndSetRF = navigateToCameraAndSetRF,
+            navigateToCameraAndSetRF = leaveDetailsScreen,
             actualItems = actualProdukty,
             editingItems = editingProdukty,
             editCanceled = {
@@ -57,28 +52,26 @@ fun FakturaDetailsScreen(
                 refreshKey++
             },
             onAddItem = { produkt ->
-                viewModel.addOneProduct(fakturaId = faktura!!.id, nazwaProduktu = produkt.nazwaProduktu, ilosc = produkt.ilosc.toString()) {
+                viewModel.addOneProduct(fakturaId = faktura.id, nazwaProduktu = produkt.nazwaProduktu, ilosc = produkt.ilosc.toString()) {
                     viewModel.loadProducts(faktura)
                 }
-
             },
             onEditItem = { index, produkt ->
                 viewModel.updateEditedProductTemp(index, produkt) {}
             },
             onDeleteItem = { produkt ->
                 viewModel.deleteProduct(produkt) {
-                    viewModel.loadProducts(faktura!!)
+                    viewModel.loadProducts(faktura)
                 }
             },
             enableDatePicker = true,
-            initialDate = formatDate(faktura?.dataWystawienia?.time),
+            initialDate = formatDate(faktura.dataWystawienia?.time),
             onDateSelected = { millis ->
                 val newDate = convertMillisToDate(millis)
-                viewModel.updateEditedFakturaTemp(faktura!!.copy(dataWystawienia = newDate)) {}
-
+                viewModel.updateEditedFakturaTemp(faktura.copy(dataWystawienia = newDate)) {}
             },
             renderEditableItem = { produkt, onEdit ->
-                FakturaProductReadonly(produkt = produkt)
+                FakturaProductReadonly(produkt = produkt) // TODO add Editable Item
             },
             renderReadonlyItem = { produkt ->
                 FakturaProductReadonly(produkt)
@@ -105,7 +98,7 @@ fun FakturaDetailsScreen(
                     ),
                     onBuildItem = {
                         ProduktFaktura(
-                            fakturaId = faktura!!.id,
+                            fakturaId = faktura.id,
                             nazwaProduktu = newNazwaProduktu.value,
                             jednostkaMiary = newJednostkaMiary.value,
                             ilosc = newIlosc.value,
@@ -121,7 +114,7 @@ fun FakturaDetailsScreen(
             },
             renderEditItemDialog = { produkt, onEdit, onDismiss ->
                 val newNazwaProduktu = remember { mutableStateOf(produkt.nazwaProduktu)}
-                val newJednostkaMiary = remember { mutableStateOf(produkt.jednostkaMiary!!)}
+                val newJednostkaMiary = remember { mutableStateOf(produkt.jednostkaMiary)}
                 val newIlosc = remember { mutableStateOf(produkt.ilosc)}
                 val newCenaNetto = remember { mutableStateOf(produkt.cenaNetto)}
                 val newWartoscNetto = remember { mutableStateOf(produkt.wartoscNetto)}
@@ -141,7 +134,7 @@ fun FakturaDetailsScreen(
                     ),
                     onBuildItem = {
                         ProduktFaktura(
-                            fakturaId = faktura!!.id,
+                            fakturaId = faktura.id,
                             nazwaProduktu = newNazwaProduktu.value,
                             jednostkaMiary = newJednostkaMiary.value,
                             ilosc = newIlosc.value,

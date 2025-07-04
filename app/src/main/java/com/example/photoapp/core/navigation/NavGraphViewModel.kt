@@ -5,11 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import coil3.Bitmap
 import android.net.Uri
+import com.example.photoapp.archive.features.paragon.data.Paragon
+import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalny
 import com.example.photoapp.features.faktura.data.Faktura
-import com.example.photoapp.features.paragon.data.Paragon
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class NavGraphViewModel : ViewModel() {
+@HiltViewModel
+class NavGraphViewModel @Inject constructor() : ViewModel() {
     // State for photo URI and Bitmap
     private val _photoUri = MutableLiveData<Uri?>(null)
     val photoUri: LiveData<Uri?> get() = _photoUri

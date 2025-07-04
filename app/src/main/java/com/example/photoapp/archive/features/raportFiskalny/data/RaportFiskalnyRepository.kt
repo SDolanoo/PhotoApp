@@ -1,4 +1,4 @@
-package com.example.photoapp.features.raportFiskalny.data
+package com.example.photoapp.archive.features.raportFiskalny.data
 
 import android.util.Log
 import com.example.photoapp.core.database.data.OnlyProduktyRaportFiskalnyDTO

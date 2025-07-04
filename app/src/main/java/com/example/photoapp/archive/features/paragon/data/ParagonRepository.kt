@@ -1,7 +1,6 @@
-package com.example.photoapp.features.paragon.data
+package com.example.photoapp.archive.features.paragon.data
 
 import android.util.Log
-import com.example.photoapp.core.database.data.OnlyProduktyRaportFiskalnyDTO
 import com.example.photoapp.core.database.data.ParagonDTO
 import com.example.photoapp.core.utils.jsonTransformer
 import kotlinx.serialization.json.Json

@@ -3,10 +3,10 @@ package com.example.photoapp.ui.FilterScreen
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.photoapp.archive.features.paragon.data.Paragon
+import com.example.photoapp.archive.features.paragon.data.ParagonRepository
 import com.example.photoapp.features.faktura.data.Faktura
 import com.example.photoapp.features.faktura.data.FakturaRepository
-import com.example.photoapp.features.paragon.data.Paragon
-import com.example.photoapp.features.paragon.data.ParagonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
 import java.util.Date

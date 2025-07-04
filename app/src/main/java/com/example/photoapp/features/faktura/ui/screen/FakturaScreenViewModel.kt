@@ -7,10 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.photoapp.archive.features.paragon.data.Paragon
 import com.example.photoapp.features.faktura.data.Faktura
 import com.example.photoapp.features.faktura.data.FakturaRepository
 import com.example.photoapp.core.utils.normalizedDate
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
+import com.example.photoapp.ui.FilterScreen.FilterResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,24 +32,22 @@ class FakturaScreenViewModel @Inject constructor(
 
     val allFakturyLive: LiveData<List<Faktura>> = repository.getAllLiveFaktury()
 
+    private val _filteredFaktury = MutableStateFlow<List<Faktura>>(emptyList())
+    val filteredFaktury: StateFlow<List<Faktura>> = _filteredFaktury
+
     private val _isDeleteMode = mutableStateOf(false)
     val isDeleteMode: State<Boolean> = _isDeleteMode
 
     private val _selectedItems = mutableStateListOf<Faktura>()
     val selectedItems: List<Faktura> get() = _selectedItems
 
+    private val _groupedFaktury = MutableStateFlow<Map<Date?, List<Faktura>>>(emptyMap())
+    val groupedFaktury: StateFlow<Map<Date?, List<Faktura>>> = _groupedFaktury
+
     fun getGroupedFakturaList(fakturyList: List<Faktura>): Map<Date?, List<Faktura>> {
         return fakturyList
             .sortedByDescending { it.dataWystawienia }
             .groupBy { raport -> raport.dataWystawienia?.normalizedDate() }
-    }
-
-    fun getCountForProductsForRaport(raport: Faktura): Int {
-        return runBlocking {
-            withContext(Dispatchers.IO) {
-                repository.getProduktyForFaktura(raport.id).size
-            }
-        }
     }
 
     fun toggleDeleteMode() {
@@ -66,25 +65,38 @@ class FakturaScreenViewModel @Inject constructor(
 
     fun deleteSelectedItems() {
         viewModelScope.launch(Dispatchers.IO) {
-            selectedItems.forEach { item ->
-                Log.i("Dolan", "IM IN VIEMODEL GOING TO REPO")
-                repository.deleteFaktura(item) // Assuming a delete function exists
-            }
+            selectedItems.forEach { repository.deleteFaktura(it) }
             _selectedItems.clear()
             _isDeleteMode.value = false // Exit delete mode after deleting
         }
     }
 
+    fun applyFakturaFilters(filterResult: FilterResult) {
+        val (startDate, endDate) = filterResult.startDate to filterResult.endDate
+        val (minPrice, maxPrice) = filterResult.minPrice to filterResult.maxPrice
 
-    private val _groupedFaktury = MutableStateFlow<Map<Date?, List<Faktura>>>(emptyMap())
-    val groupedFaktury: StateFlow<Map<Date?, List<Faktura>>> = _groupedFaktury
+        val filtered = allFakturyLive.value.filter { faktura ->
+            val matchesDate = when {
+                startDate == null && endDate == null -> true
+                startDate != null && endDate != null ->
+                    faktura.dataWystawienia?.after(startDate) == true &&
+                            faktura.dataWystawienia?.before(endDate) == true
+                else -> true
+            }
 
-    fun loadFaktury(showFiltered: Boolean, filteredList: List<Faktura>) {
-        viewModelScope.launch {
-            val source = if (showFiltered) filteredList else repository.getAllLiveFaktury().value.orEmpty()
-            _groupedFaktury.value = source
-                .sortedByDescending { it.dataWystawienia }
-                .groupBy { it.dataWystawienia?.normalizedDate() }
+            val matchesPrice = when {
+                minPrice == null && maxPrice == null -> true
+                minPrice != null && maxPrice != null ->
+                    faktura.razemBrutto.toDouble() in minPrice..maxPrice
+                minPrice != null -> faktura.razemBrutto.toDouble() >= minPrice
+                maxPrice != null -> faktura.razemBrutto.toDouble() <= maxPrice
+                else -> true
+            }
+
+            matchesDate && matchesPrice
         }
+
+        // Update filtered UI state
+        _filteredFaktury.value = filtered
     }
 }

@@ -1,4 +1,4 @@
-package com.example.photoapp.features.raportFiskalny.ui.screen
+package com.example.photoapp.archive.features.raportFiskalny.ui.screen
 
 import android.util.Log
 import androidx.compose.runtime.State
@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalnyRepository
+import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalny
+import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalnyRepository
 import com.example.photoapp.core.utils.normalizedDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

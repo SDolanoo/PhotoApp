@@ -1,10 +1,10 @@
-package com.example.photoapp.features.raportFiskalny.ui.Details
+package com.example.photoapp.archive.features.raportFiskalny.ui.Details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.photoapp.features.raportFiskalny.data.ProduktRaportFiskalny
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalnyRepository
+import com.example.photoapp.archive.features.raportFiskalny.data.ProduktRaportFiskalny
+import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalny
+import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalnyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -63,8 +63,6 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            val NavGraphViewModel = NavGraphViewModel()
-
             val navController = rememberNavController()
             val navigationActions = remember(navController) {
                 PhotoAppNavigationActions(navController)

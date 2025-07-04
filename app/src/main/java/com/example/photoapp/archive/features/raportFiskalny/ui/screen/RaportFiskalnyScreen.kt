@@ -1,6 +1,5 @@
-package com.example.photoapp.features.raportFiskalny.ui.screen
+package com.example.photoapp.archive.features.raportFiskalny.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -44,7 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
+import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalny
 import com.example.photoapp.core.navigation.PhotoAppDestinations
 import java.text.SimpleDateFormat
 import java.util.Date

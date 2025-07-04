@@ -35,7 +35,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
+import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalny
 
 @Composable
 fun AcceptPhoto(

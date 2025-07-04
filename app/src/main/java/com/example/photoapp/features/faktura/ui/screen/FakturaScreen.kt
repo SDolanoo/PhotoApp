@@ -2,6 +2,7 @@ package com.example.photoapp.features.faktura.ui.screen
 
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,7 +30,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -36,6 +38,8 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -46,6 +50,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.photoapp.core.navigation.PhotoAppDestinations
 import com.example.photoapp.features.faktura.data.Faktura
+import com.example.photoapp.ui.FilterScreen.FilterController
+import com.example.photoapp.ui.FilterScreen.FilterResult
+import com.example.photoapp.ui.FilterScreen.FilterScreenContent
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -57,8 +64,11 @@ fun FakturaScreen(
     navController: NavHostController,
     navigateToCameraView: (String) -> Unit,
     navigateToFakturaDetailsScreen: (Faktura) -> Unit,
-    viewModel: FakturaScreenViewModel = hiltViewModel()
+    viewModel: FakturaScreenViewModel = hiltViewModel(),
+    filterController: FilterController = hiltViewModel()
 ) {
+    val isFilterExpanded = remember { mutableStateOf(false) }
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     val allFakturyLive by viewModel.allFakturyLive.observeAsState(emptyList())
@@ -75,24 +85,12 @@ fun FakturaScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
                 title = {
-                    if (isDeleteMode) {
-                        Text(
-                            "Usuń Raporty Fiskalne",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    } else {
-                        Text(
-                            "Widok Raporty Fiskalne",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                    Text(
+                        if (isDeleteMode) "Usuń Raporty Fiskalne" else "Widok Raporty Fiskalne",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 },
                 navigationIcon = {
                     if (isDeleteMode) {
@@ -130,15 +128,54 @@ fun FakturaScreen(
             }
         },
     ) { innerPadding ->
+        Column {
+            if (isFilterExpanded.value) {
+                FilterScreenContent(filterController = filterController)
 
-        FakturaScrollContent(
-            innerPadding,
-            groupedFaktury = groupedFaktury,
-            navigateToFakturaDetailsScreen = navigateToFakturaDetailsScreen,
-            isDeleteMode = isDeleteMode,
-            selectedItems = selectedItems,
-            onItemSelected = { viewModel.toggleItemSelection(it) }
-        )
+                Row(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    OutlinedButton(onClick = {
+                        filterController.clearAllValues()
+                    }) {
+                        Text("Clear")
+                    }
+
+                    Button(onClick = {
+                        val (startDate, endDate) = filterController.dateRange.value
+                        val (minPrice, maxPrice) = filterController.priceRange.value
+
+                        val filterResult = FilterResult(
+                            filterType = "paragon",
+                            startDate = startDate,
+                            endDate = endDate,
+                            minPrice = minPrice,
+                            maxPrice = maxPrice,
+                            dateFilterOption = filterController.currentFakturyDateFilter.value,
+                            priceFilterOption = filterController.currentFakturyPriceFilter.value
+                        )
+
+                        viewModel.applyFakturaFilters(filterResult)
+                        isFilterExpanded.value = false
+                    }) {
+                        Text("Apply")
+                    }
+                }
+            } else {
+                FakturaScrollContent(
+                    innerPadding,
+                    groupedFaktury = groupedFaktury,
+                    navigateToFakturaDetailsScreen = navigateToFakturaDetailsScreen,
+                    isDeleteMode = isDeleteMode,
+                    selectedItems = selectedItems,
+                    onItemSelected = { viewModel.toggleItemSelection(it) }
+                )
+            }
+        }
     }
 }
 

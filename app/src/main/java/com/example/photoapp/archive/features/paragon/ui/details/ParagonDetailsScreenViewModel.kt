@@ -1,13 +1,13 @@
-package com.example.photoapp.features.paragon.ui.details
+package com.example.photoapp.archive.features.paragon.ui.details
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.photoapp.archive.features.paragon.data.Paragon
+import com.example.photoapp.archive.features.paragon.data.ParagonRepository
+import com.example.photoapp.archive.features.paragon.data.ProduktParagon
 import com.example.photoapp.core.database.data.entities.Kategoria
 import com.example.photoapp.core.database.data.repos.KategoriaRepository
-import com.example.photoapp.features.paragon.data.Paragon
-import com.example.photoapp.features.paragon.data.ParagonRepository
-import com.example.photoapp.features.paragon.data.ProduktParagon
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

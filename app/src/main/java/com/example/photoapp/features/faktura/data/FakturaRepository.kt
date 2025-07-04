@@ -2,17 +2,13 @@ package com.example.photoapp.features.faktura.data
 
 import android.util.Log
 import com.example.photoapp.core.database.data.FakturaDTO
-import com.example.photoapp.core.database.data.dao.OdbiorcaDao
-import com.example.photoapp.core.database.data.dao.SprzedawcaDao
 import com.example.photoapp.core.database.data.entities.Odbiorca
 import com.example.photoapp.core.database.data.entities.Sprzedawca
 import com.example.photoapp.core.database.data.repos.OdbiorcaRepository
 import com.example.photoapp.core.database.data.repos.SprzedawcaRepository
 import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.core.utils.jsonTransformer
-import com.example.photoapp.features.raportFiskalny.data.ProduktRaportFiskalny
 import kotlinx.serialization.json.Json
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package com.example.photoapp.features.paragon.ui.screen
+package com.example.photoapp.archive.features.paragon.ui.screen
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.State
@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.photoapp.features.paragon.data.Paragon
-import com.example.photoapp.features.paragon.data.ParagonRepository
+import com.example.photoapp.archive.features.paragon.data.Paragon
+import com.example.photoapp.archive.features.paragon.data.ParagonRepository
 import com.example.photoapp.core.utils.normalizedDate
 import com.example.photoapp.ui.FilterScreen.FilterResult
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package com.example.photoapp.features.paragon.ui.details
+package com.example.photoapp.archive.features.paragon.ui.details
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,9 +16,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.photoapp.archive.features.paragon.data.Paragon
+import com.example.photoapp.archive.features.paragon.data.ProduktParagon
 import com.example.photoapp.core.components.DefaultAddItemDialog
-import com.example.photoapp.features.paragon.data.Paragon
-import com.example.photoapp.features.paragon.data.ProduktParagon
 import com.example.photoapp.core.components.DetailsRow
 import com.example.photoapp.core.components.GenericEditableDetailsScreen
 import com.example.photoapp.core.utils.convertMillisToDate
@@ -26,7 +26,7 @@ import com.example.photoapp.core.utils.formatDate
 
 @Composable
 fun ParagonDetailsScreen(
-    paragon: Paragon?,
+    paragon: Paragon,
     leaveDetailsScreen: () -> Unit,
     navigateToCameraAndSetRF: () -> Unit,
     viewModel: ParagonDetailsScreenViewModel = hiltViewModel()
@@ -39,11 +39,9 @@ fun ParagonDetailsScreen(
     var refreshKey by remember { mutableStateOf(0) }
 
     LaunchedEffect(paragon) {
-        if (paragon != null) {
-            viewModel.getParagonByID(paragon.id) { p ->
-                viewModel.setParagon(p)
-                viewModel.loadProducts(p)
-            }
+        viewModel.getParagonByID(paragon.id) { p ->
+            viewModel.setParagon(p)
+            viewModel.loadProducts(p)
         }
     }
 
@@ -63,7 +61,6 @@ fun ParagonDetailsScreen(
                     viewModel.loadProducts(actualParagon!!)
                     refreshKey++
                 }
-
             },
             onAddItem = { produkt ->
                 viewModel.addOneProduct(paragonId = paragon!!.id, nazwaProduktu = produkt.nazwaProduktu, ilosc = produkt.ilosc.toString()) {

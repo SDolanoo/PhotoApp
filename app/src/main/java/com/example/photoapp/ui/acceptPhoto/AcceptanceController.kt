@@ -5,6 +5,9 @@ import com.example.photoapp.core.AI.chatWithGemini
 import kotlinx.serialization.json.Json
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.photoapp.archive.features.paragon.data.ParagonRepository
+import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalny
+import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalnyRepository
 import com.example.photoapp.core.AI.DocumentType
 import com.example.photoapp.core.database.data.FakturaDTO
 import com.example.photoapp.core.database.data.OnlyProduktyRaportFiskalnyDTO
@@ -14,9 +17,6 @@ import com.example.photoapp.core.database.data.ProduktParagonDTO
 import com.example.photoapp.core.database.data.ProduktRaportFiskalnyDTO
 import com.example.photoapp.core.database.data.RaportFiskalnyDTO
 import com.example.photoapp.features.faktura.data.FakturaRepository
-import com.example.photoapp.features.paragon.data.ParagonRepository
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalny
-import com.example.photoapp.features.raportFiskalny.data.RaportFiskalnyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlin.collections.joinToString

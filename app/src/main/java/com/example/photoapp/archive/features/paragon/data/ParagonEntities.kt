@@ -1,4 +1,4 @@
-package com.example.photoapp.features.paragon.data
+package com.example.photoapp.archive.features.paragon.data
 
 import androidx.room.*
 import com.example.photoapp.core.database.data.entities.Kategoria

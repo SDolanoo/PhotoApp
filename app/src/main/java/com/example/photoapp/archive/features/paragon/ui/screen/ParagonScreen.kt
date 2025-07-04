@@ -1,4 +1,4 @@
-package com.example.photoapp.features.paragon.ui.screen
+package com.example.photoapp.archive.features.paragon.ui.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,8 +49,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.photoapp.archive.features.paragon.data.Paragon
 import com.example.photoapp.core.navigation.PhotoAppDestinations
-import com.example.photoapp.features.paragon.data.Paragon
 import com.example.photoapp.ui.FilterScreen.FilterController
 import com.example.photoapp.ui.FilterScreen.FilterResult
 import com.example.photoapp.ui.FilterScreen.FilterScreenContent
@@ -71,9 +71,9 @@ fun ParagonScreen(
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
-    val allParagony by viewModel.allParagony.observeAsState(emptyList())
+    val allParagony by viewModel.allParagony.observeAsState()
 
-    val groupedParagons = viewModel.getGroupedParagonsList(allParagony)
+    val groupedParagons = viewModel.getGroupedParagonsList(allParagony!!)
 
     val isDeleteMode by viewModel.isDeleteMode
 

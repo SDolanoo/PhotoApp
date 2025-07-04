@@ -12,8 +12,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.photoapp.archive.features.paragon.data.Paragon
+import com.example.photoapp.archive.features.paragon.data.ParagonRepository
+import com.example.photoapp.archive.features.paragon.data.ProduktParagon
 import com.example.photoapp.core.database.data.entities.Kategoria
-import com.example.photoapp.core.database.data.entities.Uzytkownik
 import com.example.photoapp.core.database.data.repos.KategoriaRepository
 import com.example.photoapp.core.database.data.repos.OdbiorcaRepository
 import com.example.photoapp.core.database.data.repos.SprzedawcaRepository
@@ -21,13 +23,9 @@ import com.example.photoapp.core.database.data.repos.UzytkownikRepository
 import com.example.photoapp.features.faktura.data.Faktura
 import com.example.photoapp.features.faktura.data.FakturaRepository
 import com.example.photoapp.features.faktura.data.ProduktFaktura
-import com.example.photoapp.features.paragon.data.Paragon
-import com.example.photoapp.features.paragon.data.ParagonRepository
-import com.example.photoapp.features.paragon.data.ProduktParagon
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 
