@@ -1,10 +1,7 @@
-package com.example.photoapp.features.faktura.composables
+package com.example.photoapp.features.faktura.composables.common
 
-import android.R.attr.label
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

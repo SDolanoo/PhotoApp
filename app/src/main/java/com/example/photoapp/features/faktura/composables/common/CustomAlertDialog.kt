@@ -1,4 +1,4 @@
-package com.example.photoapp.features.faktura.composables
+package com.example.photoapp.features.faktura.composables.common
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text

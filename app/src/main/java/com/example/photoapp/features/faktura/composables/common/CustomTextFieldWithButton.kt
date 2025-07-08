@@ -1,9 +1,8 @@
-package com.example.photoapp.features.faktura.composables
+package com.example.photoapp.features.faktura.composables.common
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -41,7 +40,7 @@ fun CustomTextFieldWithButton(
     title: String,
     field: MutableState<String>,
 ) {
-    Column() {
+    Column {
         OutlinedTextField(
             value = field.value.toString(),
             onValueChange = { field.value = it },
@@ -56,7 +55,7 @@ fun CustomTextFieldWithButton(
                         contentColor = Color.White
                     ),
                 ) {
-                    Text(title)
+                    Text(text = title)
                 }
             },
         )

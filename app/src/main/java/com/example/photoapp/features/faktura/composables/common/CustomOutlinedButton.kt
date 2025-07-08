@@ -1,24 +1,21 @@
-package com.example.photoapp.features.faktura.composables
+package com.example.photoapp.features.faktura.composables.common
 
-import android.R.attr.onClick
-import android.R.attr.textColor
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.unit.sp
 
 /**
  * A reusable, customizable outlined button with optional icon and color overrides.
@@ -54,7 +51,7 @@ import androidx.compose.ui.graphics.Color
 fun CustomOutlinedButton(
     title: String,
     onClick: () -> Unit,
-    icon: ImageVector? = null,
+    icon: Painter? = null,
     textColor: Color? =  null,
     outlineColor: Color? = null,
     height: Dp = 48.dp
@@ -80,14 +77,16 @@ fun CustomOutlinedButton(
         // Tekst z kolorem
         Text(
             text = title,
-            color = textColor ?: defaultTextColor
+            color = textColor ?: defaultTextColor,
+            fontSize = (height.toString().toInt() - 4).sp
+
         )
 
         // Ikona jeśli dostępna
         if (icon != null) {
             Spacer(modifier = Modifier.width(1.dp))
             Icon(
-                imageVector = icon,
+                painter = icon,
                 contentDescription = null,
                 tint = textColor ?: defaultTextColor
             )
