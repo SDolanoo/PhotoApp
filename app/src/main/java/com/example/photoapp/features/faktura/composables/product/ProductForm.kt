@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +31,8 @@ fun ProductForm(modifier: Modifier) {
 
     var example: MutableState<String> = remember { mutableStateOf("") }
     val ROW_HEIGHT = 64.dp
+
+    var state by remember { mutableStateOf("less") } // or more
 
     Column(
         modifier = modifier.padding(4.dp)
@@ -81,6 +85,7 @@ fun ProductForm(modifier: Modifier) {
             )
         }
 
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -102,40 +107,43 @@ fun ProductForm(modifier: Modifier) {
             )
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(ROW_HEIGHT),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            CustomTextField(
-                title = "Rabat %",
-                field = example,
-                modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
-            )
+        if (state == "more") {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(ROW_HEIGHT),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                CustomTextField(
+                    title = "Rabat %",
+                    field = example,
+                    modifier = Modifier.weight(1f)
+                        .fillMaxHeight()
+                )
 
-            CustomTextField(
-                title = "PKWiU",
-                field = example,
-                modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
-            )
+                CustomTextField(
+                    title = "PKWiU",
+                    field = example,
+                    modifier = Modifier.weight(1f)
+                        .fillMaxHeight()
+                )
+            }
         }
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(120.dp)
+            //horizontalArrangement = Arrangement.spacedBy(120.dp)
         ) {
             CustomOutlinedButton(
-                title = "mniej opcji",
-                onClick = { /* rozsuwam pozycje */ },
-                icon = painterResource(R.drawable.baseline_expand_less_24),
+                title = if (state == "less") "więcej opcji" else "mniej opcji",
+                onClick = { if (state == "less") state = "more" else state = "less" },
+                icon = if (state == "less") painterResource(R.drawable.baseline_expand_more_24) else painterResource(R.drawable.baseline_expand_less_24),
                 height = 28,
                 modifier = Modifier.weight(1f)
             )
+            HorizontalDivider(thickness = 1.dp, modifier=Modifier.width(120.dp ).padding(horizontal = 4.dp).padding(top = 14.dp))
 
             CustomOutlinedButton(
                 title = "usuń pozycję",
@@ -147,8 +155,6 @@ fun ProductForm(modifier: Modifier) {
                 modifier = Modifier.weight(1f)
             )
         }
-
-        HorizontalDivider(thickness = 1.dp, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
 
     }
 }
