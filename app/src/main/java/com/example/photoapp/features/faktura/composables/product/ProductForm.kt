@@ -1,12 +1,21 @@
 package com.example.photoapp.features.faktura.composables.product
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -19,9 +28,10 @@ import com.example.photoapp.R
 fun ProductForm(modifier: Modifier) {
 
     var example: MutableState<String> = remember { mutableStateOf("") }
+    val ROW_HEIGHT = 64.dp
 
     Column(
-        modifier = modifier
+        modifier = modifier.padding(4.dp)
     ) {
 
         CustomTextFieldWithButton(
@@ -29,60 +39,102 @@ fun ProductForm(modifier: Modifier) {
             field = example
         )
 
-        Row {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(ROW_HEIGHT),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             CustomTextField(
                 title = "Ilość",
-                field = example
+                field = example,
+                modifier = Modifier.weight(1f)
+                    .fillMaxHeight()
             )
 
             CustomTextField(
                 title = "Jednostka",
-                field = example
+                field = example,
+                modifier = Modifier.weight(1f)
+                    .fillMaxHeight()
             )
         }
 
-        Row {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(ROW_HEIGHT),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             CustomTextField(
                 title = "Cena netto",
-                field = example
+                field = example,
+                modifier = Modifier.weight(1f)
+                    .fillMaxHeight()
             )
 
             CustomTextField(
-                title = "Vat%",
-                field = example
+                title = "Vat %",
+                field = example,
+                modifier = Modifier.weight(1f)
+                    .fillMaxHeight()
             )
         }
 
-        Row {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(ROW_HEIGHT),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             CustomTextField(
                 title = "Wartość netto",
-                field = example
+                field = example,
+                modifier = Modifier.weight(1f)
+                    .fillMaxHeight()
             )
 
             CustomTextField(
                 title = "Wartość brutto",
-                field = example
+                field = example,
+                modifier = Modifier.weight(1f)
+                    .fillMaxHeight()
             )
         }
 
-        Row {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(ROW_HEIGHT),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             CustomTextField(
                 title = "Rabat %",
-                field = example
+                field = example,
+                modifier = Modifier.weight(1f)
+                    .fillMaxHeight()
             )
 
             CustomTextField(
                 title = "PKWiU",
-                field = example
+                field = example,
+                modifier = Modifier.weight(1f)
+                    .fillMaxHeight()
             )
         }
 
-        Row {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(120.dp)
+        ) {
             CustomOutlinedButton(
-                title = "więcej opcji",
+                title = "mniej opcji",
                 onClick = { /* rozsuwam pozycje */ },
-                icon = painterResource(R.drawable.baseline_expand_less_24), // painterResource(R.drawable.baseline_expand_more_24)
-                height = 26.dp
+                icon = painterResource(R.drawable.baseline_expand_less_24),
+                height = 28,
+                modifier = Modifier.weight(1f)
             )
 
             CustomOutlinedButton(
@@ -91,8 +143,12 @@ fun ProductForm(modifier: Modifier) {
                 icon = painterResource(R.drawable.baseline_delete_outline_24),
                 textColor = Color.Red,
                 outlineColor = Color.Red,
-                height = 26.dp
+                height = 28,
+                modifier = Modifier.weight(1f)
             )
         }
+
+        HorizontalDivider(thickness = 1.dp, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
+
     }
 }

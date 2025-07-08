@@ -1,7 +1,11 @@
 package com.example.photoapp.features.faktura.composables.common
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
@@ -10,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.unit.dp
 
 /**
  * A custom composable combining an `OutlinedTextField` with a trailing button.
@@ -40,20 +46,30 @@ fun CustomTextFieldWithButton(
     title: String,
     field: MutableState<String>,
 ) {
+    // Recommended height for OutlinedTextField is 56.dp
+    val textFieldHeight = 56.dp
+    val buttonHeight = textFieldHeight - 5.dp
+
     Column {
         OutlinedTextField(
-            value = field.value.toString(),
+            value = field.value,
             onValueChange = { field.value = it },
             label = { Text(title) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             singleLine = true,
             trailingIcon = {
                 Button(
-                    onClick = { /* Twoja akcja */ },
+                    onClick = { /* Your action */ },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Blue,
                         contentColor = Color.White
                     ),
+                    shape = RoundedCornerShape(8.dp), // rectangular with slightly rounded corners
+                    modifier = Modifier
+                        .height(buttonHeight)
+                        .defaultMinSize(minWidth = 5.dp) // avoids extra padding from default min sizes
+                        .offset(x = -3.dp)
                 ) {
                     Text(text = title)
                 }

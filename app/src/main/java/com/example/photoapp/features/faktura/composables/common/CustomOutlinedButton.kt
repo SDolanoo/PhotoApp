@@ -1,8 +1,12 @@
 package com.example.photoapp.features.faktura.composables.common
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
@@ -15,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 
 /**
@@ -54,44 +59,51 @@ fun CustomOutlinedButton(
     icon: Painter? = null,
     textColor: Color? =  null,
     outlineColor: Color? = null,
-    height: Dp = 48.dp
+    height: Int = 48,
+    modifier: Modifier = Modifier
 ) {
     // Domyślne kolory z MaterialTheme
     val defaultTextColor = MaterialTheme.colorScheme.onSurface
     val defaultOutlineColor = MaterialTheme.colorScheme.outline
 
+    val fontSize = when {
+        height <= 28 -> 10.sp
+        height <= 36 -> 12.sp
+        height <= 48 -> 14.sp
+        else -> 16.sp
+    }
+
     OutlinedButton(
         onClick = onClick,
-        modifier = Modifier.height(height),
+        modifier = modifier
+            .height(height.dp)
+            .defaultMinSize(minHeight = height.dp),
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = textColor ?: defaultTextColor
         ),
         border = BorderStroke(
             width = 1.dp,
             color = outlineColor ?: defaultOutlineColor
-        )
+        ),
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp) // ważne przy małych wysokościach
     ) {
-        // Przed tekstem odstęp
-        Spacer(modifier = Modifier.width(1.dp))
-
-        // Tekst z kolorem
-        Text(
-            text = title,
-            color = textColor ?: defaultTextColor,
-            fontSize = (height.toString().toInt() - 4).sp
-
-        )
-
-        // Ikona jeśli dostępna
         if (icon != null) {
-            Spacer(modifier = Modifier.width(1.dp))
             Icon(
                 painter = icon,
                 contentDescription = null,
-                tint = textColor ?: defaultTextColor
+                tint = textColor ?: defaultTextColor,
+                modifier = Modifier
+                    .size(fontSize.value.dp + 16.dp)
+                    .padding(end = 4.dp)
             )
         }
 
-        Spacer(modifier = Modifier.width(1.dp))
+        Text(
+            text = title,
+            color = textColor ?: defaultTextColor,
+            fontSize = fontSize,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }

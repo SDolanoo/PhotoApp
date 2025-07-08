@@ -16,12 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import com.example.photoapp.core.navigation.NavGraphViewModel
 import com.example.photoapp.core.navigation.PhotoAppNavGraph
 import com.example.photoapp.core.navigation.PhotoAppNavigationActions
+import com.example.photoapp.features.faktura.ui.NewFakturaPreview
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -138,4 +140,11 @@ private fun rememberSizeAwareDrawerState(isExpandedScreen: Boolean): DrawerState
     }
 }
 
+
+@Preview(showBackground = true)
+@Composable
+fun CardShowcasePreview() {
+    NewFakturaPreview()
+
+}
 

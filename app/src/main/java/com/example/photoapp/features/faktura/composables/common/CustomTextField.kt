@@ -35,14 +35,13 @@ import androidx.compose.ui.Modifier
 fun CustomTextField(
     title: String,
     field: MutableState<String>,
+    modifier: Modifier = Modifier
 ) {
-    Column() {
-        OutlinedTextField(
-            value = field.value.toString(),
-            onValueChange = { field.value = it },
-            label = { Text(title) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-    }
+    OutlinedTextField(
+        value = field.value.toString(),
+        onValueChange = { field.value = it },
+        label = { Text(title) },
+        modifier = modifier,
+        singleLine = true
+    )
 }
