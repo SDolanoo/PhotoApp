@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.photoapp.core.navigation.PhotoAppDestinations
+import com.example.photoapp.features.faktura.composables.product.NabywcaForm
 import com.example.photoapp.features.faktura.composables.product.ProductForm
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,8 +73,13 @@ fun NewFakturaPreview() {
     ) { innerPadding ->
         LazyColumn (modifier = Modifier.padding(innerPadding)) {
             item {
-                ProductForm(modifier = Modifier)
+                NabywcaForm(modifier = Modifier)
             }
+
+
+//            item {
+//                ProductForm(modifier = Modifier)
+//            }
         }
     }
 }
