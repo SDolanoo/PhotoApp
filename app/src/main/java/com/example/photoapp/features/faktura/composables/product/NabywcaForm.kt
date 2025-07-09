@@ -25,7 +25,10 @@ import com.example.photoapp.features.faktura.composables.common.CustomTextField
 import com.example.photoapp.features.faktura.composables.common.CustomTextFieldWithButton
 
 @Composable
-fun NabywcaForm(modifier: Modifier) {
+fun NabywcaForm(
+    modifier: Modifier,
+    fields: List<Pair<String, MutableState<String>>>
+) {
 
     var example: MutableState<String> = remember { mutableStateOf("") }
     val ROW_HEIGHT = 64.dp
@@ -38,18 +41,18 @@ fun NabywcaForm(modifier: Modifier) {
 
         CustomTextFieldWithButton(
             title = "Nazwa firmy",
-            field = example
+            field = fields[0].second
         )
 
         CustomTextField(
             title = "NIP",
-            field = example,
+            field = fields[1].second,
             modifier = Modifier.fillMaxWidth()
         )
 
         CustomTextField(
             title = "Ulica i nr mieszkania",
-            field = example,
+            field = fields[2].second,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -61,14 +64,14 @@ fun NabywcaForm(modifier: Modifier) {
         ) {
             CustomTextField(
                 title = "Kod pocztowy",
-                field = example,
+                field = fields[3].second,
                 modifier = Modifier.weight(0.4f)
                     .fillMaxHeight()
             )
 
             CustomTextField(
                 title = "Miejscowość",
-                field = example,
+                field = fields[4].second,
                 modifier = Modifier.weight(0.6f)
                     .fillMaxHeight()
             )
@@ -77,25 +80,25 @@ fun NabywcaForm(modifier: Modifier) {
         if (state == "more") {
             CustomTextField(
                 title = "Kraj",
-                field = example,
+                field = fields[5].second,
                 modifier = Modifier.fillMaxWidth()
             )
 
             CustomTextField(
                 title = "Opis",
-                field = example,
+                field = fields[6].second,
                 modifier = Modifier.fillMaxWidth()
             )
 
             CustomTextField(
                 title = "E-mail",
-                field = example,
+                field = fields[7].second,
                 modifier = Modifier.fillMaxWidth()
             )
 
             CustomTextField(
                 title = "Telefon",
-                field = example,
+                field = fields[8].second,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -114,16 +117,6 @@ fun NabywcaForm(modifier: Modifier) {
                 modifier = Modifier.weight(1f)
             )
             HorizontalDivider(thickness = 1.dp, modifier=Modifier.width(120.dp ).padding(horizontal = 4.dp).padding(top = 14.dp))
-
-            CustomOutlinedButton(
-                title = "usuń pozycję",
-                onClick = { /* usuwam z fakturki*/ },
-                icon = painterResource(R.drawable.baseline_delete_outline_24),
-                textColor = Color.Red,
-                outlineColor = Color.Red,
-                height = 28,
-                modifier = Modifier.weight(1f)
-            )
         }
 
     }

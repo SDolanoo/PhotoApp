@@ -27,7 +27,11 @@ import com.example.photoapp.features.faktura.composables.common.CustomTextFieldW
 import com.example.photoapp.R
 
 @Composable
-fun ProductForm(modifier: Modifier) {
+fun ProductForm(
+    modifier: Modifier,
+    fields: List<Pair<String, MutableState<String>>>,
+    onDelete: () -> Unit
+) {
 
     var example: MutableState<String> = remember { mutableStateOf("") }
     val ROW_HEIGHT = 64.dp
@@ -40,7 +44,7 @@ fun ProductForm(modifier: Modifier) {
 
         CustomTextFieldWithButton(
             title = "Nazwa",
-            field = example
+            field = fields[0].second
         )
 
         Row(
@@ -51,14 +55,14 @@ fun ProductForm(modifier: Modifier) {
         ) {
             CustomTextField(
                 title = "Ilość",
-                field = example,
+                field = fields[1].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
 
             CustomTextField(
                 title = "Jednostka",
-                field = example,
+                field = fields[2].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
@@ -72,14 +76,14 @@ fun ProductForm(modifier: Modifier) {
         ) {
             CustomTextField(
                 title = "Cena netto",
-                field = example,
+                field = fields[3].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
 
             CustomTextField(
                 title = "Vat %",
-                field = example,
+                field = fields[4].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
@@ -94,14 +98,14 @@ fun ProductForm(modifier: Modifier) {
         ) {
             CustomTextField(
                 title = "Wartość netto",
-                field = example,
+                field = fields[5].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
 
             CustomTextField(
                 title = "Wartość brutto",
-                field = example,
+                field = fields[6].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
@@ -116,14 +120,14 @@ fun ProductForm(modifier: Modifier) {
             ) {
                 CustomTextField(
                     title = "Rabat %",
-                    field = example,
+                    field = fields[7].second,
                     modifier = Modifier.weight(1f)
                         .fillMaxHeight()
                 )
 
                 CustomTextField(
                     title = "PKWiU",
-                    field = example,
+                    field = fields[8].second,
                     modifier = Modifier.weight(1f)
                         .fillMaxHeight()
                 )
@@ -147,7 +151,7 @@ fun ProductForm(modifier: Modifier) {
 
             CustomOutlinedButton(
                 title = "usuń pozycję",
-                onClick = { /* usuwam z fakturki*/ },
+                onClick = { onDelete() },
                 icon = painterResource(R.drawable.baseline_delete_outline_24),
                 textColor = Color.Red,
                 outlineColor = Color.Red,

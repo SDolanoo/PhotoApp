@@ -17,7 +17,10 @@ import com.example.photoapp.features.faktura.composables.common.CustomTextField
 import com.example.photoapp.features.faktura.composables.common.CustomTextFieldWithButton
 
 @Composable
-fun InvoiceForm(modifier: Modifier) {
+fun InvoiceForm(
+    modifier: Modifier,
+    fields: List<Pair<String, MutableState<String>>>
+) {
 
     var example: MutableState<String> = remember { mutableStateOf("") }
     val ROW_HEIGHT = 64.dp
@@ -34,14 +37,14 @@ fun InvoiceForm(modifier: Modifier) {
         ) {
             CustomTextField(
                 title = "Typ",
-                field = example,
+                field = fields[0].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
 
             CustomTextField(
                 title = "Numer",
-                field = example,
+                field = fields[1].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
@@ -55,14 +58,14 @@ fun InvoiceForm(modifier: Modifier) {
         ) {
             CustomTextField(
                 title = "Data wystawienia",
-                field = example,
+                field = fields[2].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
 
             CustomTextField(
                 title = "Data sprzedaży",
-                field = example,
+                field = fields[3].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
@@ -70,7 +73,7 @@ fun InvoiceForm(modifier: Modifier) {
 
         CustomTextField(
             title = "Miejsce wystawienia",
-            field = example,
+            field = fields[4].second,
             modifier = Modifier.fillMaxWidth()
         )
     }
