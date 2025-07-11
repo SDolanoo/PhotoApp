@@ -1,16 +1,16 @@
 package com.example.photoapp.features.faktura.ui
 
-import android.util.Log.v
-import androidx.compose.foundation.layout.Column
+import android.util.Log
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -22,28 +22,30 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.photoapp.core.database.data.entities.Odbiorca
-import com.example.photoapp.core.database.data.entities.Sprzedawca
-import com.example.photoapp.core.navigation.PhotoAppDestinations
+import com.example.photoapp.R
+import com.example.photoapp.core.components.DatePickerModal
 import com.example.photoapp.core.utils.convertDateToString
-import com.example.photoapp.features.faktura.composables.product.InvoiceForm
-import com.example.photoapp.features.faktura.composables.product.NabywcaForm
-import com.example.photoapp.features.faktura.composables.product.ProductForm
-import com.example.photoapp.features.faktura.composables.product.SprzedawcaForm
-import com.example.photoapp.features.faktura.data.Faktura
-import com.example.photoapp.features.faktura.data.ProduktFaktura
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.Multimaps.index
+import com.example.photoapp.core.utils.convertMillisToString
+import com.example.photoapp.features.faktura.composables.common.CustomOutlinedButton
+import com.example.photoapp.features.faktura.composables.forms.InvoiceForm
+import com.example.photoapp.features.faktura.composables.forms.NabywcaForm
+import com.example.photoapp.features.faktura.composables.forms.ProductForm
+import com.example.photoapp.features.faktura.composables.forms.SprzedawcaForm
+import com.example.photoapp.features.faktura.data.faktura.Faktura
+import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
+import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
+import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,10 +55,18 @@ fun NewFakturaPreview() {
 
     var isDeleteMode = false
 
+    var isEditing by remember { mutableStateOf(false) }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    var datePickerTarget by remember { mutableStateOf<DatePickerTarget?>(null) }
+    var customDate by remember { mutableStateOf(convertDateToString(Date())) }
+
     var Invoice by remember { mutableStateOf(FakeData.Invoice) }
     var Seller by remember { mutableStateOf(FakeData.sprzedawca) }
     var Buyer by remember { mutableStateOf(FakeData.odbiorca) }
     val Products = remember { FakeData.Products.toMutableStateList() }
+
+    var newProducts by remember { mutableIntStateOf(0) }
 
     Scaffold(
         topBar = {
@@ -69,25 +79,32 @@ fun NewFakturaPreview() {
                     )
                 },
                 navigationIcon = {
-                    if (isDeleteMode) {
-                        IconButton(onClick = {  }) {
-                            Icon(Icons.Default.Close, contentDescription = "Cancel Deletion")
+                    if (isEditing) {
+                        IconButton(onClick = {
+                            isEditing = false
+                        }) {
+                            Icon(Icons.Default.Close, contentDescription = "Back")
                         }
                     } else {
-                        IconButton(onClick = {  }) {
+                        IconButton(onClick = {
+                        }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     }
 
                 },
                 actions = {
-                    if (isDeleteMode) {
-                        IconButton(onClick = {  }) {
-                            Icon(Icons.Default.Done, contentDescription = "Confirm Deletion")
+                    if (isEditing) {
+                        IconButton(onClick = {
+                            isEditing = false
+                        }) {
+                            Icon(Icons.Default.Check, contentDescription = "Save")
                         }
                     } else {
-                        IconButton(onClick = {  }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Enable Delete Mode")
+                        IconButton(onClick = {
+                            isEditing = true
+                        }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
                     }
                 },
@@ -124,7 +141,16 @@ fun NewFakturaPreview() {
                         "Data wystawienia" to newDataWystawienia,
                         "Data sprzedaży" to newDataSprzedazy,
                         "Miejsce wystawienia" to newMiejsceWystawienia
-                    )
+                    ),
+                    showDatePickerWystawienia = {
+                        datePickerTarget = DatePickerTarget.WYSTAWIENIA
+                        showDatePicker = true
+                    },
+                    showDatePickerSprzedazy = {
+                        datePickerTarget = DatePickerTarget.SPRZEDAZY
+                        showDatePicker = true
+                    },
+                    onEdit = {}
                 )
             }
 
@@ -163,7 +189,8 @@ fun NewFakturaPreview() {
                         "Opis" to newOpis,
                         "E-mail" to newEmail,
                         "Telefon" to newTelefon,
-                    )
+                    ),
+                    onEdit = {}
                 )
             }
 
@@ -202,7 +229,8 @@ fun NewFakturaPreview() {
                     "Opis" to newOpis,
                     "E-mail" to newEmail,
                     "Telefon" to newTelefon,
-                    )
+                    ),
+                    onEdit = {}
                 )
             }
 
@@ -221,7 +249,10 @@ fun NewFakturaPreview() {
                 )
             }
 
-            items(Products) { product ->
+            items(
+                items = Products,
+                key = { it.id }
+            ) { product ->
 
                 val nazwaProduktu = remember { mutableStateOf(product.nazwaProduktu)}
                 val ilosc = remember { mutableStateOf(product.ilosc)}
@@ -247,24 +278,62 @@ fun NewFakturaPreview() {
                         "PKWiU" to pkwiu,
                     ),
                     onDelete = {
-                        Products.remove(product)
-                    }
+
+                    },
+                    onEdit = {}
                 )
 
                 HorizontalDivider(
                     thickness = 1.dp,
                     modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
                 )
-
-
             }
 
+            item { // add new product button
+                Row(modifier = Modifier.padding(top=12.dp)) {
+                    CustomOutlinedButton(
+                        title = "Dodaj",
+                        onClick = {
+                            Products.add(
+                                ProduktFaktura(
+                                    fakturaId = Invoice.id,
+                                    nazwaProduktu = "Nowy produkt",
+                                    jednostkaMiary = "szt",
+                                    ilosc = "1",
+                                    cenaNetto = "0.00",
+                                    wartoscNetto = "0.00",
+                                    wartoscBrutto = "0.00",
+                                    stawkaVat = "23",
+                                    rabat = "TODO()",
+                                    pkwiu = "TODO()"
+                                )
+                            )
+                        },
+                        icon = painterResource(R.drawable.baseline_add_24),
+                        height = 48,
+                        modifier = Modifier.weight(1f),
+                        textColor = Color.Blue,
+                        outlineColor = Color.Blue
+                    )
+                }
+            }
+        }
 
+        if (showDatePicker) {
+            DatePickerModal(
+                onDateSelected = { it ->
+                    if (it != null) {
+                        if (datePickerTarget == DatePickerTarget.WYSTAWIENIA) {
+                            customDate = convertMillisToString(it)
+                        } else {
+                            customDate = convertMillisToString(it)
+                        }
+                        Log.i("Dolan", "UPDATED RAPORT $customDate")
 
-
-//            item {
-//                ProductForm(modifier = Modifier)
-//            }
+                    }
+                },
+                onDismiss = { showDatePicker = false }
+            )
         }
     }
 }
@@ -298,6 +367,8 @@ object FakeData {
             wartoscNetto = "11.50",
             wartoscBrutto = "61.50",
             stawkaVat = "23",
+            rabat = "TODO(",
+            pkwiu = "TODO()",
         ),
         ProduktFaktura(
             fakturaId = 1,
@@ -308,6 +379,8 @@ object FakeData {
             wartoscNetto = "11.50",
             wartoscBrutto = "61.50",
             stawkaVat = "23",
+            rabat = "TODO(",
+            pkwiu = "TODO()",
         )
     )
 
@@ -316,16 +389,21 @@ object FakeData {
         uzytkownikId = 1,
         odbiorcaId = odbiorca.id,
         sprzedawcaId = sprzedawca.id,
+        typFaktury = "Faktura",
         numerFaktury = "FV-TEST-001",
-        status = "Wystawiona",
         dataWystawienia = now,
         dataSprzedazy = now,
-        terminPlatnosci = now,
         razemNetto = "100.00",
         razemVAT = "23",
         razemBrutto = "123.00",
         doZaplaty = "123.00",
         waluta = "PLN",
-        formaPlatnosci = "Przelew"
+        formaPlatnosci = "Przelew",
+        miejsceWystawienia = ""
     )
+}
+
+enum class DatePickerTarget {
+    WYSTAWIENIA,
+    SPRZEDAZY
 }

@@ -1,5 +1,8 @@
-package com.example.photoapp.features.faktura.composables.product
+package com.example.photoapp.features.faktura.composables.readOnly
 
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,21 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.photoapp.features.faktura.composables.common.CustomTextField
-import com.example.photoapp.features.faktura.composables.common.CustomTextFieldWithButton
+import com.example.photoapp.features.faktura.composables.common.CustomText
 
 @Composable
-fun InvoiceForm(
+fun InvoiceReadOnly(
     modifier: Modifier,
-    fields: List<Pair<String, MutableState<String>>>
+    fields: List<String>
 ) {
 
-    var example: MutableState<String> = remember { mutableStateOf("") }
     val ROW_HEIGHT = 64.dp
 
     Column(
@@ -35,16 +33,16 @@ fun InvoiceForm(
                 .height(ROW_HEIGHT),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            CustomTextField(
+            CustomText(
                 title = "Typ",
-                field = fields[0].second,
+                field = fields[0],
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
 
-            CustomTextField(
+            CustomText(
                 title = "Numer",
-                field = fields[1].second,
+                field = fields[1],
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
@@ -56,24 +54,24 @@ fun InvoiceForm(
                 .height(ROW_HEIGHT),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            CustomTextField(
+            CustomText(
                 title = "Data wystawienia",
-                field = fields[2].second,
+                field = fields[2],
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
 
-            CustomTextField(
+            CustomText(
                 title = "Data sprzedaży",
-                field = fields[3].second,
+                field = fields[3],
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight()
             )
         }
 
-        CustomTextField(
+        CustomText(
             title = "Miejsce wystawienia",
-            field = fields[4].second,
+            field = fields[4],
             modifier = Modifier.fillMaxWidth()
         )
     }
