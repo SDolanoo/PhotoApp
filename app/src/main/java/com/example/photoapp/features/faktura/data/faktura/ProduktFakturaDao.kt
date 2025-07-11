@@ -1,10 +1,11 @@
-package com.example.photoapp.features.faktura.data
+package com.example.photoapp.features.faktura.data.faktura
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 
 @Dao
 interface ProduktFakturaDao {
@@ -18,7 +19,7 @@ interface ProduktFakturaDao {
     @Insert
     fun insert(produkt: ProduktFaktura): Long
 
-    @Update
+    @Upsert
     fun update(produkt: ProduktFaktura)
 
     @Delete

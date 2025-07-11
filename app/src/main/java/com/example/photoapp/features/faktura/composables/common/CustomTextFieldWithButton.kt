@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 fun CustomTextFieldWithButton(
     title: String,
     field: MutableState<String>,
+    onEdit: () -> Unit,
 ) {
     // Recommended height for OutlinedTextField is 56.dp
     val textFieldHeight = 56.dp
@@ -53,7 +54,10 @@ fun CustomTextFieldWithButton(
     Column {
         OutlinedTextField(
             value = field.value,
-            onValueChange = { field.value = it },
+            onValueChange = {
+                field.value = it
+                onEdit()
+                            },
             label = { Text(title) },
             modifier = Modifier
                 .fillMaxWidth(),

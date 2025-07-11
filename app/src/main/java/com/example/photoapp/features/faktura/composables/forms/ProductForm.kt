@@ -1,9 +1,8 @@
-package com.example.photoapp.features.faktura.composables.product
+package com.example.photoapp.features.faktura.composables.forms
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,7 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -30,10 +28,10 @@ import com.example.photoapp.R
 fun ProductForm(
     modifier: Modifier,
     fields: List<Pair<String, MutableState<String>>>,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
 
-    var example: MutableState<String> = remember { mutableStateOf("") }
     val ROW_HEIGHT = 64.dp
 
     var state by remember { mutableStateOf("less") } // or more
@@ -44,7 +42,8 @@ fun ProductForm(
 
         CustomTextFieldWithButton(
             title = "Nazwa",
-            field = fields[0].second
+            field = fields[0].second,
+            onEdit = { onEdit() }
         )
 
         Row(
@@ -57,14 +56,16 @@ fun ProductForm(
                 title = "Ilość",
                 field = fields[1].second,
                 modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                onEdit = { onEdit() }
             )
 
             CustomTextField(
                 title = "Jednostka",
                 field = fields[2].second,
                 modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                onEdit = { onEdit() }
             )
         }
 
@@ -78,14 +79,16 @@ fun ProductForm(
                 title = "Cena netto",
                 field = fields[3].second,
                 modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                onEdit = { onEdit() }
             )
 
             CustomTextField(
                 title = "Vat %",
                 field = fields[4].second,
                 modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                onEdit = { onEdit() }
             )
         }
 
@@ -100,14 +103,16 @@ fun ProductForm(
                 title = "Wartość netto",
                 field = fields[5].second,
                 modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                onEdit = { onEdit() }
             )
 
             CustomTextField(
                 title = "Wartość brutto",
                 field = fields[6].second,
                 modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                onEdit = { onEdit() }
             )
         }
 
@@ -122,14 +127,16 @@ fun ProductForm(
                     title = "Rabat %",
                     field = fields[7].second,
                     modifier = Modifier.weight(1f)
-                        .fillMaxHeight()
+                        .fillMaxHeight(),
+                    onEdit = { onEdit() }
                 )
 
                 CustomTextField(
                     title = "PKWiU",
                     field = fields[8].second,
                     modifier = Modifier.weight(1f)
-                        .fillMaxHeight()
+                        .fillMaxHeight(),
+                    onEdit = { onEdit() }
                 )
             }
         }

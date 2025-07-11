@@ -16,7 +16,7 @@ import com.example.photoapp.core.database.data.ProduktFakturaDTO
 import com.example.photoapp.core.database.data.ProduktParagonDTO
 import com.example.photoapp.core.database.data.ProduktRaportFiskalnyDTO
 import com.example.photoapp.core.database.data.RaportFiskalnyDTO
-import com.example.photoapp.features.faktura.data.FakturaRepository
+import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlin.collections.joinToString
@@ -159,10 +159,10 @@ class AcceptanceController @Inject constructor(
                 adres: ${f.odbiorca.adres}
             Dane faktura:
                 numerFaktury: ${f.numerFaktury}
-                status: ${f.status}
+                typFaktury: ${f.typFaktury}
                 dataWystawienia: ${f.dataWystawienia}
                 dataSprzedazy: ${f.dataSprzedazy}
-                terminPlatnosci: ${f.terminPlatnosci}
+                miejsceWystawienia: ${f.miejsceWystawienia}
                 razemNetto: ${f.razemNetto}
                 razemVAT: ${f.razemVAT}
                 razemBrutto: ${f.razemBrutto}

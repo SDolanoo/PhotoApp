@@ -1,28 +1,22 @@
 package com.example.photoapp.features.faktura.ui.screen
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.photoapp.archive.features.paragon.data.Paragon
-import com.example.photoapp.features.faktura.data.Faktura
-import com.example.photoapp.features.faktura.data.FakturaRepository
+import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import com.example.photoapp.core.utils.normalizedDate
+import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.ui.FilterScreen.FilterResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
-import kotlin.collections.forEach
-import kotlin.collections.orEmpty
 import kotlin.collections.sortedByDescending
 
 @HiltViewModel

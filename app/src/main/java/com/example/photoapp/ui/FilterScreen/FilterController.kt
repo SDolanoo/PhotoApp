@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.photoapp.archive.features.paragon.data.Paragon
 import com.example.photoapp.archive.features.paragon.data.ParagonRepository
-import com.example.photoapp.features.faktura.data.Faktura
-import com.example.photoapp.features.faktura.data.FakturaRepository
+import com.example.photoapp.features.faktura.data.faktura.Faktura
+import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -136,43 +136,42 @@ class FilterController @Inject constructor(
         return Pair(doShowFilters, resultList)
     }
 
-    fun applyFakturysFilters():Pair<Boolean, List<Faktura>> {
-//        Log.i("Dolan", "applyFilters FUNCTION")
-//        val (startDate, endDate) = dateRange.value
-//        Log.i("Dolan", "startDate: $startDate, endDate: $endDate")
-//        val (minPrice, maxPrice) = priceRange.value
-//        Log.i("Dolan", "minPrice: $minPrice, maxPrice: $maxPrice")
-//
-//
-//        val resultList = fakturaRepository.fetchFilteredFaktury(
-//            startDate = startDate,
-//            endDate = endDate,
-//            minPrice = minPrice,
-//            maxPrice = maxPrice,
-//            filterDate = currentFakturyDateFilter.value,
-//            filterPrice = currentFakturyPriceFilter.value
-//        )
-//
-//        val doShowFilters = canShowFilters()
-//        Log.i("Dolan", "doShowFilters: $doShowFilters, resultList: $resultList")
-        var doShowFilters = true
-        var resultList: List<Faktura> = listOf(Faktura(
-            id = TODO(),
-            uzytkownikId = TODO(),
-            odbiorcaId = TODO(),
-            sprzedawcaId = TODO(),
-            numerFaktury = TODO(),
-            status = TODO(),
-            dataWystawienia = TODO(),
-            dataSprzedazy = TODO(),
-            terminPlatnosci = TODO(),
-            razemNetto = TODO(),
-            razemVAT = TODO(),
-            razemBrutto = TODO(),
-            doZaplaty = TODO(),
-            waluta = TODO(),
-            formaPlatnosci = TODO()
-        ))
-        return Pair(doShowFilters, resultList)
-    }
+//    fun applyFakturysFilters():Pair<Boolean, List<Faktura>> {
+////        Log.i("Dolan", "applyFilters FUNCTION")
+////        val (startDate, endDate) = dateRange.value
+////        Log.i("Dolan", "startDate: $startDate, endDate: $endDate")
+////        val (minPrice, maxPrice) = priceRange.value
+////        Log.i("Dolan", "minPrice: $minPrice, maxPrice: $maxPrice")
+////
+////
+////        val resultList = fakturaRepository.fetchFilteredFaktury(
+////            startDate = startDate,
+////            endDate = endDate,
+////            minPrice = minPrice,
+////            maxPrice = maxPrice,
+////            filterDate = currentFakturyDateFilter.value,
+////            filterPrice = currentFakturyPriceFilter.value
+////        )
+////
+////        val doShowFilters = canShowFilters()
+////        Log.i("Dolan", "doShowFilters: $doShowFilters, resultList: $resultList")
+//        var doShowFilters = true
+//        var resultList: List<Faktura> = listOf(Faktura(
+//            uzytkownikId = "TODO()",
+//            odbiorcaId = TODO(),
+//            sprzedawcaId = TODO(),
+//            numerFaktury = TODO(),
+//            typFaktury = TODO(),
+//            dataWystawienia = TODO(),
+//            dataSprzedazy = TODO(),
+//            terminPlatnosci = TODO(),
+//            razemNetto = TODO(),
+//            razemVAT = TODO(),
+//            razemBrutto = TODO(),
+//            doZaplaty = TODO(),
+//            waluta = TODO(),
+//            formaPlatnosci = TODO()
+//        ))
+//        return Pair(doShowFilters, resultList)
+//    }
 }

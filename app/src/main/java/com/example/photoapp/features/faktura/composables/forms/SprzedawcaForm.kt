@@ -1,4 +1,4 @@
-package com.example.photoapp.features.faktura.composables.product
+package com.example.photoapp.features.faktura.composables.forms
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,7 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.photoapp.R
@@ -27,10 +26,10 @@ import com.example.photoapp.features.faktura.composables.common.CustomTextFieldW
 @Composable
 fun SprzedawcaForm(
     modifier: Modifier,
-    fields: List<Pair<String, MutableState<String>>>
+    fields: List<Pair<String, MutableState<String>>>,
+    onEdit: () -> Unit,
 ) {
 
-    var example: MutableState<String> = remember { mutableStateOf("") }
     val ROW_HEIGHT = 64.dp
 
     var state by remember { mutableStateOf("less") } // or more
@@ -41,19 +40,22 @@ fun SprzedawcaForm(
 
         CustomTextFieldWithButton(
             title = "Nazwa firmy",
-            field = fields[0].second
+            field = fields[0].second,
+            onEdit = { onEdit() }
         )
 
         CustomTextField(
             title = "NIP",
             field = fields[1].second,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            onEdit = { onEdit() }
         )
 
         CustomTextField(
             title = "Ulica i nr mieszkania",
             field = fields[2].second,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            onEdit = { onEdit() }
         )
 
         Row(
@@ -66,14 +68,16 @@ fun SprzedawcaForm(
                 title = "Kod pocztowy",
                 field = fields[3].second,
                 modifier = Modifier.weight(0.4f)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                onEdit = { onEdit() }
             )
 
             CustomTextField(
                 title = "Miejscowość",
                 field = fields[4].second,
                 modifier = Modifier.weight(0.6f)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                onEdit = { onEdit() }
             )
         }
 
@@ -81,25 +85,29 @@ fun SprzedawcaForm(
             CustomTextField(
                 title = "Kraj",
                 field = fields[5].second,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                onEdit = { onEdit() }
             )
 
             CustomTextField(
                 title = "Opis",
                 field = fields[6].second,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                onEdit = { onEdit() }
             )
 
             CustomTextField(
                 title = "E-mail",
                 field = fields[7].second,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                onEdit = { onEdit() }
             )
 
             CustomTextField(
                 title = "Telefon",
                 field = fields[8].second,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                onEdit = { onEdit() }
             )
         }
 

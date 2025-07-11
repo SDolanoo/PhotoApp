@@ -17,12 +17,12 @@ import com.example.photoapp.archive.features.paragon.data.ParagonRepository
 import com.example.photoapp.archive.features.paragon.data.ProduktParagon
 import com.example.photoapp.core.database.data.entities.Kategoria
 import com.example.photoapp.core.database.data.repos.KategoriaRepository
-import com.example.photoapp.core.database.data.repos.OdbiorcaRepository
-import com.example.photoapp.core.database.data.repos.SprzedawcaRepository
+import com.example.photoapp.features.faktura.data.odbiorca.OdbiorcaRepository
+import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepository
 import com.example.photoapp.core.database.data.repos.UzytkownikRepository
-import com.example.photoapp.features.faktura.data.Faktura
-import com.example.photoapp.features.faktura.data.FakturaRepository
-import com.example.photoapp.features.faktura.data.ProduktFaktura
+import com.example.photoapp.features.faktura.data.faktura.Faktura
+import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
+import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -157,16 +157,16 @@ class TestingButtonVM @Inject constructor(
                     odbiorcaId = odbiorca.id,
                     sprzedawcaId = sprzedawca.id,
                     numerFaktury = "FV-TEST-00$index",
-                    status = "Wystawiona",
+                    typFaktury = "Faktura",
                     dataWystawienia = now,
                     dataSprzedazy = now,
-                    terminPlatnosci = now,
                     razemNetto = "100.00",
                     razemVAT = "23",
                     razemBrutto = "123.00",
                     doZaplaty = "123.00",
                     waluta = "PLN",
-                    formaPlatnosci = "Przelew"
+                    formaPlatnosci = "Przelew",
+                    miejsceWystawienia = ""
                 )
                 fakturaRepository.insertFaktura(faktura)
             }
@@ -188,6 +188,8 @@ class TestingButtonVM @Inject constructor(
                         wartoscNetto = "11.50",
                         wartoscBrutto = "61.50",
                         stawkaVat = "23",
+                        rabat = "TODO()",
+                        pkwiu = "TODO()",
                     )
                     fakturaRepository.insertProdukt(produkt)
                 }
