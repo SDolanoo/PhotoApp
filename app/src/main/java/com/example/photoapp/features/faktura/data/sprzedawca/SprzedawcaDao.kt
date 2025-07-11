@@ -1,8 +1,10 @@
-package com.example.photoapp.core.database.data.dao
+package com.example.photoapp.features.faktura.data.sprzedawca
 
-import android.util.Log
-import androidx.room.*
-import com.example.photoapp.core.database.data.entities.Sprzedawca
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface SprzedawcaDao {

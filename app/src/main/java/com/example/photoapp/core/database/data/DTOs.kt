@@ -21,21 +21,22 @@ data class ParagonDTO(
 @Serializable
 data class ProduktFakturaDTO(
     @SerialName("nazwaProduktu") val nazwaProduktu: String = "none",
-    @SerialName("jednostkaMiary") val jednostkaMiary: String = "none",
     @SerialName("ilosc") val ilosc: String = "999",
+    @SerialName("jednostkaMiary") val jednostkaMiary: String = "none",
     @SerialName("cenaNetto") val cenaNetto: String = "999",
+    @SerialName("stawkaVat") val stawkaVat: String = "999",
     @SerialName("wartoscNetto") val wartoscNetto: String = "999",
     @SerialName("wartoscBrutto") val wartoscBrutto: String = "999",
-    @SerialName("stawkaVat") val stawkaVat: String = "999"
+    @SerialName("rabat") val rabat: String = "999",
+    @SerialName("pkwiu") val pkwiu: String = "999",
 )
 
 @Serializable
 data class FakturaDTO(
+    @SerialName("typFaktury") val typFaktury: String = "none",
     @SerialName("numerFaktury") val numerFaktury: String = "none",
-    @SerialName("status") val status: String = "none",
     @SerialName("dataWystawienia") val dataWystawienia: String = "1999-01-01",
     @SerialName("dataSprzedazy") val dataSprzedazy: String = "1999-01-01",
-    @SerialName("terminPlatnosci") val terminPlatnosci: String = "1999-01-01",
     @SerialName("razemNetto") val razemNetto: String = "999",
     @SerialName("razemVAT") val razemVAT: String? = "999",
     @SerialName("razemBrutto") val razemBrutto: String = "999",
@@ -49,16 +50,28 @@ data class FakturaDTO(
 
 @Serializable
 data class OdbiorcaDTO(
-    @SerialName("nazwa") val nazwa: String = "none",
-    @SerialName("nip") val nip: String = "none",
-    @SerialName("adres") val adres: String = "none",
+    @SerialName("nazwa") val nazwa: String = "",
+    @SerialName("nip") val nip: String = "",
+    @SerialName("adres") val adres: String = "",
+    @SerialName("kodPocztowy") val kodPocztowy: String = "",
+    @SerialName("miejscowosc") val miejscowosc: String = "",
+    @SerialName("kraj") val kraj: String = "",
+    @SerialName("opis") val opis: String = "",
+    @SerialName("email") val email: String = "",
+    @SerialName("telefon") val telefon: String = ""
 )
 
 @Serializable
 data class SprzedawcaDTO(
-    @SerialName("nazwa") val nazwa: String = "none",
-    @SerialName("nip") val nip: String = "none",
-    @SerialName("adres") val adres: String = "none",
+    @SerialName("nazwa") val nazwa: String = "",
+    @SerialName("nip") val nip: String = "",
+    @SerialName("adres") val adres: String = "",
+    @SerialName("kodPocztowy") val kodPocztowy: String = "",
+    @SerialName("miejscowosc") val miejscowosc: String = "",
+    @SerialName("kraj") val kraj: String = "",
+    @SerialName("opis") val opis: String = "",
+    @SerialName("email") val email: String = "",
+    @SerialName("telefon") val telefon: String = ""
 )
 
 @Serializable

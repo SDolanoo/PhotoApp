@@ -1,33 +1,86 @@
 package com.example.photoapp.features.faktura.ui.details
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.OutlinedTextField
+import android.util.Log
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.photoapp.core.components.DefaultAddItemDialog
-import com.example.photoapp.features.faktura.data.Faktura
-import com.example.photoapp.features.faktura.data.ProduktFaktura
-import com.example.photoapp.core.components.GenericEditableDetailsScreen
-import com.example.photoapp.core.utils.convertMillisToDate
-import com.example.photoapp.core.utils.formatDate
+import com.example.photoapp.R
+import com.example.photoapp.core.components.DatePickerModal
+import com.example.photoapp.core.utils.convertDateToString
+import com.example.photoapp.core.utils.convertMillisToString
+import com.example.photoapp.core.utils.convertStringToDate
+import com.example.photoapp.features.faktura.composables.common.CustomOutlinedButton
+import com.example.photoapp.features.faktura.composables.forms.InvoiceForm
+import com.example.photoapp.features.faktura.composables.forms.NabywcaForm
+import com.example.photoapp.features.faktura.composables.forms.ProductForm
+import com.example.photoapp.features.faktura.composables.forms.SprzedawcaForm
+import com.example.photoapp.features.faktura.composables.readOnly.InvoiceReadOnly
+import com.example.photoapp.features.faktura.composables.readOnly.NabywcaReadOnly
+import com.example.photoapp.features.faktura.composables.readOnly.ProductReadOnly
+import com.example.photoapp.features.faktura.composables.readOnly.SprzedawcaReadOnly
+import com.example.photoapp.features.faktura.data.faktura.Faktura
+import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
+import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
+import com.example.photoapp.features.faktura.ui.DatePickerTarget
+import com.example.photoapp.features.faktura.ui.FakeData.Invoice
+import java.util.Date
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FakturaDetailsScreen(
     faktura: Faktura,
     leaveDetailsScreen: () -> Unit,
     viewModel: FakturaDetailsViewModel = hiltViewModel()
 ) {
+    val editedFaktura by viewModel.editedFaktura.collectAsState()
+
     val actualProdukty by viewModel.actualProdukty.collectAsState()
-    val editingProdukty by viewModel.editedProdukty.collectAsState()
+    val editedProdukty  by viewModel.editedProdukty.collectAsState()
 
-    val actualFaktura by viewModel.actualFaktura.collectAsState()
+    val actualOdbiorca  by viewModel.actualOdbiorca.collectAsState()
+    val editedOdbiorca  by viewModel.editedOdbiorca.collectAsState()
 
-    var refreshKey by remember { mutableStateOf(0) }
+    val actualSprzedawca  by viewModel.actualSprzedawca.collectAsState()
+    val editedSprzedawca  by viewModel.editedSprzedawca.collectAsState()
+
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+
+    var isEditing by remember { mutableStateOf(false) }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    var datePickerTarget by remember { mutableStateOf<DatePickerTarget?>(null) }
+    var customDate by remember { mutableStateOf(convertDateToString(Date())) }
 
     LaunchedEffect(faktura) {
         viewModel.getFakturaByID(faktura.id) { f ->
@@ -36,173 +89,411 @@ fun FakturaDetailsScreen(
         }
     }
 
-    key(refreshKey) {
-        GenericEditableDetailsScreen(
-            title = "Szczegóły Faktury",
-            leaveDetailsScreen = leaveDetailsScreen,
-            navigateToCameraAndSetRF = leaveDetailsScreen,
-            actualItems = actualProdukty,
-            editingItems = editingProdukty,
-            editCanceled = {
-                viewModel.editingFailed()
-                refreshKey++
-            },
-            editAccepted = {
-                viewModel.editingSuccess()
-                refreshKey++
-            },
-            onAddItem = { produkt ->
-                viewModel.addOneProduct(fakturaId = faktura.id, nazwaProduktu = produkt.nazwaProduktu, ilosc = produkt.ilosc.toString()) {
-                    viewModel.loadProducts(faktura)
-                }
-            },
-            onEditItem = { index, produkt ->
-                viewModel.updateEditedProductTemp(index, produkt) {}
-            },
-            onDeleteItem = { produkt ->
-                viewModel.deleteProduct(produkt) {
-                    viewModel.loadProducts(faktura)
-                }
-            },
-            enableDatePicker = true,
-            initialDate = formatDate(faktura.dataWystawienia?.time),
-            onDateSelected = { millis ->
-                val newDate = convertMillisToDate(millis)
-                viewModel.updateEditedFakturaTemp(faktura.copy(dataWystawienia = newDate)) {}
-            },
-            renderEditableItem = { produkt, onEdit ->
-                FakturaProductReadonly(produkt = produkt) // TODO add Editable Item
-            },
-            renderReadonlyItem = { produkt ->
-                FakturaProductReadonly(produkt)
-            },
-            renderAddItemDialog = { onAdd, onDismiss ->
-                val newNazwaProduktu = remember { mutableStateOf("")}
-                val newJednostkaMiary = remember { mutableStateOf("")}
-                val newIlosc = remember { mutableStateOf("")}
-                val newCenaNetto = remember { mutableStateOf("")}
-                val newWartoscNetto = remember { mutableStateOf("")}
-                val newWartoscBrutto = remember { mutableStateOf("")}
-                val newStawkaVat = remember { mutableStateOf("")}
-
-                DefaultAddItemDialog(
-                    title = "Dodaj Produkt",
-                    fields = listOf(
-                        "Nazwa" to newNazwaProduktu,
-                        "Jednostka Miary" to newJednostkaMiary,
-                        "Ilosc" to newIlosc,
-                        "Cena Netto" to newCenaNetto,
-                        "Wartosc Netto" to newWartoscNetto,
-                        "Wartosc Brutto" to newWartoscBrutto,
-                        "Stawka VAT" to newStawkaVat
-                    ),
-                    onBuildItem = {
-                        ProduktFaktura(
-                            fakturaId = faktura.id,
-                            nazwaProduktu = newNazwaProduktu.value,
-                            jednostkaMiary = newJednostkaMiary.value,
-                            ilosc = newIlosc.value,
-                            cenaNetto = newCenaNetto.value,
-                            wartoscNetto = newWartoscNetto.value,
-                            wartoscBrutto = newWartoscBrutto.value,
-                            stawkaVat = newStawkaVat.value,
-                        )
-                    },
-                    onAction = onAdd,
-                    onDismiss = onDismiss
+    Scaffold(
+    topBar = {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(
+                    if (isEditing) "Edytuj Fakture" else "Szczegóły Faktura",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
-            renderEditItemDialog = { produkt, onEdit, onDismiss ->
-                val newNazwaProduktu = remember { mutableStateOf(produkt.nazwaProduktu)}
-                val newJednostkaMiary = remember { mutableStateOf(produkt.jednostkaMiary)}
-                val newIlosc = remember { mutableStateOf(produkt.ilosc)}
-                val newCenaNetto = remember { mutableStateOf(produkt.cenaNetto)}
-                val newWartoscNetto = remember { mutableStateOf(produkt.wartoscNetto)}
-                val newWartoscBrutto = remember { mutableStateOf(produkt.wartoscBrutto)}
-                val newStawkaVat = remember { mutableStateOf(produkt.stawkaVat)}
+            navigationIcon = {
+                if (isEditing) {
+                    IconButton(onClick = {
+                        isEditing = false
+                        viewModel.editingFailed()
+                    }) {
+                        Icon(Icons.Default.Close, contentDescription = "Back")
+                    }
+                } else {
+                    IconButton(onClick = {
+                        leaveDetailsScreen()
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
 
-                DefaultAddItemDialog(
-                    title = "Edytuj Produkt",
-                    fields = listOf(
-                        "Nazwa" to newNazwaProduktu,
-                        "Jednostka Miary" to newJednostkaMiary,
-                        "Ilosc" to newIlosc,
-                        "Cena Netto" to newCenaNetto,
-                        "Wartosc Netto" to newWartoscNetto,
-                        "Wartosc Brutto" to newWartoscBrutto,
-                        "Stawka VAT" to newStawkaVat
-                    ),
-                    onBuildItem = {
-                        ProduktFaktura(
-                            fakturaId = faktura.id,
-                            nazwaProduktu = newNazwaProduktu.value,
-                            jednostkaMiary = newJednostkaMiary.value,
-                            ilosc = newIlosc.value,
-                            cenaNetto = newCenaNetto.value,
-                            wartoscNetto = newWartoscNetto.value,
-                            wartoscBrutto = newWartoscBrutto.value,
-                            stawkaVat = newStawkaVat.value,
-                        )
-                    },
-                    onAction = onEdit,
-                    onDismiss = onDismiss
+            },
+            actions = {
+                if (isEditing) {
+                    IconButton(onClick = {
+                        isEditing = false
+                        viewModel.editingSuccess()
+                    }) {
+                        Icon(Icons.Default.Check, contentDescription = "Save")
+                    }
+                } else {
+                    IconButton(onClick = {
+                        isEditing = true
+                    }) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                    }
+                }
+            },
+            scrollBehavior = scrollBehavior,
+        )
+    },
+    ) { innerPadding ->
+        LazyColumn (modifier = Modifier
+            .padding(innerPadding)
+            .padding(horizontal = 8.dp)) {
+            item {
+                Text(
+                    text = "Faktura",
+                    fontWeight = FontWeight.Bold
                 )
             }
-        )
+
+            item {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                )
+            }
+
+            item {
+                if (isEditing) {
+                    val newTyp = remember { mutableStateOf(editedFaktura!!.typFaktury) }
+                    val newNumer = remember { mutableStateOf(editedFaktura!!.numerFaktury) }
+                    val newDataWystawienia =
+                        remember { mutableStateOf(convertDateToString(editedFaktura!!.dataWystawienia!!)) }
+                    val newDataSprzedazy =
+                        remember { mutableStateOf(convertDateToString(editedFaktura!!.dataSprzedazy!!)) }
+                    val newMiejsceWystawienia = remember { mutableStateOf(editedFaktura!!.miejsceWystawienia) }
+                    InvoiceForm(
+                        modifier = Modifier,
+                        fields = listOf(
+                            "Typ" to newTyp,
+                            "Numer" to newNumer,
+                            "Data wystawienia" to newDataWystawienia,
+                            "Data sprzedaży" to newDataSprzedazy,
+                            "Miejsce wystawienia" to newMiejsceWystawienia
+                        ),
+                        showDatePickerWystawienia = {
+                            datePickerTarget = DatePickerTarget.WYSTAWIENIA
+                            showDatePicker = true
+                        },
+                        showDatePickerSprzedazy = {
+                            datePickerTarget = DatePickerTarget.SPRZEDAZY
+                            showDatePicker = true
+                        },
+                        onEdit = {
+                            viewModel.updateEditedFakturaTemp(
+                                faktura = Faktura(
+                                    id = faktura.id,
+                                    uzytkownikId = editedFaktura!!.uzytkownikId,
+                                    odbiorcaId = editedFaktura!!.odbiorcaId,
+                                    sprzedawcaId = editedFaktura!!.sprzedawcaId,
+                                    typFaktury = newTyp.toString(),
+                                    numerFaktury = newNumer.toString(),
+                                    dataWystawienia = convertStringToDate(newDataWystawienia.toString()),
+                                    dataSprzedazy = convertStringToDate(newDataSprzedazy.toString()),
+                                    miejsceWystawienia = newMiejsceWystawienia.toString(),
+                                    razemNetto = editedFaktura!!.razemNetto,
+                                    razemVAT = editedFaktura!!.razemVAT,
+                                    razemBrutto = editedFaktura!!.razemBrutto,
+                                    doZaplaty = editedFaktura!!.doZaplaty,
+                                    waluta = editedFaktura!!.waluta,
+                                    formaPlatnosci = editedFaktura!!.formaPlatnosci
+                                ),
+                                callback = {}
+                            )
+                        }
+                    )
+                } else {
+                    InvoiceReadOnly(
+                        modifier = Modifier,
+                        fields = listOf(
+                            faktura.typFaktury,
+                            faktura.numerFaktury,
+                            convertDateToString(faktura.dataWystawienia!!),
+                            convertDateToString(faktura.dataSprzedazy!!),
+                            faktura.miejsceWystawienia
+                        )
+                    )
+                }
+
+            }
+
+            item {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                )
+            }
+
+            item {
+                Text(
+                    text = "Sprzedawca",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+
+                if (isEditing) {
+                    val newNazwa = remember { mutableStateOf(editedSprzedawca!!.nazwa) }
+                    val newNIP = remember { mutableStateOf(editedSprzedawca!!.nip) }
+                    val newAdres = remember { mutableStateOf(editedSprzedawca!!.adres) }
+                    val newKodPocztowy = remember { mutableStateOf(editedSprzedawca!!.kodPocztowy) }
+                    val newMiejscowosc = remember { mutableStateOf(editedSprzedawca!!.miejscowosc) }
+                    val newKraj = remember { mutableStateOf(editedSprzedawca!!.kraj) }
+                    val newOpis = remember { mutableStateOf(editedSprzedawca!!.opis) }
+                    val newEmail = remember { mutableStateOf(editedSprzedawca!!.email) }
+                    val newTelefon = remember { mutableStateOf(editedSprzedawca!!.telefon) }
+                    SprzedawcaForm(
+                        modifier = Modifier,
+                        fields = listOf(
+                            "Nazwa firmy" to newNazwa,
+                            "NIP" to newNIP,
+                            "Adres" to newAdres,
+                            "Kod pocztowy" to newKodPocztowy,
+                            "Miejscowość" to newMiejscowosc,
+                            "Kraj" to newKraj,
+                            "Opis" to newOpis,
+                            "E-mail" to newEmail,
+                            "Telefon" to newTelefon,
+                        ),
+                        onEdit = {
+                            viewModel.editEditedSprzedawca(
+                                Sprzedawca(
+                                    id = editedSprzedawca!!.id,
+                                    nazwa = newNazwa.toString(),
+                                    nip = newNIP.toString(),
+                                    adres = newAdres.toString(),
+                                    kodPocztowy = newKodPocztowy.toString(),
+                                    miejscowosc = newMiejscowosc.toString(),
+                                    kraj = newKraj.toString(),
+                                    opis = newOpis.toString(),
+                                    email = newEmail.toString(),
+                                    telefon = newTelefon.toString()
+                                )
+                            )
+                        }
+                    )
+                } else {
+                    SprzedawcaReadOnly(
+                        modifier = Modifier,
+                        fields = listOf(
+                            actualSprzedawca!!.nazwa,
+                            actualSprzedawca!!.nip,
+                            actualSprzedawca!!.adres,
+                            actualSprzedawca!!.kodPocztowy,
+                            actualSprzedawca!!.miejscowosc,
+                            actualSprzedawca!!.kraj,
+                            actualSprzedawca!!.opis,
+                            actualSprzedawca!!.email,
+                            actualSprzedawca!!.telefon,
+                        )
+                    )
+                }
+            }
+
+            item {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                )
+            }
+
+            item {
+                Text(
+                    text = "Nabywca",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+                if (isEditing) {
+                    val newNazwa = remember { mutableStateOf(editedOdbiorca!!.nazwa) }
+                    val newNIP = remember { mutableStateOf(editedOdbiorca!!.nip) }
+                    val newAdres = remember { mutableStateOf(editedOdbiorca!!.adres) }
+                    val newKodPocztowy = remember { mutableStateOf(editedOdbiorca!!.kodPocztowy) }
+                    val newMiejscowosc = remember { mutableStateOf(editedOdbiorca!!.miejscowosc) }
+                    val newKraj = remember { mutableStateOf(editedOdbiorca!!.kraj) }
+                    val newOpis = remember { mutableStateOf(editedOdbiorca!!.opis) }
+                    val newEmail = remember { mutableStateOf(editedOdbiorca!!.email) }
+                    val newTelefon = remember { mutableStateOf(editedOdbiorca!!.telefon) }
+                    NabywcaForm(
+                        modifier = Modifier,
+                        fields = listOf(
+                            "Nazwa firmy" to newNazwa,
+                            "NIP" to newNIP,
+                            "Adres" to newAdres,
+                            "Kod pocztowy" to newKodPocztowy,
+                            "Miejscowość" to newMiejscowosc,
+                            "Kraj" to newKraj,
+                            "Opis" to newOpis,
+                            "E-mail" to newEmail,
+                            "Telefon" to newTelefon,
+                        ),
+                        onEdit = {
+                            viewModel.editEditedOdbiorca(
+                                Odbiorca(
+                                    id = editedOdbiorca!!.id,
+                                    nazwa = newNazwa.toString(),
+                                    nip = newNIP.toString(),
+                                    adres = newAdres.toString(),
+                                    kodPocztowy = newKodPocztowy.toString(),
+                                    miejscowosc = newMiejscowosc.toString(),
+                                    kraj = newKraj.toString(),
+                                    opis = newOpis.toString(),
+                                    email = newEmail.toString(),
+                                    telefon = newTelefon.toString()
+                                )
+                            )
+                        }
+                    )
+                } else {
+                    NabywcaReadOnly(
+                        modifier = Modifier,
+                        fields = listOf(
+                            actualOdbiorca!!.nazwa,
+                            actualOdbiorca!!.nip,
+                            actualOdbiorca!!.adres,
+                            actualOdbiorca!!.kodPocztowy,
+                            actualOdbiorca!!.miejscowosc,
+                            actualOdbiorca!!.kraj,
+                            actualOdbiorca!!.opis,
+                            actualOdbiorca!!.email,
+                            actualOdbiorca!!.telefon,
+                        )
+                    )
+                }
+            }
+
+            item {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                )
+            }
+
+            item {
+                Text(
+                    text = "Produkty",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            }
+
+            if (isEditing) {
+                itemsIndexed(
+                    items = editedProdukty,
+                    key = { _, item -> item.id }
+                ) { index, product ->
+
+                val nazwaProduktu = remember { mutableStateOf(product.nazwaProduktu) }
+                    val ilosc = remember { mutableStateOf(product.ilosc) }
+                    val jednostkaMiary = remember { mutableStateOf(product.jednostkaMiary) }
+                    val cenaNetto = remember { mutableStateOf(product.cenaNetto) }
+                    val stawkaVat = remember { mutableStateOf(product.stawkaVat) }
+                    val wartoscNetto = remember { mutableStateOf(product.wartoscNetto) }
+                    val wartoscBrutto = remember { mutableStateOf(product.wartoscBrutto) }
+                    val rabat = remember { mutableStateOf(product.rabat) }
+                    val pkwiu = remember { mutableStateOf(product.pkwiu) }
+
+                    ProductForm(
+                        modifier = Modifier,
+                        fields = listOf(
+                            "Nazwa" to nazwaProduktu,
+                            "Ilość" to ilosc,
+                            "Jednostka" to jednostkaMiary,
+                            "Cena netto" to cenaNetto,
+                            "Vat %" to stawkaVat,
+                            "Wartość netto" to wartoscNetto,
+                            "Wartość brutto" to wartoscBrutto,
+                            "Rabat %" to rabat,
+                            "PKWiU" to pkwiu,
+                        ),
+                        onDelete = {
+                            viewModel.deleteEditedProduct(product)
+                        },
+                        onEdit = {
+                            viewModel.updateEditedProductTemp(
+                                index,
+                                product,
+                                callback = {}
+                            )
+                        }
+                    )
+
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                    )
+                }
+
+                item {
+                    Row(modifier = Modifier.padding(top = 12.dp)) {
+                        CustomOutlinedButton(
+                            title = "Dodaj",
+                            onClick = {
+                                viewModel.addOneProductToEdited(
+                                    nazwaProduktu = "Nowy produkt",
+                                    ilosc = "1"
+                                )
+                            },
+                            icon = painterResource(R.drawable.baseline_add_24),
+                            height = 48,
+                            modifier = Modifier.weight(1f),
+                            textColor = Color.Blue,
+                            outlineColor = Color.Blue
+                        )
+                    }
+                }
+            } else {
+                items(
+                    items = actualProdukty,
+                    key = { it.id }
+                ) { product ->
+                    ProductReadOnly(
+                        modifier = Modifier,
+                        fields = listOf(
+                            product.nazwaProduktu,
+                            product.ilosc,
+                            product.jednostkaMiary,
+                            product.cenaNetto,
+                            product.stawkaVat,
+                            product.wartoscNetto,
+                            product.wartoscBrutto,
+                            product.rabat,
+                            product.pkwiu,
+                        ),
+                    )
+                }
+            }
+
+        }
+
+        if (showDatePicker) {
+            DatePickerModal(
+                onDateSelected = { it ->
+                    if (it != null) {
+                        if (datePickerTarget == DatePickerTarget.WYSTAWIENIA) {
+                            customDate = convertMillisToString(it)
+                        } else {
+                            customDate = convertMillisToString(it)
+                        }
+                        Log.i("Dolan", "UPDATED RAPORT $customDate")
+
+                    }
+                },
+                onDismiss = { showDatePicker = false }
+            )
+        }
     }
 }
 
-@Composable
-fun FakturaProductEditor(produkt: ProduktFaktura, onEdit: (ProduktFaktura) -> Unit) {
-    var name by remember { mutableStateOf(produkt.nazwaProduktu) }
-    var qty by remember { mutableStateOf(produkt.ilosc) }
-
-    Column(modifier = Modifier.padding(8.dp)) {
-        OutlinedTextField(
-            value = name,
-            onValueChange = {
-                name = it
-                onEdit(produkt.copy(nazwaProduktu = it))
-            },
-            label = { Text("Nazwa") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = qty.toString(),
-            onValueChange = {
-                qty = it
-                onEdit(produkt.copy(ilosc = it))
-            },
-            label = { Text("Ilość") },
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-fun FakturaProductReadonly(produkt: ProduktFaktura) {
-    Column(modifier = Modifier.padding(8.dp)) {
-        FakturaDetailsRow("Nazwa", produkt.nazwaProduktu)
-        FakturaDetailsRow("Jednostka miary", produkt.jednostkaMiary)
-        FakturaDetailsRow("Ilość", produkt.ilosc)
-        FakturaDetailsRow("Cena Netto", produkt.cenaNetto)
-        FakturaDetailsRow("Wartosc Netto", produkt.wartoscNetto)
-        FakturaDetailsRow("Wartosc Brutto", produkt.wartoscBrutto)
-        FakturaDetailsRow("Stawka VAT", produkt.stawkaVat)
-    }
-}
-
-@Composable
-fun FakturaDetailsRow(label: String, value: String?) {
-    val newValue = value ?: "null"
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = label, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        Text(text = newValue, fontSize = 16.sp)
-    }
+enum class DatePickerTarget {
+    WYSTAWIENIA,
+    SPRZEDAZY
 }

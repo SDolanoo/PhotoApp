@@ -1,15 +1,16 @@
-package com.example.photoapp.features.faktura.data
+package com.example.photoapp.features.faktura.data.faktura
 
 import android.util.Log
 import com.example.photoapp.core.database.data.FakturaDTO
-import com.example.photoapp.core.database.data.entities.Odbiorca
-import com.example.photoapp.core.database.data.entities.Sprzedawca
-import com.example.photoapp.core.database.data.repos.OdbiorcaRepository
-import com.example.photoapp.core.database.data.repos.SprzedawcaRepository
+import com.example.photoapp.features.faktura.data.odbiorca.OdbiorcaRepository
+import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepository
 import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.core.utils.jsonTransformer
+import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
+import com.example.photoapp.features.faktura.data.faktura.ProduktFakturaDao
+import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import kotlinx.serialization.json.Json
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
 class FakturaRepository @Inject constructor(
@@ -40,7 +41,7 @@ class FakturaRepository @Inject constructor(
     }
 
     fun updateProdukt(produkt: ProduktFaktura) {
-        produktFakturaDao.delete(produkt)
+        produktFakturaDao.update(produkt)
     }
 
     fun deleteFaktura(faktura: Faktura) {
@@ -75,11 +76,10 @@ class FakturaRepository @Inject constructor(
             uzytkownikId = 1,
             odbiorcaId = odbiorca.id,
             sprzedawcaId = sprzedawca.id,
+            typFaktury = fakturaDTO.typFaktury,
             numerFaktury = fakturaDTO.numerFaktury,
-            status = fakturaDTO.status,
             dataWystawienia = convertStringToDate(fakturaDTO.dataWystawienia),
             dataSprzedazy = convertStringToDate(fakturaDTO.dataSprzedazy),
-            terminPlatnosci = convertStringToDate(fakturaDTO.terminPlatnosci),
             razemNetto = fakturaDTO.razemNetto,
             razemVAT = fakturaDTO.razemVAT ?: "null",
             razemBrutto = fakturaDTO.razemBrutto,
@@ -94,12 +94,14 @@ class FakturaRepository @Inject constructor(
             val produkt = ProduktFaktura(
                 fakturaId = fakturaId,
                 nazwaProduktu = produktDTO.nazwaProduktu,
-                jednostkaMiary = produktDTO.jednostkaMiary,
                 ilosc = produktDTO.ilosc,
+                jednostkaMiary = produktDTO.jednostkaMiary,
                 cenaNetto = produktDTO.cenaNetto,
+                stawkaVat = produktDTO.stawkaVat,
                 wartoscNetto = produktDTO.wartoscNetto,
                 wartoscBrutto = produktDTO.wartoscBrutto,
-                stawkaVat = produktDTO.stawkaVat
+                rabat = produktDTO.rabat,
+                pkwiu = produktDTO.pkwiu,
             )
             insertProdukt(produkt)
         }

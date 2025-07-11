@@ -1,4 +1,4 @@
-package com.example.photoapp.features.faktura.data
+package com.example.photoapp.features.faktura.data.faktura
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
