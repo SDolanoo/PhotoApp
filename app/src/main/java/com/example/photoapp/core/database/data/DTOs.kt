@@ -4,21 +4,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ProduktParagonDTO(
-    @SerialName("nazwaProduktu") val nazwaProduktu: String = "none",
-    @SerialName("cenaSuma") val cenaSuma: String = "999.9",
-    @SerialName("ilosc") val ilosc: String = "1"
-)
-
-@Serializable
-data class ParagonDTO(
-    @SerialName("dataZakupu") val dataZakupu: String = "1999-01-01",
-    @SerialName("nazwaSklepu") val nazwaSklepu: String = "none",
-    @SerialName("kwotaCalkowita") val kwotaCalkowita: String = "999.9",
-    val produkty: List<ProduktParagonDTO>
-)
-
-@Serializable
 data class ProduktFakturaDTO(
     @SerialName("nazwaProduktu") val nazwaProduktu: String = "none",
     @SerialName("ilosc") val ilosc: String = "999",
@@ -74,21 +59,4 @@ data class SprzedawcaDTO(
     @SerialName("opis") val opis: String = "",
     @SerialName("email") val email: String = "",
     @SerialName("telefon") val telefon: String = ""
-)
-
-@Serializable
-data class ProduktRaportFiskalnyDTO(
-    @SerialName("nrPLU") val nrPLU: String = "none",
-    @SerialName("ilosc") val ilosc: String = "none"
-)
-
-@Serializable
-data class RaportFiskalnyDTO(
-    @SerialName("dataDodania") val dataDodania: String = "1999-01-01",
-    val produkty: List<ProduktRaportFiskalnyDTO>
-)
-
-@Serializable
-data class OnlyProduktyRaportFiskalnyDTO(
-    val produkty: List<ProduktRaportFiskalnyDTO>
 )

@@ -1,6 +1,5 @@
 package com.example.photoapp.core.database.data.dao
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.photoapp.core.database.data.entities.Uzytkownik

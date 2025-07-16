@@ -53,7 +53,6 @@ import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import com.example.photoapp.features.faktura.ui.DatePickerTarget
-import com.example.photoapp.features.faktura.ui.FakeData.Invoice
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)

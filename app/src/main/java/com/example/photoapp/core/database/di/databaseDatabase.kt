@@ -6,26 +6,16 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.example.photoapp.archive.features.paragon.data.Paragon
-import com.example.photoapp.archive.features.paragon.data.ParagonDao
-import com.example.photoapp.archive.features.paragon.data.ProduktParagon
-import com.example.photoapp.archive.features.paragon.data.ProduktParagonDao
-import com.example.photoapp.archive.features.raportFiskalny.data.ProduktRaportFiskalny
-import com.example.photoapp.archive.features.raportFiskalny.data.ProduktRaportFiskalnyDao
-import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalny
-import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalnyDao
-import com.example.photoapp.core.database.data.dao.KategoriaDao
 import com.example.photoapp.features.faktura.data.odbiorca.OdbiorcaDao
 import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaDao
 import com.example.photoapp.core.database.data.dao.UzytkownikDao
-import com.example.photoapp.core.database.data.entities.Kategoria
-import com.example.photoapp.core.database.data.entities.Odbiorca
-import com.example.photoapp.core.database.data.entities.Sprzedawca
 import com.example.photoapp.core.database.data.entities.Uzytkownik
-import com.example.photoapp.features.faktura.data.Faktura
+import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaDao
-import com.example.photoapp.features.faktura.data.ProduktFaktura
+import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.data.faktura.ProduktFakturaDao
+import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
+import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,9 +26,7 @@ import javax.inject.Singleton
 
 @Database(
     entities = [
-        Uzytkownik::class, Odbiorca::class, Sprzedawca::class, Paragon::class,
-        ProduktParagon::class, Faktura::class, ProduktFaktura::class, Kategoria::class,
-        RaportFiskalny::class, ProduktRaportFiskalny::class
+        Uzytkownik::class, Odbiorca::class, Sprzedawca::class, Faktura::class, ProduktFaktura::class
     ],
     version = 1
 )
@@ -49,11 +37,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun odbiorcaDao(): OdbiorcaDao
     abstract fun fakturaDao(): FakturaDao
     abstract fun produktFakturaDao(): ProduktFakturaDao
-    abstract fun paragonDao(): ParagonDao
-    abstract fun produktParagonDao(): ProduktParagonDao
-    abstract fun kategoriaDao(): KategoriaDao
-    abstract fun raportFiskalnyDao(): RaportFiskalnyDao
-    abstract fun produktRaportFiskalnyDao(): ProduktRaportFiskalnyDao
 
     // Dodaj inne DAO według potrzeby
 
@@ -90,18 +73,8 @@ object DatabaseModule {
     }
 
     @Provides
-    fun provideParagonDao(appDatabase: AppDatabase): ParagonDao {
-        return appDatabase.paragonDao()
-    }
-
-    @Provides
     fun provideFakturaDao(appDatabase: AppDatabase): FakturaDao {
         return appDatabase.fakturaDao()
-    }
-
-    @Provides
-    fun provideProduktParagonDao(appDatabase: AppDatabase): ProduktParagonDao {
-        return appDatabase.produktParagonDao()
     }
 
     @Provides
@@ -123,20 +96,4 @@ object DatabaseModule {
     fun provideUzytkownikDao(appDatabase: AppDatabase): UzytkownikDao {
         return appDatabase.uzytkownikDao()
     }
-
-    @Provides
-    fun provideKategoriaDao(appDatabase: AppDatabase): KategoriaDao {
-        return appDatabase.kategoriaDao()
-    }
-
-    @Provides
-    fun provideRaportFiskalnyDao(appDatabase: AppDatabase): RaportFiskalnyDao {
-        return appDatabase.raportFiskalnyDao()
-    }
-
-    @Provides
-    fun provideProduktRaportFiskalnyDao(appDatabase: AppDatabase): ProduktRaportFiskalnyDao {
-        return appDatabase.produktRaportFiskalnyDao()
-    }
-
 }

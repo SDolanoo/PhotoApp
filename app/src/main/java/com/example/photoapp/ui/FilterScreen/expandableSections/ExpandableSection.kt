@@ -21,8 +21,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.photoapp.R
-import java.nio.file.WatchEvent
 import androidx.compose.ui.unit.dp
 
 

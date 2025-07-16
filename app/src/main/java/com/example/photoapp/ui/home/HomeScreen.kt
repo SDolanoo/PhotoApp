@@ -55,10 +55,8 @@ import com.example.photoapp.R
 fun HomeScreen(
     openDrawer: () -> Unit,
     navigateToCameraView: (String)-> Unit,
-    navigateToParagonScreen: () -> Unit,
     navigateToFakturaScreen: () -> Unit,
     navigateToExcelPacker: () -> Unit,
-    navigateToRaportFiskalnyScreen: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     var expanded by remember { mutableStateOf(false) }
@@ -102,7 +100,6 @@ fun HomeScreen(
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 expanded = !expanded
-//                navigateToCameraView()
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
@@ -112,10 +109,8 @@ fun HomeScreen(
 
             ScrollContent(
                 innerPadding,
-                navigateToParagonScreen,
                 navigateToFakturaScreen,
-                navigateToExcelPacker,
-                navigateToRaportFiskalnyScreen)
+                navigateToExcelPacker)
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
@@ -134,15 +129,13 @@ fun HomeScreen(
             }
         }
     }
-//}
+
 
 @Composable
 fun ScrollContent(
     innerPadding: PaddingValues,
-    navigateToParagonScreen: () -> Unit,
     navigateToFakturaScreen: () -> Unit,
     navigateToExcelPacker: () -> Unit,
-    navigateToRaportFiskalnyScreen: () -> Unit,
     ) {
 
         LazyVerticalStaggeredGrid(
@@ -161,10 +154,8 @@ fun ScrollContent(
                 }
                 item {
                     MainCards(
-                        navigateToParagonScreen = navigateToParagonScreen,
                         navigateToFakturaScreen = navigateToFakturaScreen,
                         navigateToExcelPacker = navigateToExcelPacker,
-                        navigateToRaportFiskalnyScreen = navigateToRaportFiskalnyScreen,
                     )
                 }
             }
@@ -201,38 +192,11 @@ fun WelcomeCard() {
 
 @Composable
 fun MainCards(
-    navigateToParagonScreen: () -> Unit,
     navigateToFakturaScreen: () -> Unit,
-    navigateToExcelPacker: () -> Unit,
-    navigateToRaportFiskalnyScreen: () -> Unit
+    navigateToExcelPacker: () -> Unit
     ) {
     Column {
         Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
-            // [START] PARAGONY
-            ElevatedCard(
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 6.dp
-                ),
-                modifier = Modifier
-                    .size(width = 180.dp, height = 240.dp)
-                    .padding(end = 5.dp),
-                onClick = navigateToParagonScreen
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(
-                        painter = painterResource(id = R.drawable.paragon),
-                        contentDescription = "android image",
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = "Paragony",
-                        modifier = Modifier
-                            .padding(8.dp),
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
-            // [END] PARAGONY
 
             // [START} FAKTURY
             ElevatedCard(
@@ -311,34 +275,7 @@ fun MainCards(
                     )
                 }
             }
-            // [END] EXCEL PACKER
         }
-        // [START] RAPORT FISKALNY
-        Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
-            ElevatedCard(
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 6.dp
-                ),
-                modifier = Modifier
-                    .size(width = 180.dp, height = 240.dp)
-                    .padding(end = 5.dp),
-                onClick = navigateToRaportFiskalnyScreen
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(
-                        painter = painterResource(id = R.drawable.raport_fiskalny_obraz),
-                        contentDescription = "android image",
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = "Raport fiskalny",
-                        modifier = Modifier
-                            .padding(8.dp),
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
-            // [END] RAPORT FISKALNY
-        }
+        // [END] EXCEL PACKER
     }
 }

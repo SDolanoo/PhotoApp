@@ -7,7 +7,6 @@ import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepositor
 import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.core.utils.jsonTransformer
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
-import com.example.photoapp.features.faktura.data.faktura.ProduktFakturaDao
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import kotlinx.serialization.json.Json
 import java.util.Date
@@ -85,7 +84,8 @@ class FakturaRepository @Inject constructor(
             razemBrutto = fakturaDTO.razemBrutto,
             doZaplaty = fakturaDTO.doZaplaty,
             waluta = fakturaDTO.waluta,
-            formaPlatnosci = fakturaDTO.formaPlatnosci
+            formaPlatnosci = fakturaDTO.formaPlatnosci,
+            miejsceWystawienia = ""
         )
 
         val fakturaId = fakturaDao.insert(faktura)

@@ -61,32 +61,15 @@ fun HomeDrawer(
 private fun PhotoAppLogo(modifier: Modifier = Modifier) {
     Row(modifier = modifier) {
         Icon(
-//            painterResource(R.drawable.ic_jetnews_logo), change for photoapp logo
             painterResource(R.drawable.ic_launcher_foreground),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary
         )
         Spacer(Modifier.width(8.dp))
         Icon(
-//            painter = painterResource(R.drawable.ic_jetnews_wordmark),
             painter = painterResource(R.drawable.ic_launcher_foreground),
             contentDescription = stringResource(R.string.app_name),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
-//
-//@Preview("Drawer contents")
-//@Preview("Drawer contents (dark)", uiMode = UI_MODE_NIGHT_YES)
-//@Composable
-//fun PreviewAppDrawer() {
-//    JetnewsTheme {
-//        AppDrawer(
-//            drawerState = rememberDrawerState(initialValue = DrawerValue.Open),
-//            currentRoute = PhotoAppDestinations.HOME_ROUTE,
-//            navigateToHome = {},
-//            navigateToInterests = {},
-//            closeDrawer = { }
-//        )
-//    }
-//}

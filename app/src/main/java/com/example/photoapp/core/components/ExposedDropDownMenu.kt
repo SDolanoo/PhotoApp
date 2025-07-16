@@ -1,6 +1,5 @@
 package com.example.photoapp.core.components
 
-import android.R.attr.label
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api

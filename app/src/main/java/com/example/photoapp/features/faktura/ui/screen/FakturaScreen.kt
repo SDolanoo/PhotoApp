@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.photoapp.core.navigation.PhotoAppDestinations
-import com.example.photoapp.features.faktura.data.Faktura
+import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.ui.FilterScreen.FilterController
 import com.example.photoapp.ui.FilterScreen.FilterResult
 import com.example.photoapp.ui.FilterScreen.FilterScreenContent

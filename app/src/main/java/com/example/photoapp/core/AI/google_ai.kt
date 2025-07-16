@@ -18,13 +18,7 @@ fun chatWithGemini(
     if (bitmap != null) {
         CoroutineScope(Dispatchers.IO).launch {
             val systemInstructionText = when (documentType) {
-                DocumentType.PARAGON -> "przeczytaj zdjęcie paragonu i uzyskaj z niego nastepujące informacje. Całość napisz w podanym formacie json zmieniając tylko value, key muszą zostać nie zmienione. Napisz tylko json w podanym niżej formacie. Jeśli jest informacja w nawiasie, zastosuj się do tej informacji, nie wstawiając jej w odpowiedź. Jeśli w jakiejkolwiek nazwie jest 'backslash' nie pisz go. Jeśli nie udało się znaleźć informacji, napisz 'null'. Wszystkie dane, zawsze muszą mieć formę string. Dane MUSZĄ mieć następujące nazwy:{ \"dataZakupu\": \"dataZakupu - format \"yyyy-MM-dd\"\",  \"nazwaSklepu\": \"nazwaSklepu\", \"kwotaCalkowita\": \"kwotaCalkowita\",  \"produkty\": [    {     \"nazwaProduktu\": \"nazwaProduktu\",    \"cenaSuma\": \"cenaSuma\",      \"ilosc\":  \"ilosc\"(jeśli ilość nie jest integerem napisz tylko float np. 0.55)    }  ]}"
-
                 DocumentType.FAKTURA -> "przeczytaj zdjęcie faktury i uzyskaj z niego nastepujące informacje. Całość napisz w podanym formacie json zmieniając tylko value, key muszą zostać nie zmienione. Napisz tylko json w podanym niżej formacie. Jeśli jest informacja w nawiasie, zastosuj się do tej informacji, nie wstawiając jej w odpowiedź. Jeśli nie udało się znaleźć informacji, napisz 'null'. Dane MUSZĄ mieć następujące nazwy:{ \"odbiorca\": { \"nazwa\":\"nazwa\", \"nip\":\"nip\", \"adres\":\"adres\"},  \"sprzedawca\":{ \"nazwa\":\"nazwa\", \"nip\":\"nip\", \"adres\":\"adres\"},\"numerFaktury\": \"numerFaktury\", \"dataWystawienia\": \"dataWystawienia\",  \"dataSprzedazy\": \"dataSprzedazy\", \"terminPlatnosci\": \"terminPlatnosci\", \"razemNetto\": \"razemNetto\",  \"razemVAT\": \"razemVAT\",  \"razemBrutto\": \"razemBrutto\", \"doZaplaty\": \"doZaplaty\", \"waluta\": \"waluta\",  \"formaPlatnosci\": \"formaPlatnosci\",   \"produkty\": [    {     \"nazwaProduktu\": \"nazwaProduktu\",    \"jednostkaMiary\": \"jednostkaMiary\" (zobacz czy nie istnieje skrót 'j. m.' zapisz wartość jako value jednostkiMiary. key jednostkaMiary bez zmian),      \"ilosc\":  \"ilosc\"(jeśli ilość nie jest integerem napisz tylko float np. 0.55, zawsze w String),  \"wartoscNetto\": \"wartoscNetto\",  \"stawkaVat\": \"stawkaVat\", \"wartoscBrutto\": \"wartoscBrutto\" }  ]}"
-
-                DocumentType.RAPORT_FISKALNY -> "przeczytaj zdjęcie raportu fiskalnego i uzyskaj z niego następujące informacje. Całość napisz w podanym formacie JSON zmieniając tylko value, key muszą zostać niezmienione. Jeśli jest informacja w nawiasie, zastosuj się do tej informacji, nie wstawiając jej w odpowiedź. Jeśli nie udało się znaleźć informacji, napisz 'null'. Wszystkie dane, zawsze muszą mieć formę string. Dane MUSZĄ mieć następujące nazwy:{ \\\"dataDodania\\\": \\\"dataDodania - format \\\"yyyy-MM-dd\\\"\\\", \\\"produkty\\\": [ { \\\"nrPLU\\\": \\\"nrPLU\\\"(nrPLU to numer produktu w kwadratowym nawiasie, numer musi być bez nawiasów, sam numer), \\\"ilosc\\\": \\\"ilosc\\\"(jeśli ilość nie jest integerem napisz tylko float np. 0.55) } ]}"
-
-                DocumentType.PRODUCTS_RAPORT_FISKALNY -> "przeczytaj zdjęcie raportu fiskalnego i uzyskaj z niego tylko listę produktów. Całość napisz w podanym formacie JSON zmieniając tylko value, key muszą zostać niezmienione. Napisz tylko JSON w podanym niżej formacie. Jeśli nie udało się znaleźć informacji, napisz 'null'. Wszystkie dane, zawsze muszą mieć formę string. Dane MUSZĄ mieć następujące nazwy: { \\\"produkty\\\": [ { \\\"nrPLU\\\": \\\"nrPLU\\\"(nrPLU to numer produktu w kwadratowym nawiasie, numer musi być bez nawiasów, sam numer), \\\"ilosc\\\": \\\"ilosc\\\"(jeśli ilość nie jest integerem napisz tylko float np. 0.55) } ]}\""
             }
 
             val model = GenerativeModel(
@@ -62,5 +56,5 @@ fun chatWithGemini(
 }
 
 enum class DocumentType {
-    PARAGON, FAKTURA, RAPORT_FISKALNY, PRODUCTS_RAPORT_FISKALNY
+    FAKTURA
 }

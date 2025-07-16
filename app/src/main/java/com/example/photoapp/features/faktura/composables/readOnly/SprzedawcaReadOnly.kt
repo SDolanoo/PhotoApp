@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,16 +20,12 @@ import androidx.compose.ui.unit.dp
 import com.example.photoapp.R
 import com.example.photoapp.features.faktura.composables.common.CustomOutlinedButton
 import com.example.photoapp.features.faktura.composables.common.CustomText
-import com.example.photoapp.features.faktura.composables.common.CustomTextField
-import com.example.photoapp.features.faktura.composables.common.CustomTextFieldWithButton
 
 @Composable
 fun SprzedawcaReadOnly(
     modifier: Modifier,
     fields: List<String>
 ) {
-
-    var example: MutableState<String> = remember { mutableStateOf("") }
     val ROW_HEIGHT = 64.dp
 
     var state by remember { mutableStateOf("less") } // or more

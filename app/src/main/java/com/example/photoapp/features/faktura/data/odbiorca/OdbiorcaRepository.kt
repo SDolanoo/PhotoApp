@@ -1,7 +1,6 @@
 package com.example.photoapp.features.faktura.data.odbiorca
 
 import android.util.Log
-import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import javax.inject.Inject
 
 class OdbiorcaRepository @Inject constructor(

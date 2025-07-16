@@ -35,20 +35,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
-import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalny
 
 @Composable
 fun AcceptPhoto(
     photoUri: Uri?,
     bitmapPhoto: Bitmap?,
     addingPhotoFor: String?,
-    raportFiskalnyViewedNow: RaportFiskalny?,
     modifier: Modifier = Modifier.fillMaxSize(),
     contentDescription: String?,
     backToCameraView: () -> Unit,
     backToHome: () -> Unit,
     geminiKey: String,
-    navigateToRFDetailsScreen: (RaportFiskalny) -> Unit,
     acceptanceController: AcceptanceController = hiltViewModel()
     ) {
     var isLoading by remember { mutableStateOf(false) }
@@ -114,9 +111,8 @@ fun AcceptPhoto(
         showDialog(
             dialogData,
             acceptanceController,
-            addingPhotoFor, raportFiskalnyViewedNow,
+            addingPhotoFor,
             isPromptSuccess,
-            navigateToRFDetailsScreen = navigateToRFDetailsScreen
         ) {
             showDialog = false
         }
@@ -151,9 +147,7 @@ fun showDialog(
     data: String,
     controller: AcceptanceController,
     addingPhotoFor: String?,
-    raportFiskalnyViewedNow: RaportFiskalny?,
     isPromptSuccess: Boolean,
-    navigateToRFDetailsScreen: (RaportFiskalny) -> Unit,
     onDismiss: () -> Unit,
 ) {
     AlertDialog(
@@ -163,17 +157,8 @@ fun showDialog(
         confirmButton = {
             Button(onClick = {
                 if (isPromptSuccess) {
-                    if (addingPhotoFor == "paragon") {
-                        controller.addRecipe()
-                    } else if (addingPhotoFor == "faktura") {
+                    if (addingPhotoFor == "faktura") {
                         controller.addInvoice()
-                    } else if (addingPhotoFor == "raportFiskalny") {
-                        val raportID = controller.addRaportFiskalny()
-                        val raportById = controller.getRaportByID(raportID)
-                        navigateToRFDetailsScreen(raportById)
-                    } else if (addingPhotoFor == "produktRaportFiskalny") {
-                        controller.addProduktRaportFiskalny(raportFiskalnyViewedNow!!)
-                        navigateToRFDetailsScreen(raportFiskalnyViewedNow)
                     }
                 }
                 onDismiss()

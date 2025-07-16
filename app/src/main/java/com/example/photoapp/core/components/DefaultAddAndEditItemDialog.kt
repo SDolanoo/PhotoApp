@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.photoapp.core.database.data.entities.Kategoria
 
 /**
  * A generic, reusable AlertDialog for adding an item of type T via text-based fields.

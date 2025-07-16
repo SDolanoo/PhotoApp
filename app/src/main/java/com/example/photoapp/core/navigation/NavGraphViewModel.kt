@@ -5,9 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import coil3.Bitmap
 import android.net.Uri
-import com.example.photoapp.archive.features.paragon.data.Paragon
-import com.example.photoapp.archive.features.raportFiskalny.data.RaportFiskalny
-import com.example.photoapp.features.faktura.data.Faktura
+import com.example.photoapp.features.faktura.data.faktura.Faktura
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -24,17 +22,6 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
     private val _addingPhotoFor = MutableLiveData<String>(null)
     val addingPhotoFor: LiveData<String> get() = _addingPhotoFor
 
-    // State for the current paragon viewed
-    private val _paragonViewedNow = MutableLiveData<Paragon?>(null)
-    val paragonViewedNow: LiveData<Paragon?> get() = _paragonViewedNow
-
-    // State for filtered paragons
-    private val _showFilteredParagons = MutableLiveData(false)
-    val showFilteredParagons: LiveData<Boolean> get() = _showFilteredParagons
-
-    private val _paragonFilteredList = MutableLiveData<List<Paragon>>(emptyList())
-    val paragonFilteredList: LiveData<List<Paragon>> get() = _paragonFilteredList
-
     // State for the current faktura viewed
     private val _fakturaViewedNow = MutableLiveData<Faktura?>(null)
     val fakturaViewedNow: LiveData<Faktura?> get() = _fakturaViewedNow
@@ -49,16 +36,6 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
     private val _currentlyShowing = MutableLiveData("paragon")
     val currentlyShowing: LiveData<String> get() = _currentlyShowing
 
-    private val _raportFiskalnyViewedNow = MutableLiveData<RaportFiskalny?>(null)
-    val raportFiskalnyViewedNow: MutableLiveData<RaportFiskalny?> get() = _raportFiskalnyViewedNow
-
-    // State for filtered Raport Fiskalny
-    private val _showFilteredRaportyFiskalne = MutableLiveData(false)
-    val showFilteredRaportyFiskalne: LiveData<Boolean> get() = _showFilteredRaportyFiskalne
-
-    private val _raportFiskalnyFilteredList = MutableLiveData<List<RaportFiskalny>>(emptyList())
-    val raportFiskalnyFilteredList: LiveData<List<RaportFiskalny>> get() = _raportFiskalnyFilteredList
-
     // Functions to update states
     fun setPhotoUri(uri: Uri) {
         _photoUri.postValue(uri)
@@ -72,15 +49,6 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
         _addingPhotoFor.postValue(paragonOrFaktura)
     }
 
-    fun setParagonViewedNow(paragon: Paragon) {
-        _paragonViewedNow.postValue(paragon)
-    }
-
-    fun setFilters(showFilters: Boolean, filteredList: List<Paragon>) {
-        _showFilteredParagons.postValue(showFilters)
-        _paragonFilteredList.postValue(filteredList)
-    }
-
     fun setFakturaViewedNow(faktura: Faktura) {
         _fakturaViewedNow.postValue(faktura)
     }
@@ -88,15 +56,6 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
     fun setFakturyFilters(showFilters: Boolean, filteredList: List<Faktura>) {
         _showFilteredFakturys.postValue(showFilters)
         _fakturaFilteredList.postValue(filteredList)
-    }
-
-    fun setRaportFiskalnyViewedNow(raport: RaportFiskalny) {
-        _raportFiskalnyViewedNow.postValue(raport)
-    }
-
-    fun setRaportFiskalnyFilters(showFilters: Boolean, filteredList: List<RaportFiskalny>) {
-        _showFilteredRaportyFiskalne.postValue(showFilters)
-        _raportFiskalnyFilteredList.postValue(filteredList)
     }
 
     fun setCurrenltyShowing(what: String) {

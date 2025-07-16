@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.photoapp.archive.features.paragon.data.Paragon
+import com.example.photoapp.features.faktura.data.faktura.Faktura
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -66,23 +66,23 @@ fun ExcelPacker(
     navController: NavHostController,
     exportRoomViewModel: ExportRoomViewModel = hiltViewModel(),
 
-    navigateToParagonDetailsScreen: (Paragon) -> Unit,
+    navigateToFakturaDetailsScreen: (Faktura) -> Unit,
     navigateToFiltersScreen: () -> Unit,
-    showFilteredParagons: Boolean,
-    paragonFilteredList: List<Paragon>,
+    showFilteredFaktura: Boolean,
+    fakturaFilteredList: List<Faktura>,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     val coroutineScope = rememberCoroutineScope()
 
     // hello
-    val allParagony by exportRoomViewModel.allParagony.observeAsState(emptyList())
-    Log.i("Dolan", "Showing paragony: $allParagony")
+    val allFaktura by exportRoomViewModel.allFaktura.observeAsState(emptyList())
+    Log.i("Dolan", "Showing paragony: $allFaktura")
 
-    val paragonListToShow = if (showFilteredParagons) {
-        paragonFilteredList
+    val fakturaListToShow = if (showFilteredFaktura) {
+        fakturaFilteredList
     } else {
-        allParagony
+        allFaktura
     }
     // world
 
@@ -98,7 +98,7 @@ fun ExcelPacker(
             coroutineScope.launch {
                 isCircularIndicatorShowing = true
                 delay(3000)
-                exportRoomViewModel.exportToExcel("paragon", paragonListToShow)
+                exportRoomViewModel.exportToExcel("faktura", fakturaListToShow)
                 isCircularIndicatorShowing = false
             }
         } else {
@@ -164,7 +164,7 @@ fun ExcelPacker(
                                 Log.i("Dolan", "Writing to Excel")
                                 isCircularIndicatorShowing = true
                                 delay(3000)
-                                exportRoomViewModel.exportToExcel("paragon", paragonListToShow)
+                                exportRoomViewModel.exportToExcel("faktura", fakturaListToShow)
                             }.invokeOnCompletion {
                                 isCircularIndicatorShowing = false
                             }
@@ -181,7 +181,7 @@ fun ExcelPacker(
                     coroutineScope.launch {
                         isCircularIndicatorShowing = true
                         delay(3000)
-                        exportRoomViewModel.exportToExcel("paragon", paragonListToShow)
+                        exportRoomViewModel.exportToExcel("faktura", fakturaListToShow)
                     }.invokeOnCompletion {
                         isCircularIndicatorShowing = false
                     }
@@ -210,8 +210,8 @@ fun ExcelPacker(
 
         ScrollContent(
             innerPadding,
-            paragonListToShow = paragonListToShow,
-            navigateToParagonDetailsScreen = navigateToParagonDetailsScreen,
+            fakturaListToShow = fakturaListToShow,
+            navigateToFakturaDetailsScreen = navigateToFakturaDetailsScreen,
 
         )
     }
@@ -220,14 +220,14 @@ fun ExcelPacker(
 
 @Composable
 fun ScrollContent(innerPadding: PaddingValues,
-                  paragonListToShow: List<Paragon>,
-                  navigateToParagonDetailsScreen: (Paragon) -> Unit,
+                  fakturaListToShow: List<Faktura>,
+                  navigateToFakturaDetailsScreen: (Faktura) -> Unit,
 ) {
-    val paragony = paragonListToShow
+    val faktura = fakturaListToShow
 
-    val groupedParagons = paragony
-        .sortedByDescending { it.dataZakupu }
-        .groupBy { it.dataZakupu }
+    val groupedFaktura = faktura
+        .sortedByDescending { it.dataWystawienia }
+        .groupBy { it.dataWystawienia }
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(1),
@@ -236,7 +236,7 @@ fun ScrollContent(innerPadding: PaddingValues,
         contentPadding = innerPadding,
         verticalItemSpacing = 2.dp,
     ) {
-        groupedParagons.forEach { (date, paragonList) ->
+        groupedFaktura.forEach { (date, fakturaList) ->
             if (date != null) {
                 val dateformat = date.let {
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -249,17 +249,17 @@ fun ScrollContent(innerPadding: PaddingValues,
                         modifier = Modifier.padding(start = 15.dp, top = 5.dp)
                     )
                 }
-                items(paragonList.size) { index ->
-                    val paragon = paragonList[index]
+                items(fakturaList.size) { index ->
+                    val faktura = fakturaList[index]
                     Column {
                         if (index > 0) {
                             HorizontalDivider(thickness = 1.dp)
                         }
-                        ParagonItem(
-                            paragon = paragon,
-                            navigateToParagonDetailsScreen = navigateToParagonDetailsScreen
+                        FakturaItem(
+                            faktura = faktura,
+                            navigateToFakturaDetailsScreen = navigateToFakturaDetailsScreen
                         )
-                        if (index == paragonList.size - 1) {
+                        if (index ==fakturaList.size - 1) {
                             Spacer(modifier = Modifier.height(10.dp))
                         }
                     }
@@ -271,17 +271,17 @@ fun ScrollContent(innerPadding: PaddingValues,
 }
 
 @Composable
-fun ParagonItem(paragon: Paragon, navigateToParagonDetailsScreen: (Paragon) -> Unit) {
-    val dateformat = paragon.dataZakupu?.let {
+fun FakturaItem(faktura: Faktura, navigateToFakturaDetailsScreen: (Faktura) -> Unit) {
+    val dateformat = faktura.dataWystawienia?.let {
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             .format(it)
     }
 
     ListItem(
-        modifier = Modifier.clickable { navigateToParagonDetailsScreen(paragon) },
+        modifier = Modifier.clickable { navigateToFakturaDetailsScreen(faktura) },
         // jest clickable -> przenosi nas na inną strone, może navigation
         headlineContent = { Text("Data Zakupu: $dateformat") },
-        supportingContent = { Text(paragon.nazwaSklepu) },
-        trailingContent = { Text("${paragon.kwotaCalkowita}") }
+        supportingContent = { Text(faktura.numerFaktury) },
+        trailingContent = { Text(faktura.razemBrutto) }
     )
 }

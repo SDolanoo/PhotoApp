@@ -3,9 +3,6 @@ package com.example.photoapp.ui.FilterScreen
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.photoapp.archive.features.paragon.data.Paragon
-import com.example.photoapp.archive.features.paragon.data.ParagonRepository
-import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
@@ -16,7 +13,6 @@ import javax.inject.Inject
 // FilterController Class
 @HiltViewModel
 class FilterController @Inject constructor(
-    paragonRepository: ParagonRepository,
     fakturaRepository: FakturaRepository
 ) : ViewModel() {
 
@@ -110,30 +106,6 @@ class FilterController @Inject constructor(
         }
         Log.i("Dolan", "canShowFilters = true")
         return true
-    }
-
-    fun applyParagonsFilters():Pair<Boolean, List<Paragon>> {
-//        Log.i("Dolan", "applyFilters FUNCTION")
-//        val (startDate, endDate) = dateRange.value
-//        Log.i("Dolan", "startDate: $startDate, endDate: $endDate")
-//        val (minPrice, maxPrice) = priceRange.value
-//        Log.i("Dolan", "minPrice: $minPrice, maxPrice: $maxPrice")
-//        val resultList = paragonRepository.fetchFilteredParagony(
-//            startDate = startDate,
-//            endDate = endDate,
-//            minPrice = minPrice,
-//            maxPrice = maxPrice,)
-//        val doShowFilters = canShowFilters()
-//        Log.i("Dolan", "doShowFilters: $doShowFilters, resultList: $resultList")
-        var doShowFilters = true
-        var resultList: List<Paragon> = listOf(Paragon(
-            id = TODO(),
-            uzytkownikId = TODO(),
-            dataZakupu = TODO(),
-            nazwaSklepu = TODO(),
-            kwotaCalkowita = TODO()
-        ))
-        return Pair(doShowFilters, resultList)
     }
 
 //    fun applyFakturysFilters():Pair<Boolean, List<Faktura>> {

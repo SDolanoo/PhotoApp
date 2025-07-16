@@ -7,10 +7,8 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.photoapp.BuildConfig
-import com.example.photoapp.archive.features.paragon.data.Paragon
-import com.example.photoapp.archive.features.paragon.data.ParagonRepository
-import com.example.photoapp.archive.features.raportFiskalny.data.ProduktRaportFiskalny
-import com.example.photoapp.features.faktura.data.Faktura
+import com.example.photoapp.features.faktura.data.faktura.Faktura
+import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -27,13 +25,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExportRoomViewModel @Inject constructor(
-    private val paragonRepository: ParagonRepository,
+    private val fakturaRepository: FakturaRepository,
     val context: Context,
 ): ViewModel() {
 
     val baseApplication = context.applicationContext
 
-    val allParagony: LiveData<List<Paragon>> = paragonRepository.getAllLiveParagony()
+    val allFaktura: LiveData<List<Faktura>> = fakturaRepository.getAllLiveFaktury()
 
     fun <T : Any> exportListToExcel(
         workbook: XSSFWorkbook,
@@ -97,7 +95,7 @@ class ExportRoomViewModel @Inject constructor(
     }
 
     suspend fun exportToExcel(whatToExport: String, listToExport: List<Any>) {
-        val exportOptions = listOf( "paragon", "faktura", "raport fiskalny")
+        val exportOptions = listOf("faktura")
 
         if (whatToExport in exportOptions) {
             Log.e("Dolan", "whatToExport VALUE IS INVALID IN EXPORT ROOM VIEW MODEL")
@@ -110,23 +108,11 @@ class ExportRoomViewModel @Inject constructor(
             if (!folder.exists()) folder.mkdirs()
 
             when (whatToExport) {
-                "paragon" -> exportListToExcel(
-                    workbook,
-                    listToExport.filterIsInstance<Paragon>(),
-                    "Paragony",
-                    listOf("dataZakupu", "nazwaSklepu", "kwotaCalkowita")
-                )
                 "faktura" -> exportListToExcel(
                     workbook,
                     listToExport.filterIsInstance<Faktura>(),
                     "Produkty",
                     listOf("productName", "category", "price")
-                )
-                "raport fiskalny" -> exportListToExcel(
-                    workbook,
-                    listToExport.filterIsInstance<ProduktRaportFiskalny>(),
-                    "Raport",
-                    listOf("nrPLU", "ilosc")
                 )
             }
 

@@ -1,6 +1,5 @@
 package com.example.photoapp.ui.testingButtons
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,11 +11,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.photoapp.archive.features.paragon.data.Paragon
-import com.example.photoapp.archive.features.paragon.data.ParagonRepository
-import com.example.photoapp.archive.features.paragon.data.ProduktParagon
-import com.example.photoapp.core.database.data.entities.Kategoria
-import com.example.photoapp.core.database.data.repos.KategoriaRepository
 import com.example.photoapp.features.faktura.data.odbiorca.OdbiorcaRepository
 import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepository
 import com.example.photoapp.core.database.data.repos.UzytkownikRepository
@@ -64,15 +58,6 @@ fun TestingButtons(
         }
 
         Button(
-            onClick = { databaseViewModel.addTestKategorias() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        ) {
-            Text(text = "Add Test Kategorias")
-        }
-
-        Button(
             onClick = { databaseViewModel.addTestInvoices() },
             modifier = Modifier
                 .fillMaxWidth()
@@ -89,37 +74,12 @@ fun TestingButtons(
         ) {
             Text(text = "Add Test Invoices Products")
         }
-
-        Button(
-            onClick = { databaseViewModel.addTestParagony() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        ) {
-            Text(text = "Add Test Paragony")
-        }
-
-        Button(
-            onClick = { databaseViewModel.addTestParagonProdukty() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        ) {
-            Text(text = "Add Test Produkty Paragon")
-        }
-
-
     }
-
-
-
 }
 
 @HiltViewModel
 class TestingButtonVM @Inject constructor(
-    private val paragonRepository: ParagonRepository,
     private val fakturaRepository: FakturaRepository,
-    private val kategoriaRepository: KategoriaRepository,
     private val odbiorcaRepository: OdbiorcaRepository,
     private val sprzedawcaRepository: SprzedawcaRepository,
     private val uzytkownikRepository: UzytkownikRepository
@@ -130,20 +90,6 @@ class TestingButtonVM @Inject constructor(
             uzytkownikRepository.insert(login = "stasio", "stasio", "stasio@gmail.com")
         }
     }
-
-    fun addTestKategorias() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val categories = listOf(
-                Kategoria(nazwa = "Żywność"),
-                Kategoria(nazwa = "Meble"),
-                Kategoria(nazwa = "Sprzęt")
-            )
-            categories.forEach {
-                kategoriaRepository.insert(it)
-            }
-        }
-    }
-
 
     fun addTestInvoices() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -192,48 +138,6 @@ class TestingButtonVM @Inject constructor(
                         pkwiu = "TODO()",
                     )
                     fakturaRepository.insertProdukt(produkt)
-                }
-            }
-        }
-    }
-
-    fun addTestParagony() {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.i("Dolan", "adding test paragony")
-            val now = Date()
-            repeat(3) { index ->
-                val paragon = Paragon(
-                    uzytkownikId = 1,
-                    dataZakupu = now,
-                    nazwaSklepu = "Sklep $index",
-                    kwotaCalkowita = 59.99 + index * 10
-                )
-                paragonRepository.insertParagon(paragon)
-                Log.i("Dolan", "added one ${paragon}")
-            }
-        }
-    }
-
-    fun addTestParagonProdukty() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val paragony = paragonRepository.getAllParagony()
-
-            // Ensure at least one kategoria exists
-            val kategorie = kategoriaRepository.getAllKategorii()
-            val fallbackKategoriaId = kategorie.firstOrNull()?.id
-
-            if (paragony.isEmpty()) return@launch
-
-            paragony.forEachIndexed { index, paragon ->
-                repeat(2) { i ->
-                    val produkt = ProduktParagon(
-                        paragonId = paragon.id,
-                        kategoriaId = fallbackKategoriaId,
-                        nazwaProduktu = "Produkt ${index + 1}-$i",
-                        cenaSuma = 19.99 + i * 5,
-                        ilosc = i + 1
-                    )
-                    paragonRepository.insertProdukt(produkt)
                 }
             }
         }
