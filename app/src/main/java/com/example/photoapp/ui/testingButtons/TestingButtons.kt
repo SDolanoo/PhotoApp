@@ -121,7 +121,7 @@ class TestingButtonVM @Inject constructor(
 
     fun addTestInvoiceProducts() {
         viewModelScope.launch(Dispatchers.IO) {
-            val allFaktury = fakturaRepository.getAllLiveFaktury().value ?: return@launch
+            val allFaktury = fakturaRepository.getAllFaktury()
 
             allFaktury.forEach { faktura ->
                 repeat(2) { i ->

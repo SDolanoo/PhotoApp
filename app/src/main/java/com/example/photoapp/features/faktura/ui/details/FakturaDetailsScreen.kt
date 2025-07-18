@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -94,7 +95,9 @@ fun FakturaDetailsScreen(
     LaunchedEffect(faktura) {
         viewModel.getFakturaByID(faktura.id) { f ->
             viewModel.setFaktura(f)
+            Log.i("Dolan", "loading products")
             viewModel.loadProducts(f)
+            Log.i("Dolan", "loading products succesfuly")
         }
     }
 
@@ -245,64 +248,67 @@ fun FakturaDetailsScreen(
                 )
 
                 if (isEditing) {
-                    val newNazwa = remember { mutableStateOf(editedSprzedawca!!.nazwa) }
-                    val newNIP = remember { mutableStateOf(editedSprzedawca!!.nip) }
-                    val newAdres = remember { mutableStateOf(editedSprzedawca!!.adres) }
-                    val newKodPocztowy = remember { mutableStateOf(editedSprzedawca!!.kodPocztowy) }
-                    val newMiejscowosc = remember { mutableStateOf(editedSprzedawca!!.miejscowosc) }
-                    val newKraj = remember { mutableStateOf(editedSprzedawca!!.kraj) }
-                    val newOpis = remember { mutableStateOf(editedSprzedawca!!.opis) }
-                    val newEmail = remember { mutableStateOf(editedSprzedawca!!.email) }
-                    val newTelefon = remember { mutableStateOf(editedSprzedawca!!.telefon) }
-                    SprzedawcaForm(
-                        modifier = Modifier,
-                        fields = listOf(
-                            "Nazwa firmy" to newNazwa,
-                            "NIP" to newNIP,
-                            "Adres" to newAdres,
-                            "Kod pocztowy" to newKodPocztowy,
-                            "Miejscowość" to newMiejscowosc,
-                            "Kraj" to newKraj,
-                            "Opis" to newOpis,
-                            "E-mail" to newEmail,
-                            "Telefon" to newTelefon,
-                        ),
-                        onEdit = {
-                            viewModel.editEditedSprzedawca(
-                                Sprzedawca(
-                                    id = editedSprzedawca!!.id,
-                                    nazwa = newNazwa.toString(),
-                                    nip = newNIP.toString(),
-                                    adres = newAdres.toString(),
-                                    kodPocztowy = newKodPocztowy.toString(),
-                                    miejscowosc = newMiejscowosc.toString(),
-                                    kraj = newKraj.toString(),
-                                    opis = newOpis.toString(),
-                                    email = newEmail.toString(),
-                                    telefon = newTelefon.toString()
+                    key(editedSprzedawca.id) {
+                        val newNazwa = remember { mutableStateOf(editedSprzedawca.nazwa) }
+                        val newNIP = remember { mutableStateOf(editedSprzedawca.nip) }
+                        val newAdres = remember { mutableStateOf(editedSprzedawca.adres) }
+                        val newKodPocztowy = remember { mutableStateOf(editedSprzedawca.kodPocztowy) }
+                        val newMiejscowosc = remember { mutableStateOf(editedSprzedawca.miejscowosc) }
+                        val newKraj = remember { mutableStateOf(editedSprzedawca.kraj) }
+                        val newOpis = remember { mutableStateOf(editedSprzedawca.opis) }
+                        val newEmail = remember { mutableStateOf(editedSprzedawca.email) }
+                        val newTelefon = remember { mutableStateOf(editedSprzedawca.telefon) }
+                        SprzedawcaForm(
+                            modifier = Modifier,
+                            fields = listOf(
+                                "Nazwa firmy" to newNazwa,
+                                "NIP" to newNIP,
+                                "Adres" to newAdres,
+                                "Kod pocztowy" to newKodPocztowy,
+                                "Miejscowość" to newMiejscowosc,
+                                "Kraj" to newKraj,
+                                "Opis" to newOpis,
+                                "E-mail" to newEmail,
+                                "Telefon" to newTelefon,
+                            ),
+                            onEdit = {
+                                viewModel.editEditedSprzedawca(
+                                    Sprzedawca(
+                                        id = editedSprzedawca.id,
+                                        nazwa = newNazwa.value,
+                                        nip = newNIP.value,
+                                        adres = newAdres.value,
+                                        kodPocztowy = newKodPocztowy.value,
+                                        miejscowosc = newMiejscowosc.value,
+                                        kraj = newKraj.value,
+                                        opis = newOpis.value,
+                                        email = newEmail.value,
+                                        telefon = newTelefon.value
+                                    )
                                 )
-                            )
-                        },
-                        onButtonClick = {
-                            showSprzedawcaDropdown = true
-                        }
-                    )
+                            },
+                            onButtonClick = {
+                                showSprzedawcaDropdown = true
+                            }
+                        )
+                    }
                 } else {
                     SprzedawcaReadOnly(
                         modifier = Modifier,
                         fields = listOf(
-                            actualSprzedawca!!.nazwa,
-                            actualSprzedawca!!.nip,
-                            actualSprzedawca!!.adres,
-                            actualSprzedawca!!.kodPocztowy,
-                            actualSprzedawca!!.miejscowosc,
-                            actualSprzedawca!!.kraj,
-                            actualSprzedawca!!.opis,
-                            actualSprzedawca!!.email,
-                            actualSprzedawca!!.telefon,
+                            actualSprzedawca.nazwa,
+                            actualSprzedawca.nip,
+                            actualSprzedawca.adres,
+                            actualSprzedawca.kodPocztowy,
+                            actualSprzedawca.miejscowosc,
+                            actualSprzedawca.kraj,
+                            actualSprzedawca.opis,
+                            actualSprzedawca.email,
+                            actualSprzedawca.telefon,
                         )
                     )
                 }
+
             } // Sprzedawca
 
             item {
@@ -321,61 +327,63 @@ fun FakturaDetailsScreen(
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
                 if (isEditing) {
-                    val newNazwa = remember { mutableStateOf(editedOdbiorca!!.nazwa) }
-                    val newNIP = remember { mutableStateOf(editedOdbiorca!!.nip) }
-                    val newAdres = remember { mutableStateOf(editedOdbiorca!!.adres) }
-                    val newKodPocztowy = remember { mutableStateOf(editedOdbiorca!!.kodPocztowy) }
-                    val newMiejscowosc = remember { mutableStateOf(editedOdbiorca!!.miejscowosc) }
-                    val newKraj = remember { mutableStateOf(editedOdbiorca!!.kraj) }
-                    val newOpis = remember { mutableStateOf(editedOdbiorca!!.opis) }
-                    val newEmail = remember { mutableStateOf(editedOdbiorca!!.email) }
-                    val newTelefon = remember { mutableStateOf(editedOdbiorca!!.telefon) }
-                    NabywcaForm(
-                        modifier = Modifier,
-                        fields = listOf(
-                            "Nazwa firmy" to newNazwa,
-                            "NIP" to newNIP,
-                            "Adres" to newAdres,
-                            "Kod pocztowy" to newKodPocztowy,
-                            "Miejscowość" to newMiejscowosc,
-                            "Kraj" to newKraj,
-                            "Opis" to newOpis,
-                            "E-mail" to newEmail,
-                            "Telefon" to newTelefon,
-                        ),
-                        onEdit = {
-                            viewModel.editEditedOdbiorca(
-                                Odbiorca(
-                                    id = editedOdbiorca!!.id,
-                                    nazwa = newNazwa.toString(),
-                                    nip = newNIP.toString(),
-                                    adres = newAdres.toString(),
-                                    kodPocztowy = newKodPocztowy.toString(),
-                                    miejscowosc = newMiejscowosc.toString(),
-                                    kraj = newKraj.toString(),
-                                    opis = newOpis.toString(),
-                                    email = newEmail.toString(),
-                                    telefon = newTelefon.toString()
+                    key(editedOdbiorca.id) {
+                        val newNazwa = remember { mutableStateOf(editedOdbiorca.nazwa) }
+                        val newNIP = remember { mutableStateOf(editedOdbiorca.nip) }
+                        val newAdres = remember { mutableStateOf(editedOdbiorca.adres) }
+                        val newKodPocztowy = remember { mutableStateOf(editedOdbiorca.kodPocztowy) }
+                        val newMiejscowosc = remember { mutableStateOf(editedOdbiorca.miejscowosc) }
+                        val newKraj = remember { mutableStateOf(editedOdbiorca.kraj) }
+                        val newOpis = remember { mutableStateOf(editedOdbiorca.opis) }
+                        val newEmail = remember { mutableStateOf(editedOdbiorca.email) }
+                        val newTelefon = remember { mutableStateOf(editedOdbiorca.telefon) }
+                        NabywcaForm(
+                            modifier = Modifier,
+                            fields = listOf(
+                                "Nazwa firmy" to newNazwa,
+                                "NIP" to newNIP,
+                                "Adres" to newAdres,
+                                "Kod pocztowy" to newKodPocztowy,
+                                "Miejscowość" to newMiejscowosc,
+                                "Kraj" to newKraj,
+                                "Opis" to newOpis,
+                                "E-mail" to newEmail,
+                                "Telefon" to newTelefon,
+                            ),
+                            onEdit = {
+                                viewModel.editEditedOdbiorca(
+                                    Odbiorca(
+                                        id = editedOdbiorca.id,
+                                        nazwa = newNazwa.value,
+                                        nip = newNIP.value,
+                                        adres = newAdres.value,
+                                        kodPocztowy = newKodPocztowy.value,
+                                        miejscowosc = newMiejscowosc.value,
+                                        kraj = newKraj.value,
+                                        opis = newOpis.value,
+                                        email = newEmail.value,
+                                        telefon = newTelefon.value
+                                    )
                                 )
-                            )
-                        },
-                        onButtonClick = {
-                            showOdbiorcaDropdown = true
-                        }
-                    )
+                            },
+                            onButtonClick = {
+                                showOdbiorcaDropdown = true
+                            }
+                        )
+                    }
                 } else {
                     NabywcaReadOnly(
                         modifier = Modifier,
                         fields = listOf(
-                            actualOdbiorca!!.nazwa,
-                            actualOdbiorca!!.nip,
-                            actualOdbiorca!!.adres,
-                            actualOdbiorca!!.kodPocztowy,
-                            actualOdbiorca!!.miejscowosc,
-                            actualOdbiorca!!.kraj,
-                            actualOdbiorca!!.opis,
-                            actualOdbiorca!!.email,
-                            actualOdbiorca!!.telefon,
+                            actualOdbiorca.nazwa,
+                            actualOdbiorca.nip,
+                            actualOdbiorca.adres,
+                            actualOdbiorca.kodPocztowy,
+                            actualOdbiorca.miejscowosc,
+                            actualOdbiorca.kraj,
+                            actualOdbiorca.opis,
+                            actualOdbiorca.email,
+                            actualOdbiorca.telefon,
                         )
                     )
                 }
@@ -404,7 +412,7 @@ fun FakturaDetailsScreen(
                     key = { _, item -> item.id }
                 ) { index, product ->
 
-                val nazwaProduktu = remember { mutableStateOf(product.nazwaProduktu) }
+                    val nazwaProduktu = remember { mutableStateOf(product.nazwaProduktu) }
                     val ilosc = remember { mutableStateOf(product.ilosc) }
                     val jednostkaMiary = remember { mutableStateOf(product.jednostkaMiary) }
                     val cenaNetto = remember { mutableStateOf(product.cenaNetto) }

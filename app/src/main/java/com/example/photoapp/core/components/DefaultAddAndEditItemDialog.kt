@@ -51,12 +51,10 @@ import androidx.compose.ui.unit.dp
 fun <T> DefaultAddItemDialog(
     title: String,
     fields: List<Pair<String, MutableState<String>>>,
-    kategorie: List<Kategoria>? = null,
     onBuildItem: () -> T,
     onAction: (T) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val kategorieList: List<String> = kategorie!!.map { it.nazwa }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -64,21 +62,13 @@ fun <T> DefaultAddItemDialog(
         text = {
             Column {
                 fields.forEach { (label, state) ->
-                    if (label == "Kategoria") {
-                        ExposedDropdownMenu(
-                            options = kategorieList,
-                            label = label,
-                            selected = { state.value = it },
-                        )
-                    } else {
-                        OutlinedTextField(
-                            value = state.value.toString(),
-                            onValueChange = { state.value = it },
-                            label = { Text(label) },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-                    }
+                    OutlinedTextField(
+                        value = state.value.toString(),
+                        onValueChange = { state.value = it },
+                        label = { Text(label) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }

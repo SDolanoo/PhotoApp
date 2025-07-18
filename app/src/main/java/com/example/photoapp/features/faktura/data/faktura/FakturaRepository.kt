@@ -1,6 +1,7 @@
 package com.example.photoapp.features.faktura.data.faktura
 
 import android.util.Log
+import androidx.compose.runtime.DisposableEffect
 import com.example.photoapp.core.database.data.FakturaDTO
 import com.example.photoapp.features.faktura.data.odbiorca.OdbiorcaRepository
 import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepository
@@ -8,6 +9,9 @@ import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.core.utils.jsonTransformer
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.util.Date
 import javax.inject.Inject
@@ -21,10 +25,22 @@ class FakturaRepository @Inject constructor(
 
     fun getAllLiveFaktury() = fakturaDao.getAllLive()
 
+    fun getAllFaktury(): List<Faktura> {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                fakturaDao.getAllFaktury()
+            }
+        }
+    }
+
     fun getFakturaByID(id: Long): Faktura? = fakturaDao.getById(id)
 
     fun getProduktyForFaktura(fakturaId: Long): List<ProduktFaktura> {
-        return produktFakturaDao.getProductsByFakturaId(fakturaId)
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                produktFakturaDao.getProductsByFakturaId(fakturaId)
+            }
+        }
     }
 
     fun insertFaktura(faktura: Faktura) {
@@ -36,7 +52,7 @@ class FakturaRepository @Inject constructor(
     }
 
     fun updateFaktura(faktura: Faktura) {
-        fakturaDao.delete(faktura)
+        fakturaDao.update(faktura)
     }
 
     fun updateProdukt(produkt: ProduktFaktura) {

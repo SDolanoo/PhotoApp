@@ -187,7 +187,8 @@ fun NewFakturaPreview() {
                         "E-mail" to newEmail,
                         "Telefon" to newTelefon,
                     ),
-                    onEdit = {}
+                    onEdit = {},
+                    onButtonClick = {}
                 )
             }
 
@@ -227,7 +228,8 @@ fun NewFakturaPreview() {
                     "E-mail" to newEmail,
                     "Telefon" to newTelefon,
                     ),
-                    onEdit = {}
+                    onEdit = {},
+                    onButtonClick = {}
                 )
             }
 
@@ -277,7 +279,8 @@ fun NewFakturaPreview() {
                     onDelete = {
 
                     },
-                    onEdit = {}
+                    onEdit = {},
+                    onButtonClick = {}
                 )
 
                 HorizontalDivider(

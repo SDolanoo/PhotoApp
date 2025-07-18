@@ -43,18 +43,50 @@ class FakturaDetailsViewModel @Inject constructor(
     val editedProdukty: StateFlow<List<ProduktFaktura>> = _editedProdukty.asStateFlow()
 
     // ---- SPRZEDAWCA ----
-    private val _actualSprzedawca = MutableStateFlow<Sprzedawca?>(null)
-    val actualSprzedawca: StateFlow<Sprzedawca?> = _actualSprzedawca.asStateFlow()
+    private val _actualSprzedawca = MutableStateFlow<Sprzedawca>(Sprzedawca(
+        nazwa = "", nip = "", adres = "",
+        kodPocztowy = "",
+        miejscowosc = "",
+        kraj = "",
+        opis = "",
+        email = "",
+        telefon = ""
+    ))
+    val actualSprzedawca: StateFlow<Sprzedawca> = _actualSprzedawca.asStateFlow()
 
-    private val _editedSprzedawca = MutableStateFlow<Sprzedawca?>(null)
-    val editedSprzedawca: StateFlow<Sprzedawca?> = _editedSprzedawca.asStateFlow()
+    private val _editedSprzedawca = MutableStateFlow<Sprzedawca>(Sprzedawca(
+        nazwa = "", nip = "", adres = "",
+        kodPocztowy = "",
+        miejscowosc = "",
+        kraj = "",
+        opis = "",
+        email = "",
+        telefon = ""
+    ))
+    val editedSprzedawca: StateFlow<Sprzedawca> = _editedSprzedawca.asStateFlow()
 
     // ---- ODBIORCA ----
-    private val _actualOdbiorca = MutableStateFlow<Odbiorca?>(null)
-    val actualOdbiorca: StateFlow<Odbiorca?> = _actualOdbiorca.asStateFlow()
+    private val _actualOdbiorca = MutableStateFlow<Odbiorca>(Odbiorca(
+        nazwa = "", nip = "", adres = "",
+        kodPocztowy = "",
+        miejscowosc = "",
+        kraj = "",
+        opis = "",
+        email = "",
+        telefon = ""
+    ))
+    val actualOdbiorca: StateFlow<Odbiorca> = _actualOdbiorca.asStateFlow()
 
-    private val _editedOdbiorca = MutableStateFlow<Odbiorca?>(null)
-    val editedOdbiorca: StateFlow<Odbiorca?> = _editedOdbiorca.asStateFlow()
+    private val _editedOdbiorca = MutableStateFlow<Odbiorca>(Odbiorca(
+        nazwa = "", nip = "", adres = "",
+        kodPocztowy = "",
+        miejscowosc = "",
+        kraj = "",
+        opis = "",
+        email = "",
+        telefon = ""
+    ))
+    val editedOdbiorca: StateFlow<Odbiorca> = _editedOdbiorca.asStateFlow()
 
 
     fun loadProducts(faktura: Faktura) {
@@ -68,11 +100,13 @@ class FakturaDetailsViewModel @Inject constructor(
             _actualProdukty.value = produkty
             _editedProdukty.value = produkty
 
-            _actualSprzedawca.value = sprzedawca
+            _actualSprzedawca.value = sprzedawca!!
             _editedSprzedawca.value = sprzedawca
+            Log.i("Dolan", sprzedawca.toString())
 
-            _actualOdbiorca.value = odbiorca
+            _actualOdbiorca.value = odbiorca!!
             _editedOdbiorca.value = odbiorca
+            Log.i("Dolan", odbiorca.toString())
         }
     }
 
@@ -140,7 +174,7 @@ class FakturaDetailsViewModel @Inject constructor(
                 val sprzedawca = editedSprzedawca.value
                 val odbiorca = editedOdbiorca.value
 
-                if (faktura == null || sprzedawca == null || odbiorca == null) {
+                if (faktura == null) {
                     Log.e("Dolan", "Brakuje danych do zapisania")
                     return@launch
                 }
