@@ -52,6 +52,17 @@ class Converters {
     fun dateToTimestamp(date: Date?): Long? {
         return date?.time?.toLong()
     }
+
+    @TypeConverter
+    fun fromListLong(value: List<Long>?): String {
+        return value?.joinToString(",") ?: ""
+    }
+
+    @TypeConverter
+    fun toListLong(value: String): List<Long> {
+        return if (value.isEmpty()) emptyList()
+        else value.split(",").map { it.toLong() }
+    }
 }
 
 @InstallIn(SingletonComponent::class)

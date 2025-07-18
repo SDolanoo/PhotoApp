@@ -210,7 +210,8 @@ fun FakturaDetailsScreen(
                                     razemBrutto = editedFaktura!!.razemBrutto,
                                     doZaplaty = editedFaktura!!.doZaplaty,
                                     waluta = editedFaktura!!.waluta,
-                                    formaPlatnosci = editedFaktura!!.formaPlatnosci
+                                    formaPlatnosci = editedFaktura!!.formaPlatnosci,
+                                    produktyId = emptyList()
                                 ),
                                 callback = {}
                             )

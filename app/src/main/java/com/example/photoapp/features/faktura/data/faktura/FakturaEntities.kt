@@ -28,17 +28,13 @@ data class Faktura(
     @ColumnInfo(name = "razemBrutto") val razemBrutto: String,
     @ColumnInfo(name = "doZaplaty") val doZaplaty: String,
     @ColumnInfo(name = "waluta") val waluta: String,
-    @ColumnInfo(name = "formaPlatnosci") val formaPlatnosci: String
+    @ColumnInfo(name = "formaPlatnosci") val formaPlatnosci: String,
+    @ColumnInfo(name = "produktyId") val produktyId: List<Long>
 )
 
-@Entity(
-    foreignKeys = [
-        ForeignKey(entity = Faktura::class, parentColumns = ["id"], childColumns = ["fakturaId"])
-    ]
-)
+@Entity
 data class ProduktFaktura(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(name = "fakturaId") val fakturaId: Long,
     @ColumnInfo(name = "nazwaProduktu") val nazwaProduktu: String,
     @ColumnInfo(name = "ilosc") val ilosc: String,
     @ColumnInfo(name = "jednostkaMiary") val jednostkaMiary: String,

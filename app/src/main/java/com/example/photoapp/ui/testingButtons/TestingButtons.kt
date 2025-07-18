@@ -112,7 +112,8 @@ class TestingButtonVM @Inject constructor(
                     doZaplaty = "123.00",
                     waluta = "PLN",
                     formaPlatnosci = "Przelew",
-                    miejsceWystawienia = ""
+                    miejsceWystawienia = "",
+                    produktyId = emptyList()
                 )
                 fakturaRepository.insertFaktura(faktura)
             }
@@ -126,7 +127,6 @@ class TestingButtonVM @Inject constructor(
             allFaktury.forEach { faktura ->
                 repeat(2) { i ->
                     val produkt = ProduktFaktura(
-                        fakturaId = faktura.id,
                         nazwaProduktu = "Produkt ${i + 1}",
                         jednostkaMiary = "szt",
                         ilosc = "${i + 1}",
@@ -137,7 +137,8 @@ class TestingButtonVM @Inject constructor(
                         rabat = "TODO()",
                         pkwiu = "TODO()",
                     )
-                    fakturaRepository.insertProdukt(produkt)
+                    val produktId = fakturaRepository.insertProdukt(produkt)
+                    fakturaRepository.addProductToFaktura(fakturaId = faktura.id, newProductId = produktId)
                 }
             }
         }

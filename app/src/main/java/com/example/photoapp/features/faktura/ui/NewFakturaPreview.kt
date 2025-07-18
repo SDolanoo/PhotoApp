@@ -296,7 +296,6 @@ fun NewFakturaPreview() {
                         onClick = {
                             Products.add(
                                 ProduktFaktura(
-                                    fakturaId = Invoice.id,
                                     nazwaProduktu = "Nowy produkt",
                                     jednostkaMiary = "szt",
                                     ilosc = "1",
@@ -359,7 +358,7 @@ object FakeData {
 
     val Products = listOf(
         ProduktFaktura(
-            fakturaId = 1,
+            id = 1L,
             nazwaProduktu = "Produkt 1",
             jednostkaMiary = "szt",
             ilosc = "1",
@@ -371,7 +370,7 @@ object FakeData {
             pkwiu = "TODO()",
         ),
         ProduktFaktura(
-            fakturaId = 1,
+            id = 2L,
             nazwaProduktu = "Produkt 2",
             jednostkaMiary = "szt",
             ilosc = "2",
@@ -399,7 +398,8 @@ object FakeData {
         doZaplaty = "123.00",
         waluta = "PLN",
         formaPlatnosci = "Przelew",
-        miejsceWystawienia = ""
+        miejsceWystawienia = "",
+        produktyId = listOf(1L, 2L)
     )
 }
 
