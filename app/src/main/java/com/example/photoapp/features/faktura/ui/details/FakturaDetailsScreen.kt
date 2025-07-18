@@ -527,7 +527,8 @@ fun FakturaDetailsScreen(
                     Column {
                         Text(text = sprzedawca.nazwa, fontWeight = FontWeight.Bold)
                     }
-                }
+                },
+                modifier = Modifier.padding(innerPadding)
             )
         }
 
@@ -541,7 +542,8 @@ fun FakturaDetailsScreen(
                     Column {
                         Text(text = odbiorca.nazwa, fontWeight = FontWeight.Bold)
                     }
-                }
+                },
+                modifier = Modifier.padding(innerPadding)
             )
         }
 
@@ -558,7 +560,8 @@ fun FakturaDetailsScreen(
                             Text(text = "Cena: ${"%.2f".format(produkt.wartoscBrutto)} zł")
                         }
                     }
-                }
+                },
+                modifier = Modifier.padding(innerPadding)
             )
         }
     }
