@@ -126,4 +126,8 @@ class FakturaRepository @Inject constructor(
             filterPrice
         )
     }
+
+    fun getAllProdukty(): List<ProduktFaktura> {
+        return produktFakturaDao.getAll()
+    }
 }

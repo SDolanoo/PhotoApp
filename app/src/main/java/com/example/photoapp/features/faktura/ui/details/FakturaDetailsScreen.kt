@@ -1,6 +1,7 @@
 package com.example.photoapp.features.faktura.ui.details
 
 import android.util.Log
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,6 +43,7 @@ import com.example.photoapp.core.utils.convertDateToString
 import com.example.photoapp.core.utils.convertMillisToString
 import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.features.faktura.composables.common.CustomOutlinedButton
+import com.example.photoapp.features.faktura.composables.common.SearchableDropdownOverlay
 import com.example.photoapp.features.faktura.composables.forms.InvoiceForm
 import com.example.photoapp.features.faktura.composables.forms.NabywcaForm
 import com.example.photoapp.features.faktura.composables.forms.ProductForm
@@ -53,6 +56,7 @@ import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import com.example.photoapp.features.faktura.ui.DatePickerTarget
+import com.example.photoapp.features.faktura.ui.FakeData.odbiorca
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,6 +84,12 @@ fun FakturaDetailsScreen(
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickerTarget by remember { mutableStateOf<DatePickerTarget?>(null) }
     var customDate by remember { mutableStateOf(convertDateToString(Date())) }
+
+
+    var showOdbiorcaDropdown by remember { mutableStateOf(false) }
+    var showSprzedawcaDropdown by remember { mutableStateOf(false) }
+    var showProductDropdown by remember { mutableStateOf(false) }
+    var dropdownProductIndex by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(faktura) {
         viewModel.getFakturaByID(faktura.id) { f ->
@@ -216,7 +226,7 @@ fun FakturaDetailsScreen(
                     )
                 }
 
-            }
+            } // InvoiceForm
 
             item {
                 HorizontalDivider(
@@ -272,6 +282,9 @@ fun FakturaDetailsScreen(
                                     telefon = newTelefon.toString()
                                 )
                             )
+                        },
+                        onButtonClick = {
+                            showSprzedawcaDropdown = true
                         }
                     )
                 } else {
@@ -290,7 +303,7 @@ fun FakturaDetailsScreen(
                         )
                     )
                 }
-            }
+            } // Sprzedawca
 
             item {
                 HorizontalDivider(
@@ -345,6 +358,9 @@ fun FakturaDetailsScreen(
                                     telefon = newTelefon.toString()
                                 )
                             )
+                        },
+                        onButtonClick = {
+                            showOdbiorcaDropdown = true
                         }
                     )
                 } else {
@@ -363,7 +379,7 @@ fun FakturaDetailsScreen(
                         )
                     )
                 }
-            }
+            } // Odbiorca
 
             item {
                 HorizontalDivider(
@@ -380,7 +396,7 @@ fun FakturaDetailsScreen(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
-            }
+            } // Products
 
             if (isEditing) {
                 itemsIndexed(
@@ -420,6 +436,10 @@ fun FakturaDetailsScreen(
                                 product,
                                 callback = {}
                             )
+                        },
+                        onButtonClick = {
+                            dropdownProductIndex = index
+                            showProductDropdown = true
                         }
                     )
 
@@ -449,7 +469,7 @@ fun FakturaDetailsScreen(
                         )
                     }
                 }
-            } else {
+            } else { // Products
                 items(
                     items = actualProdukty,
                     key = { it.id }
@@ -470,7 +490,6 @@ fun FakturaDetailsScreen(
                     )
                 }
             }
-
         }
 
         if (showDatePicker) {
@@ -487,6 +506,51 @@ fun FakturaDetailsScreen(
                     }
                 },
                 onDismiss = { showDatePicker = false }
+            )
+        }
+
+        if (showSprzedawcaDropdown) {
+            SearchableDropdownOverlay(
+                items = viewModel.getListOfSprzedacwa(),
+                onItemSelected = { viewModel.replaceEditedSprzedawca(it) },
+                onDismissRequest = { showSprzedawcaDropdown = false },
+                itemToSearchableText = { it.nazwa },
+                itemContent = { sprzedawca ->
+                    Column {
+                        Text(text = sprzedawca.nazwa, fontWeight = FontWeight.Bold)
+                    }
+                }
+            )
+        }
+
+        if (showOdbiorcaDropdown) {
+            SearchableDropdownOverlay(
+                items = viewModel.getListOfOdbiorca(),
+                onItemSelected = { viewModel.replaceEditedOdbiorca(it) },
+                onDismissRequest = { showOdbiorcaDropdown = false },
+                itemToSearchableText = { it.nazwa },
+                itemContent = { odbiorca ->
+                    Column {
+                        Text(text = odbiorca.nazwa, fontWeight = FontWeight.Bold)
+                    }
+                }
+            )
+        }
+
+        if (showProductDropdown) {
+            SearchableDropdownOverlay(
+                items = viewModel.getListOfProdukty(),
+                onItemSelected = { viewModel.updateEditedProductTemp(dropdownProductIndex, it, callback = {}) },
+                onDismissRequest = { showProductDropdown = false },
+                itemToSearchableText = { it.nazwaProduktu },
+                itemContent = { produkt ->
+                    Column {
+                        Row {
+                            Text(text = produkt.nazwaProduktu, fontWeight = FontWeight.Bold)
+                            Text(text = "Cena: ${"%.2f".format(produkt.wartoscBrutto)} zł")
+                        }
+                    }
+                }
             )
         }
     }

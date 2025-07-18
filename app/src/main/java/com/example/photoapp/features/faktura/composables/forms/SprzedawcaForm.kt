@@ -28,6 +28,7 @@ fun SprzedawcaForm(
     modifier: Modifier,
     fields: List<Pair<String, MutableState<String>>>,
     onEdit: () -> Unit,
+    onButtonClick: () -> Unit
 ) {
 
     val ROW_HEIGHT = 64.dp
@@ -41,7 +42,8 @@ fun SprzedawcaForm(
         CustomTextFieldWithButton(
             title = "Nazwa firmy",
             field = fields[0].second,
-            onEdit = { onEdit() }
+            onEdit = { onEdit() },
+            onButtonClick = { onButtonClick() }
         )
 
         CustomTextField(

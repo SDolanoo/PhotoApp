@@ -29,7 +29,8 @@ fun ProductForm(
     modifier: Modifier,
     fields: List<Pair<String, MutableState<String>>>,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onButtonClick: () -> Unit
 ) {
 
     val ROW_HEIGHT = 64.dp
@@ -43,7 +44,8 @@ fun ProductForm(
         CustomTextFieldWithButton(
             title = "Nazwa",
             field = fields[0].second,
-            onEdit = { onEdit() }
+            onEdit = { onEdit() },
+            onButtonClick = { onButtonClick() }
         )
 
         Row(

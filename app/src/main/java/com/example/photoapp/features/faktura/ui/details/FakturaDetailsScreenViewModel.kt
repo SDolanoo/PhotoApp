@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -171,8 +173,6 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
-
-
     fun addOneProductToEdited(nazwaProduktu: String, ilosc: String, callback: () -> Unit = {}) {
         viewModelScope.launch(Dispatchers.IO) {
             val fakturaId = _editedFaktura.value?.id ?: return@launch
@@ -193,7 +193,6 @@ class FakturaDetailsViewModel @Inject constructor(
             _editedProdukty.update { currentList ->
                 currentList + newProduct
             }
-
             callback()
         }
     }
@@ -206,8 +205,6 @@ class FakturaDetailsViewModel @Inject constructor(
     fun editEditedSprzedawca(sprzedawca: Sprzedawca) {
         viewModelScope.launch(Dispatchers.IO) {
             _editedSprzedawca.value = sprzedawca
-
-
         }
     }
 
@@ -231,6 +228,30 @@ class FakturaDetailsViewModel @Inject constructor(
             _editedOdbiorca.value = newOdbiorca
             _editedFaktura.value = _editedFaktura.value?.copy(odbiorcaId = newOdbiorca.id)
             callback()
+        }
+    }
+
+    fun getListOfSprzedacwa(): List<Sprzedawca> {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                sprzedawcaRepository.getAll()
+            }
+        }
+    }
+
+    fun getListOfOdbiorca(): List<Odbiorca> {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                odbiorcaRepository.getAllOdbiorcy()
+            }
+        }
+    }
+
+    fun getListOfProdukty(): List<ProduktFaktura> {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                repository.getAllProdukty()
+            }
         }
     }
 

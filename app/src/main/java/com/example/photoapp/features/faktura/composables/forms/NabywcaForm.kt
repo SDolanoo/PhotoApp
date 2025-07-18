@@ -28,6 +28,7 @@ fun NabywcaForm(
     modifier: Modifier,
     fields: List<Pair<String, MutableState<String>>>,
     onEdit: () -> Unit,
+    onButtonClick: () -> Unit
 ) {
 
     val ROW_HEIGHT = 64.dp
@@ -41,7 +42,8 @@ fun NabywcaForm(
         CustomTextFieldWithButton(
             title = "Nazwa firmy",
             field = fields[0].second,
-            onEdit = { onEdit() }
+            onEdit = { onEdit() },
+            onButtonClick = { onButtonClick() }
         )
 
         CustomTextField(
@@ -67,7 +69,8 @@ fun NabywcaForm(
             CustomTextField(
                 title = "Kod pocztowy",
                 field = fields[3].second,
-                modifier = Modifier.weight(0.4f)
+                modifier = Modifier
+                    .weight(0.4f)
                     .fillMaxHeight(),
                 onEdit = { onEdit() }
             )
@@ -75,7 +78,8 @@ fun NabywcaForm(
             CustomTextField(
                 title = "Miejscowość",
                 field = fields[4].second,
-                modifier = Modifier.weight(0.6f)
+                modifier = Modifier
+                    .weight(0.6f)
                     .fillMaxHeight(),
                 onEdit = { onEdit() }
             )
@@ -124,7 +128,10 @@ fun NabywcaForm(
                 height = 28,
                 modifier = Modifier.weight(1f)
             )
-            HorizontalDivider(thickness = 1.dp, modifier=Modifier.width(120.dp ).padding(horizontal = 4.dp).padding(top = 14.dp))
+            HorizontalDivider(thickness = 1.dp, modifier=Modifier
+                .width(120.dp)
+                .padding(horizontal = 4.dp)
+                .padding(top = 14.dp))
         }
 
     }
