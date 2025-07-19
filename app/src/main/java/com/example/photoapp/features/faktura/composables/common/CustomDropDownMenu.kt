@@ -1,6 +1,8 @@
 package com.example.photoapp.features.faktura.composables.common
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -8,11 +10,19 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import kotlinx.coroutines.delay
 
 /**
  * A reusable exposed dropdown menu component for selecting a string from a predefined list.
@@ -44,23 +54,43 @@ import androidx.compose.ui.Modifier
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomDropdownMenu(
-    options:List<String>,
+    options: List<String>,
     label: String,
+    field: MutableState<String>,
+    modifier: Modifier = Modifier,
     selected: (String) -> Unit
 ) {
-    // State management
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf("") }
+    var isCustomInput by remember { mutableStateOf(false) }
 
-    // Material Design dropdown wrapper
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    val focusState = remember { mutableStateOf(false) }
+
+    // Watch for focus loss to revert back to dropdown mode
+    LaunchedEffect(focusState.value) {
+        if (!focusState.value && isCustomInput) {
+            isCustomInput = false
+        }
+    }
+
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+        onExpandedChange = {
+            if (!isCustomInput) {
+                expanded = !expanded
+            }
+        },
+        modifier = modifier
     ) {
         OutlinedTextField(
-            value = selectedOptionText,
-            onValueChange = { },
-            readOnly = true,
+            value = field.value,
+            onValueChange = {
+                field.value = it
+                selected(it)
+            },
+            readOnly = !isCustomInput,
             label = { Text(label) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
@@ -68,22 +98,42 @@ fun CustomDropdownMenu(
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()
+                .onFocusChanged {
+                    focusState.value = it.isFocused
+                }
+                .focusRequester(focusRequester),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus() // triggers focusState change
+                }
+            )
         )
 
-        // The dropdown menu
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            options.forEach { selectionOption ->
-                DropdownMenuItem(
-                    text = { Text(selectionOption) },
-                    onClick = {
-                        selectedOptionText = selectionOption
-                        selected(selectionOption)
-                        expanded = false
-                    }
-                )
+        // Show dropdown only if not in custom input mode
+        if (!isCustomInput) {
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { selectionOption ->
+                    DropdownMenuItem(
+                        text = { Text(selectionOption) },
+                        onClick = {
+                            expanded = false
+                            if (selectionOption == "więcej..") {
+                                field.value = ""
+                                isCustomInput = true
+                                focusRequester.requestFocus()
+                            } else {
+                                field.value = selectionOption
+                                selected(selectionOption)
+                            }
+                        }
+                    )
+                }
             }
         }
     }

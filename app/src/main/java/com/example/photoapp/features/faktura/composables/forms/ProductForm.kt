@@ -23,6 +23,7 @@ import com.example.photoapp.features.faktura.composables.common.CustomOutlinedBu
 import com.example.photoapp.features.faktura.composables.common.CustomTextField
 import com.example.photoapp.features.faktura.composables.common.CustomTextFieldWithButton
 import com.example.photoapp.R
+import com.example.photoapp.features.faktura.composables.common.CustomDropdownMenu
 import com.example.photoapp.features.faktura.composables.common.KeyboardType
 
 @Composable
@@ -64,12 +65,13 @@ fun ProductForm(
                 keyboardType = KeyboardType.NUMERIC
             )
 
-            CustomTextField(
-                title = "Jednostka",
+            CustomDropdownMenu(
+                options = listOf("szt", "godz", "dni", "mc", "kg", "m2", "więcej.."),
+                label = "Jednostka",
                 field = fields[2].second,
+                selected = { onEdit() },
                 modifier = Modifier.weight(1f)
-                    .fillMaxHeight(),
-                onEdit = { onEdit() }
+                    .fillMaxHeight()
             )
         }
 
@@ -88,13 +90,13 @@ fun ProductForm(
                 keyboardType = KeyboardType.NUMERIC
             )
 
-            CustomTextField(
-                title = "Vat %",
+            CustomDropdownMenu(
+                options = listOf("23", "8", "7", "5", "0", "zw", "np", "więcej.."),
+                label = "Vat %",
                 field = fields[4].second,
+                selected = { onEdit() },
                 modifier = Modifier.weight(1f)
-                    .fillMaxHeight(),
-                onEdit = { onEdit() },
-                keyboardType = KeyboardType.NUMERIC
+                    .fillMaxHeight()
             )
         }
 
