@@ -322,4 +322,15 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
+    fun replaceEditedProdukt(index: Int, product: ProduktFaktura,  callback: () -> Unit = {}) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _editedProdukty.update { currentList ->
+                currentList.toMutableList().apply {
+                    this[index] = product
+                }
+            }
+            callback()
+        }
+    }
+
 }

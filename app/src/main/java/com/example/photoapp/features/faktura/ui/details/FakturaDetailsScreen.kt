@@ -422,56 +422,57 @@ fun FakturaDetailsScreen(
                     items = editedProdukty,
                     key = { _, item -> item.id }
                 ) { index, product ->
+                    key (product.id) {
+                        val nazwaProduktu = remember { mutableStateOf(product.nazwaProduktu) }
+                        val ilosc = remember { mutableStateOf(product.ilosc) }
+                        val jednostkaMiary = remember { mutableStateOf(product.jednostkaMiary) }
+                        val cenaNetto = remember { mutableStateOf(product.cenaNetto) }
+                        val stawkaVat = remember { mutableStateOf(product.stawkaVat) }
+                        val wartoscNetto = remember { mutableStateOf(product.wartoscNetto) }
+                        val wartoscBrutto = remember { mutableStateOf(product.wartoscBrutto) }
+                        val rabat = remember { mutableStateOf(product.rabat) }
+                        val pkwiu = remember { mutableStateOf(product.pkwiu) }
 
-                    val nazwaProduktu = remember { mutableStateOf(product.nazwaProduktu) }
-                    val ilosc = remember { mutableStateOf(product.ilosc) }
-                    val jednostkaMiary = remember { mutableStateOf(product.jednostkaMiary) }
-                    val cenaNetto = remember { mutableStateOf(product.cenaNetto) }
-                    val stawkaVat = remember { mutableStateOf(product.stawkaVat) }
-                    val wartoscNetto = remember { mutableStateOf(product.wartoscNetto) }
-                    val wartoscBrutto = remember { mutableStateOf(product.wartoscBrutto) }
-                    val rabat = remember { mutableStateOf(product.rabat) }
-                    val pkwiu = remember { mutableStateOf(product.pkwiu) }
-
-                    ProductForm(
-                        modifier = Modifier,
-                        fields = listOf(
-                            "Nazwa" to nazwaProduktu,
-                            "Ilość" to ilosc,
-                            "Jednostka" to jednostkaMiary,
-                            "Cena netto" to cenaNetto,
-                            "Vat %" to stawkaVat,
-                            "Wartość netto" to wartoscNetto,
-                            "Wartość brutto" to wartoscBrutto,
-                            "Rabat %" to rabat,
-                            "PKWiU" to pkwiu,
-                        ),
-                        onDelete = {
-                            viewModel.deleteEditedProduct(product)
-                        },
-                        onEdit = {
-                            viewModel.updateEditedProductTemp(
-                                index,
-                                ProduktFaktura(
-                                    id = product.id,
-                                    nazwaProduktu = product.nazwaProduktu,
-                                    ilosc = product.ilosc,
-                                    jednostkaMiary = product.jednostkaMiary,
-                                    cenaNetto = product.cenaNetto,
-                                    stawkaVat = product.stawkaVat,
-                                    wartoscNetto = product.wartoscNetto,
-                                    wartoscBrutto = product.wartoscBrutto,
-                                    rabat = product.rabat,
-                                    pkwiu = product.pkwiu
-                                ),
-                                callback = {}
-                            )
-                        },
-                        onButtonClick = {
-                            dropdownProductIndex = index
-                            showProductDropdown = true
-                        }
-                    )
+                        ProductForm(
+                            modifier = Modifier,
+                            fields = listOf(
+                                "Nazwa" to nazwaProduktu,
+                                "Ilość" to ilosc,
+                                "Jednostka" to jednostkaMiary,
+                                "Cena netto" to cenaNetto,
+                                "Vat %" to stawkaVat,
+                                "Wartość netto" to wartoscNetto,
+                                "Wartość brutto" to wartoscBrutto,
+                                "Rabat %" to rabat,
+                                "PKWiU" to pkwiu,
+                            ),
+                            onDelete = {
+                                viewModel.deleteEditedProduct(product)
+                            },
+                            onEdit = {
+                                viewModel.updateEditedProductTemp(
+                                    index,
+                                    ProduktFaktura(
+                                        id = product.id,
+                                        nazwaProduktu = product.nazwaProduktu,
+                                        ilosc = product.ilosc,
+                                        jednostkaMiary = product.jednostkaMiary,
+                                        cenaNetto = product.cenaNetto,
+                                        stawkaVat = product.stawkaVat,
+                                        wartoscNetto = product.wartoscNetto,
+                                        wartoscBrutto = product.wartoscBrutto,
+                                        rabat = product.rabat,
+                                        pkwiu = product.pkwiu
+                                    ),
+                                    callback = {}
+                                )
+                            },
+                            onButtonClick = {
+                                dropdownProductIndex = index
+                                showProductDropdown = true
+                            }
+                        )
+                    }
 
                     HorizontalDivider(
                         thickness = 1.dp,
@@ -570,7 +571,7 @@ fun FakturaDetailsScreen(
         if (showProductDropdown) {
             SearchableDropdownOverlay(
                 items = viewModel.getListOfProdukty(),
-                onItemSelected = { viewModel.updateEditedProductTemp(dropdownProductIndex, it, callback = {}) },
+                onItemSelected = { viewModel.replaceEditedProdukt(dropdownProductIndex, it, callback = {}) },
                 onDismissRequest = { showProductDropdown = false },
                 itemToSearchableText = { it.nazwaProduktu },
                 itemContent = { produkt ->
