@@ -1,5 +1,6 @@
 package com.example.photoapp.features.faktura.composables.common
 
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,7 +36,13 @@ fun CustomTextField(
     field: MutableState<String>,
     modifier: Modifier = Modifier,
     onEdit: () -> Unit,
+    keyboardType: KeyboardType = KeyboardType.STANDARD
 ) {
+    val inputType = when (keyboardType) {
+        KeyboardType.NUMERIC -> androidx.compose.ui.text.input.KeyboardType.Number
+        KeyboardType.STANDARD -> androidx.compose.ui.text.input.KeyboardType.Text
+    }
+
     OutlinedTextField(
         value = field.value.toString(),
         onValueChange = {
@@ -44,6 +51,12 @@ fun CustomTextField(
                         },
         label = { Text(title) },
         modifier = modifier,
-        singleLine = true
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = inputType)
     )
+}
+
+enum class KeyboardType {
+    STANDARD,
+    NUMERIC
 }

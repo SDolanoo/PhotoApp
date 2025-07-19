@@ -22,6 +22,7 @@ import com.example.photoapp.R
 import com.example.photoapp.features.faktura.composables.common.CustomOutlinedButton
 import com.example.photoapp.features.faktura.composables.common.CustomTextField
 import com.example.photoapp.features.faktura.composables.common.CustomTextFieldWithButton
+import com.example.photoapp.features.faktura.composables.common.KeyboardType
 
 @Composable
 fun SprzedawcaForm(
@@ -50,7 +51,8 @@ fun SprzedawcaForm(
             title = "NIP",
             field = fields[1].second,
             modifier = Modifier.fillMaxWidth(),
-            onEdit = { onEdit() }
+            onEdit = { onEdit() },
+            keyboardType = KeyboardType.NUMERIC
         )
 
         CustomTextField(
@@ -71,7 +73,8 @@ fun SprzedawcaForm(
                 field = fields[3].second,
                 modifier = Modifier.weight(0.4f)
                     .fillMaxHeight(),
-                onEdit = { onEdit() }
+                onEdit = { onEdit() },
+                keyboardType = KeyboardType.NUMERIC
             )
 
             CustomTextField(
@@ -109,7 +112,8 @@ fun SprzedawcaForm(
                 title = "Telefon",
                 field = fields[8].second,
                 modifier = Modifier.fillMaxWidth(),
-                onEdit = { onEdit() }
+                onEdit = { onEdit() },
+                keyboardType = KeyboardType.NUMERIC
             )
         }
 

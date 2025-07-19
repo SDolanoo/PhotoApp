@@ -23,6 +23,7 @@ import com.example.photoapp.features.faktura.composables.common.CustomOutlinedBu
 import com.example.photoapp.features.faktura.composables.common.CustomTextField
 import com.example.photoapp.features.faktura.composables.common.CustomTextFieldWithButton
 import com.example.photoapp.R
+import com.example.photoapp.features.faktura.composables.common.KeyboardType
 
 @Composable
 fun ProductForm(
@@ -59,7 +60,8 @@ fun ProductForm(
                 field = fields[1].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight(),
-                onEdit = { onEdit() }
+                onEdit = { onEdit() },
+                keyboardType = KeyboardType.NUMERIC
             )
 
             CustomTextField(
@@ -82,7 +84,8 @@ fun ProductForm(
                 field = fields[3].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight(),
-                onEdit = { onEdit() }
+                onEdit = { onEdit() },
+                keyboardType = KeyboardType.NUMERIC
             )
 
             CustomTextField(
@@ -90,7 +93,8 @@ fun ProductForm(
                 field = fields[4].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight(),
-                onEdit = { onEdit() }
+                onEdit = { onEdit() },
+                keyboardType = KeyboardType.NUMERIC
             )
         }
 
@@ -106,7 +110,8 @@ fun ProductForm(
                 field = fields[5].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight(),
-                onEdit = { onEdit() }
+                onEdit = { onEdit() },
+                keyboardType = KeyboardType.NUMERIC
             )
 
             CustomTextField(
@@ -114,7 +119,8 @@ fun ProductForm(
                 field = fields[6].second,
                 modifier = Modifier.weight(1f)
                     .fillMaxHeight(),
-                onEdit = { onEdit() }
+                onEdit = { onEdit() },
+                keyboardType = KeyboardType.NUMERIC
             )
         }
 
@@ -130,7 +136,8 @@ fun ProductForm(
                     field = fields[7].second,
                     modifier = Modifier.weight(1f)
                         .fillMaxHeight(),
-                    onEdit = { onEdit() }
+                    onEdit = { onEdit() },
+                    keyboardType = KeyboardType.NUMERIC
                 )
 
                 CustomTextField(
