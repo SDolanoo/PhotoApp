@@ -191,21 +191,15 @@ class FakturaDetailsViewModel @Inject constructor(
             try {
                 val faktura = editedFaktura.value
                 val produktyEdited = editedProdukty.value
-                val produktyActual = actualProdukty.value
                 val sprzedawca = editedSprzedawca.value
                 val odbiorca = editedOdbiorca.value
-
-                if (faktura == null) {
-                    Log.e("Dolan", "Brakuje danych do zapisania")
-                    return@launch
-                }
 
                 val nowaListaId = mutableListOf<Long>()
 
                 // 🧠 OBSŁUGA KAŻDEGO PRODUKTU INDYWIDUALNIE
                 produktyEdited.forEachIndexed { index, produkt ->
                     val produktId = when (produkt.id) {
-                        0L -> repository.insertProdukt(produkt) // Zwraca nowe ID
+                        in Long.MIN_VALUE until 1L -> repository.insertProdukt(produkt) // Zwraca nowe ID
                         else -> {
                             repository.updateProdukt(produkt)
                             produkt.id
@@ -234,14 +228,15 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun addOneProductToEdited(nazwaProduktu: String, ilosc: String, callback: () -> Unit = {}) {
-        viewModelScope.launch(Dispatchers.IO) {
+    private var nextTempProductId = -1L
 
+    fun addOneProductToEdited(callback: () -> Unit = {}) {
+        viewModelScope.launch(Dispatchers.IO) {
             val newProduct = ProduktFaktura(
-                id = 0L,
-                nazwaProduktu = nazwaProduktu,
+                id = nextTempProductId--,
+                nazwaProduktu = "Nazwa Produktu",
                 jednostkaMiary = "szt.",
-                ilosc = ilosc,
+                ilosc = "1",
                 cenaNetto = "0",
                 wartoscNetto = "0",
                 wartoscBrutto = "0",
@@ -251,8 +246,20 @@ class FakturaDetailsViewModel @Inject constructor(
             )
 
             _editedProdukty.update { currentList ->
-                currentList + newProduct
+                val index = currentList.indexOfFirst { it.nazwaProduktu == newProduct.nazwaProduktu }
+
+                if (index >= 0) {
+                    val existing = currentList[index]
+                    val newIlosc = (existing.ilosc.toIntOrNull() ?: 1) + 1
+
+                    currentList.toMutableList().apply {
+                        set(index, existing.copy(ilosc = newIlosc.toString()))
+                    }
+                } else {
+                    currentList + newProduct
+                }
             }
+
             callback()
         }
     }

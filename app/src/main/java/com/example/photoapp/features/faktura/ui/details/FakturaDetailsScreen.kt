@@ -1,6 +1,7 @@
 package com.example.photoapp.features.faktura.ui.details
 
 import android.util.Log
+import androidx.compose.animation.core.estimateAnimationDurationMillis
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,6 +55,7 @@ import com.example.photoapp.features.faktura.composables.readOnly.NabywcaReadOnl
 import com.example.photoapp.features.faktura.composables.readOnly.ProductReadOnly
 import com.example.photoapp.features.faktura.composables.readOnly.SprzedawcaReadOnly
 import com.example.photoapp.features.faktura.data.faktura.Faktura
+import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import com.example.photoapp.features.faktura.ui.DatePickerTarget
@@ -84,7 +86,8 @@ fun FakturaDetailsScreen(
 
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickerTarget by remember { mutableStateOf<DatePickerTarget?>(null) }
-    var customDate by remember { mutableStateOf(convertDateToString(Date())) }
+    var customDateWystawienia by remember { mutableStateOf(convertDateToString(Date())) }
+    var customDateSprzedazy by remember { mutableStateOf(convertDateToString(Date())) }
 
 
     var showOdbiorcaDropdown by remember { mutableStateOf(false) }
@@ -169,13 +172,13 @@ fun FakturaDetailsScreen(
 
             item {
                 if (isEditing) {
-                    val newTyp = remember { mutableStateOf(editedFaktura!!.typFaktury) }
-                    val newNumer = remember { mutableStateOf(editedFaktura!!.numerFaktury) }
+                    val newTyp = remember { mutableStateOf(editedFaktura.typFaktury) }
+                    val newNumer = remember { mutableStateOf(editedFaktura.numerFaktury) }
                     val newDataWystawienia =
-                        remember { mutableStateOf(convertDateToString(editedFaktura!!.dataWystawienia!!)) }
+                        remember { mutableStateOf(convertDateToString(editedFaktura.dataWystawienia!!)) }
                     val newDataSprzedazy =
-                        remember { mutableStateOf(convertDateToString(editedFaktura!!.dataSprzedazy!!)) }
-                    val newMiejsceWystawienia = remember { mutableStateOf(editedFaktura!!.miejsceWystawienia) }
+                        remember { mutableStateOf(convertDateToString(editedFaktura.dataSprzedazy!!)) }
+                    val newMiejsceWystawienia = remember { mutableStateOf(editedFaktura.miejsceWystawienia) }
                     InvoiceForm(
                         modifier = Modifier,
                         fields = listOf(
@@ -197,26 +200,33 @@ fun FakturaDetailsScreen(
                             viewModel.updateEditedFakturaTemp(
                                 faktura = Faktura(
                                     id = faktura.id,
-                                    uzytkownikId = editedFaktura!!.uzytkownikId,
-                                    odbiorcaId = editedFaktura!!.odbiorcaId,
-                                    sprzedawcaId = editedFaktura!!.sprzedawcaId,
+                                    uzytkownikId = editedFaktura.uzytkownikId,
+                                    odbiorcaId = editedFaktura.odbiorcaId,
+                                    sprzedawcaId = editedFaktura.sprzedawcaId,
                                     typFaktury = newTyp.toString(),
                                     numerFaktury = newNumer.toString(),
                                     dataWystawienia = convertStringToDate(newDataWystawienia.toString()),
                                     dataSprzedazy = convertStringToDate(newDataSprzedazy.toString()),
                                     miejsceWystawienia = newMiejsceWystawienia.toString(),
-                                    razemNetto = editedFaktura!!.razemNetto,
-                                    razemVAT = editedFaktura!!.razemVAT,
-                                    razemBrutto = editedFaktura!!.razemBrutto,
-                                    doZaplaty = editedFaktura!!.doZaplaty,
-                                    waluta = editedFaktura!!.waluta,
-                                    formaPlatnosci = editedFaktura!!.formaPlatnosci,
+                                    razemNetto = editedFaktura.razemNetto,
+                                    razemVAT = editedFaktura.razemVAT,
+                                    razemBrutto = editedFaktura.razemBrutto,
+                                    doZaplaty = editedFaktura.doZaplaty,
+                                    waluta = editedFaktura.waluta,
+                                    formaPlatnosci = editedFaktura.formaPlatnosci,
                                     produktyId = emptyList()
                                 ),
                                 callback = {}
                             )
                         }
                     )
+                    LaunchedEffect(editedFaktura.dataSprzedazy) {
+                        newDataSprzedazy.value = convertDateToString(editedFaktura.dataSprzedazy!!)
+                    }
+
+                    LaunchedEffect(editedFaktura.dataWystawienia) {
+                        newDataWystawienia.value = convertDateToString(editedFaktura.dataWystawienia!!)
+                    }
                 } else {
                     InvoiceReadOnly(
                         modifier = Modifier,
@@ -442,7 +452,18 @@ fun FakturaDetailsScreen(
                         onEdit = {
                             viewModel.updateEditedProductTemp(
                                 index,
-                                product,
+                                ProduktFaktura(
+                                    id = product.id,
+                                    nazwaProduktu = product.nazwaProduktu,
+                                    ilosc = product.ilosc,
+                                    jednostkaMiary = product.jednostkaMiary,
+                                    cenaNetto = product.cenaNetto,
+                                    stawkaVat = product.stawkaVat,
+                                    wartoscNetto = product.wartoscNetto,
+                                    wartoscBrutto = product.wartoscBrutto,
+                                    rabat = product.rabat,
+                                    pkwiu = product.pkwiu
+                                ),
                                 callback = {}
                             )
                         },
@@ -465,10 +486,7 @@ fun FakturaDetailsScreen(
                         CustomOutlinedButton(
                             title = "Dodaj",
                             onClick = {
-                                viewModel.addOneProductToEdited(
-                                    nazwaProduktu = "Nowy produkt",
-                                    ilosc = "1"
-                                )
+                                viewModel.addOneProductToEdited()
                             },
                             icon = painterResource(R.drawable.baseline_add_24),
                             height = 48,
@@ -503,14 +521,15 @@ fun FakturaDetailsScreen(
 
         if (showDatePicker) {
             DatePickerModal(
-                onDateSelected = { it ->
-                    if (it != null) {
+                onDateSelected = { millis ->
+                    if (millis != null) {
+                        val newDate = convertMillisToString(millis)
                         if (datePickerTarget == DatePickerTarget.WYSTAWIENIA) {
-                            customDate = convertMillisToString(it)
+                            viewModel.updateEditedFakturaTemp(editedFaktura.copy(dataWystawienia = convertStringToDate(newDate))) {  }
                         } else {
-                            customDate = convertMillisToString(it)
+                            viewModel.updateEditedFakturaTemp(editedFaktura.copy(dataSprzedazy = convertStringToDate(newDate))) {  }
                         }
-                        Log.i("Dolan", "UPDATED RAPORT $customDate")
+                        Log.i("Dolan", "UPDATED RAPORT $newDate")
 
                     }
                 },
