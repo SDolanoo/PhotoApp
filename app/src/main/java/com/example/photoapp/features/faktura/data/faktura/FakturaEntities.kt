@@ -30,7 +30,28 @@ data class Faktura(
     @ColumnInfo(name = "waluta") val waluta: String,
     @ColumnInfo(name = "formaPlatnosci") val formaPlatnosci: String,
     @ColumnInfo(name = "produktyId") val produktyId: List<Long>
-)
+) {
+    companion object {
+        fun default() = Faktura(
+            id = 1L,
+            uzytkownikId = 1L,
+            odbiorcaId = 1L,
+            sprzedawcaId = 1L,
+            typFaktury = "Faktura",
+            numerFaktury = "FV-TEST-001",
+            dataWystawienia = Date(),
+            dataSprzedazy = Date(),
+            razemNetto = "100.00",
+            razemVAT = "23",
+            razemBrutto = "123.00",
+            doZaplaty = "123.00",
+            waluta = "PLN",
+            formaPlatnosci = "Przelew",
+            miejsceWystawienia = "",
+            produktyId = emptyList()
+        )
+    }
+}
 
 @Entity
 data class ProduktFaktura(

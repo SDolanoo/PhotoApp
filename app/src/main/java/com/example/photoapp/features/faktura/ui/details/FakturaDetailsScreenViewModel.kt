@@ -33,27 +33,10 @@ class FakturaDetailsViewModel @Inject constructor(
 ) : ViewModel() {
 
     // ---- FAKTURA ----
-    private val _actualFaktura = MutableStateFlow<Faktura?>(null)
-    val actualFaktura: StateFlow<Faktura?> = _actualFaktura.asStateFlow()
+    private val _actualFaktura = MutableStateFlow<Faktura>(Faktura.default())
+    val actualFaktura: StateFlow<Faktura> = _actualFaktura.asStateFlow()
 
-    private val _editedFaktura = MutableStateFlow<Faktura>(Faktura(
-        id = 1L,
-        uzytkownikId = 1L,
-        odbiorcaId = 1L,
-        sprzedawcaId = 1L,
-        typFaktury = "Faktura",
-        numerFaktury = "FV-TEST-001",
-        dataWystawienia = Date(),
-        dataSprzedazy = Date(),
-        razemNetto = "100.00",
-        razemVAT = "23",
-        razemBrutto = "123.00",
-        doZaplaty = "123.00",
-        waluta = "PLN",
-        formaPlatnosci = "Przelew",
-        miejsceWystawienia = "",
-        produktyId = emptyList()
-    ))
+    private val _editedFaktura = MutableStateFlow<Faktura>(Faktura.default())
     val editedFaktura: StateFlow<Faktura> = _editedFaktura.asStateFlow()
 
     // ---- PRODUKTY ----
@@ -64,49 +47,17 @@ class FakturaDetailsViewModel @Inject constructor(
     val editedProdukty: StateFlow<List<ProduktFaktura>> = _editedProdukty.asStateFlow()
 
     // ---- SPRZEDAWCA ----
-    private val _actualSprzedawca = MutableStateFlow<Sprzedawca>(Sprzedawca(
-        nazwa = "", nip = "", adres = "",
-        kodPocztowy = "",
-        miejscowosc = "",
-        kraj = "",
-        opis = "",
-        email = "",
-        telefon = ""
-    ))
+    private val _actualSprzedawca = MutableStateFlow<Sprzedawca>(Sprzedawca.empty())
     val actualSprzedawca: StateFlow<Sprzedawca> = _actualSprzedawca.asStateFlow()
 
-    private val _editedSprzedawca = MutableStateFlow<Sprzedawca>(Sprzedawca(
-        nazwa = "", nip = "", adres = "",
-        kodPocztowy = "",
-        miejscowosc = "",
-        kraj = "",
-        opis = "",
-        email = "",
-        telefon = ""
-    ))
+    private val _editedSprzedawca = MutableStateFlow<Sprzedawca>(Sprzedawca.empty())
     val editedSprzedawca: StateFlow<Sprzedawca> = _editedSprzedawca.asStateFlow()
 
     // ---- ODBIORCA ----
-    private val _actualOdbiorca = MutableStateFlow<Odbiorca>(Odbiorca(
-        nazwa = "", nip = "", adres = "",
-        kodPocztowy = "",
-        miejscowosc = "",
-        kraj = "",
-        opis = "",
-        email = "",
-        telefon = ""
-    ))
+    private val _actualOdbiorca = MutableStateFlow<Odbiorca>(Odbiorca.empty())
     val actualOdbiorca: StateFlow<Odbiorca> = _actualOdbiorca.asStateFlow()
 
-    private val _editedOdbiorca = MutableStateFlow<Odbiorca>(Odbiorca(
-        nazwa = "", nip = "", adres = "",
-        kodPocztowy = "",
-        miejscowosc = "",
-        kraj = "",
-        opis = "",
-        email = "",
-        telefon = ""
-    ))
+    private val _editedOdbiorca = MutableStateFlow<Odbiorca>(Odbiorca.empty())
     val editedOdbiorca: StateFlow<Odbiorca> = _editedOdbiorca.asStateFlow()
 
 
@@ -116,6 +67,7 @@ class FakturaDetailsViewModel @Inject constructor(
             val sprzedawca = sprzedawcaRepository.getById(faktura.sprzedawcaId.toLong())
             val odbiorca = odbiorcaRepository.getById(faktura.odbiorcaId.toLong())
             // Ustawienie actual i edited jednocześnie
+            _actualFaktura.value = faktura
             _editedFaktura.value = faktura
 
             _actualProdukty.value = produkty
@@ -215,10 +167,10 @@ class FakturaDetailsViewModel @Inject constructor(
                 val editedIds = produktyEdited.map { it.id }.toSet()
 
                 // 🔁 Aktualizacja sprzedawcy i odbiorcy
-                sprzedawcaRepository.update(sprzedawca)
-                odbiorcaRepository.update(odbiorca)
+                val sprzedawcaId = sprzedawcaRepository.upsertSprzedawcaSmart(sprzedawca)
+                val odbiorcaId = odbiorcaRepository.upsertOdbiorcaSmart(odbiorca)
 
-                val updatedFaktura = faktura.copy(produktyId = nowaListaId)
+                val updatedFaktura = faktura.copy(produktyId = nowaListaId, sprzedawcaId = sprzedawcaId, odbiorcaId = odbiorcaId)
                 repository.updateFaktura(updatedFaktura)
                 callback(updatedFaktura)
 
@@ -302,6 +254,8 @@ class FakturaDetailsViewModel @Inject constructor(
         return runBlocking {
             withContext(Dispatchers.IO) {
                 sprzedawcaRepository.getAll()
+                    .sortedBy { it.id }                       // Najpierw sortujemy po ID
+                    .distinctBy { it.nazwa.trim().lowercase() } // Unikalne po nazwie (ignorując wielkość liter i spacje)
             }
         }
     }
@@ -310,6 +264,8 @@ class FakturaDetailsViewModel @Inject constructor(
         return runBlocking {
             withContext(Dispatchers.IO) {
                 odbiorcaRepository.getAllOdbiorcy()
+                    .sortedBy { it.id }
+                    .distinctBy { it.nazwa.trim().lowercase() }
             }
         }
     }
@@ -318,6 +274,8 @@ class FakturaDetailsViewModel @Inject constructor(
         return runBlocking {
             withContext(Dispatchers.IO) {
                 repository.getAllProdukty()
+                    .sortedBy { it.id }
+                    .distinctBy { it.nazwaProduktu.trim().lowercase() }
             }
         }
     }

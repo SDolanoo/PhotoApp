@@ -1,6 +1,7 @@
 package com.example.photoapp.features.faktura.ui.details
 
 import android.util.Log
+import android.util.Log.v
 import androidx.compose.animation.core.estimateAnimationDurationMillis
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -60,6 +62,8 @@ import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import com.example.photoapp.features.faktura.ui.DatePickerTarget
 import com.example.photoapp.features.faktura.ui.FakeData.odbiorca
+import com.example.photoapp.features.faktura.validation.ValidationField
+import com.example.photoapp.features.faktura.validation.ValidationViewModel
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,8 +71,10 @@ import java.util.Date
 fun FakturaDetailsScreen(
     faktura: Faktura,
     leaveDetailsScreen: () -> Unit,
-    viewModel: FakturaDetailsViewModel = hiltViewModel()
+    viewModel: FakturaDetailsViewModel = hiltViewModel(),
+    validationVM: ValidationViewModel = hiltViewModel()
 ) {
+    val actualFaktura by viewModel.actualFaktura.collectAsState()
     val editedFaktura by viewModel.editedFaktura.collectAsState()
 
     val actualProdukty by viewModel.actualProdukty.collectAsState()
@@ -94,6 +100,8 @@ fun FakturaDetailsScreen(
     var showSprzedawcaDropdown by remember { mutableStateOf(false) }
     var showProductDropdown by remember { mutableStateOf(false) }
     var dropdownProductIndex by remember { mutableIntStateOf(0) }
+
+    val validationResult by validationVM.validationResult.collectAsState()
 
     LaunchedEffect(faktura) {
         viewModel.getFakturaByID(faktura.id) { f ->
@@ -134,8 +142,18 @@ fun FakturaDetailsScreen(
             actions = {
                 if (isEditing) {
                     IconButton(onClick = {
-                        isEditing = false
-                        viewModel.editingSuccess()
+                        validationVM.validate(
+                            sellerName = editedSprzedawca.nazwa,
+                            buyerName = editedOdbiorca.nazwa,
+                            products = editedProdukty
+                        ) { isValid ->
+                            if (isValid) {
+                                isEditing = false
+                                viewModel.editingSuccess()
+                            }
+                        }
+
+
                     }) {
                         Icon(Icons.Default.Check, contentDescription = "Save")
                     }
@@ -201,13 +219,13 @@ fun FakturaDetailsScreen(
                                 faktura = Faktura(
                                     id = faktura.id,
                                     uzytkownikId = editedFaktura.uzytkownikId,
-                                    odbiorcaId = editedFaktura.odbiorcaId,
-                                    sprzedawcaId = editedFaktura.sprzedawcaId,
-                                    typFaktury = newTyp.toString(),
-                                    numerFaktury = newNumer.toString(),
-                                    dataWystawienia = convertStringToDate(newDataWystawienia.toString()),
-                                    dataSprzedazy = convertStringToDate(newDataSprzedazy.toString()),
-                                    miejsceWystawienia = newMiejsceWystawienia.toString(),
+                                    odbiorcaId = editedOdbiorca.id,
+                                    sprzedawcaId = editedSprzedawca.id,
+                                    typFaktury = newTyp.value,
+                                    numerFaktury = newNumer.value,
+                                    dataWystawienia = convertStringToDate(newDataWystawienia.value),
+                                    dataSprzedazy = convertStringToDate(newDataSprzedazy.value),
+                                    miejsceWystawienia = newMiejsceWystawienia.value,
                                     razemNetto = editedFaktura.razemNetto,
                                     razemVAT = editedFaktura.razemVAT,
                                     razemBrutto = editedFaktura.razemBrutto,
@@ -231,11 +249,11 @@ fun FakturaDetailsScreen(
                     InvoiceReadOnly(
                         modifier = Modifier,
                         fields = listOf(
-                            faktura.typFaktury,
-                            faktura.numerFaktury,
-                            convertDateToString(faktura.dataWystawienia!!),
-                            convertDateToString(faktura.dataSprzedazy!!),
-                            faktura.miejsceWystawienia
+                            actualFaktura.typFaktury,
+                            actualFaktura.numerFaktury,
+                            convertDateToString(actualFaktura.dataWystawienia!!),
+                            convertDateToString(actualFaktura.dataSprzedazy!!),
+                            actualFaktura.miejsceWystawienia
                         )
                     )
                 }
@@ -257,6 +275,16 @@ fun FakturaDetailsScreen(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
+
+                validationResult.fieldErrors["SELLER_NAME"]?.let { error ->
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
+
 
                 if (isEditing) {
                     key(editedSprzedawca.id) {
@@ -300,7 +328,7 @@ fun FakturaDetailsScreen(
                             },
                             onButtonClick = {
                                 showSprzedawcaDropdown = true
-                            }
+                            },
                         )
                     }
                 } else {
@@ -337,6 +365,16 @@ fun FakturaDetailsScreen(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
+
+                validationResult.fieldErrors["BUYER_NAME"]?.let { error ->
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
+
                 if (isEditing) {
                     key(editedOdbiorca.id) {
                         val newNazwa = remember { mutableStateOf(editedOdbiorca.nazwa) }
@@ -423,6 +461,17 @@ fun FakturaDetailsScreen(
                     key = { _, item -> item.id }
                 ) { index, product ->
                     key (product.id) {
+
+                        val errorName = validationResult.fieldErrors["PRODUCT_NAME_$index"]
+                        val errorQuantity = validationResult.fieldErrors["PRODUCT_QUANTITY_$index"]
+                        val errorBrutto = validationResult.fieldErrors["PRODUCT_BRUTTO_$index"]
+
+                        Column(modifier = Modifier.padding(start = 16.dp, top = 4.dp)) {
+                            errorName?.let { Text(text = it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+                            errorQuantity?.let { Text(text = it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+                            errorBrutto?.let { Text(text = it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+                        }
+
                         val nazwaProduktu = remember { mutableStateOf(product.nazwaProduktu) }
                         val ilosc = remember { mutableStateOf(product.ilosc) }
                         val jednostkaMiary = remember { mutableStateOf(product.jednostkaMiary) }
@@ -454,15 +503,15 @@ fun FakturaDetailsScreen(
                                     index,
                                     ProduktFaktura(
                                         id = product.id,
-                                        nazwaProduktu = product.nazwaProduktu,
-                                        ilosc = product.ilosc,
-                                        jednostkaMiary = product.jednostkaMiary,
-                                        cenaNetto = product.cenaNetto,
-                                        stawkaVat = product.stawkaVat,
-                                        wartoscNetto = product.wartoscNetto,
-                                        wartoscBrutto = product.wartoscBrutto,
-                                        rabat = product.rabat,
-                                        pkwiu = product.pkwiu
+                                        nazwaProduktu = nazwaProduktu.value,
+                                        ilosc = ilosc.value,
+                                        jednostkaMiary = jednostkaMiary.value,
+                                        cenaNetto = cenaNetto.value,
+                                        stawkaVat = stawkaVat.value,
+                                        wartoscNetto = wartoscNetto.value,
+                                        wartoscBrutto = wartoscBrutto.value,
+                                        rabat = rabat.value,
+                                        pkwiu = pkwiu.value
                                     ),
                                     callback = {}
                                 )
@@ -578,7 +627,10 @@ fun FakturaDetailsScreen(
                     Column {
                         Row {
                             Text(text = produkt.nazwaProduktu, fontWeight = FontWeight.Bold)
-                            Text(text = "Cena: ${"%.2f".format(produkt.wartoscBrutto)} zł")
+                            val formattedPrice = produkt.wartoscBrutto.toDoubleOrNull()?.let {
+                                "%.2f".format(it)
+                            } ?: "Błąd"
+                            Text(text = "Cena: $formattedPrice zł")
                         }
                     }
                 },

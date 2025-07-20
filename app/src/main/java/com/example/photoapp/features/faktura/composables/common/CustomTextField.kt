@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 
 /**
  * A reusable single-line text input field with a label.
@@ -35,6 +36,7 @@ fun CustomTextField(
     title: String,
     field: MutableState<String>,
     modifier: Modifier = Modifier,
+    error: String? = null,
     onEdit: () -> Unit,
     keyboardType: KeyboardType = KeyboardType.STANDARD
 ) {
@@ -50,6 +52,7 @@ fun CustomTextField(
             onEdit()
                         },
         label = { Text(title) },
+        isError = error != null,
         modifier = modifier,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = inputType)

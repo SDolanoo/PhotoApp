@@ -35,4 +35,66 @@ class SprzedawcaRepository @Inject constructor(
     fun update(sprzedawca: Sprzedawca) = sprzedawcaDao.update(sprzedawca)
 
     fun delete(sprzedawca: Sprzedawca) = sprzedawcaDao.delete(sprzedawca)
+
+    fun upsertSprzedawcaSmart(new: Sprzedawca): Long {
+        val existingList = getAll()
+
+        when (val mode = determineSaveModeForSprzedawca(new, existingList)) {
+            is SaveMode.Update -> {
+                val updated = new.copy(id = mode.existingId)
+                update(updated)
+                updated
+                return mode.existingId
+            }
+            SaveMode.Insert -> {
+                val newId = insert(new.copy(id = 0L))
+                new.copy(id = newId)
+                return newId
+            }
+        }
+    }
+
+
+    fun determineSaveModeForSprzedawca(
+        new: Sprzedawca,
+        existingList: List<Sprzedawca>
+    ): SaveMode {
+        val normalizedNewName = new.nazwa.trim().lowercase()
+        val normalizedNewNip = new.nip.trim()
+
+        for (existing in existingList) {
+            val normalizedExistingName = existing.nazwa.trim().lowercase()
+            val normalizedExistingNip = existing.nip.trim()
+
+            // 🔁 MATCH 1: Ten sam NIP (priorytetowo)
+            if (normalizedNewNip.isNotEmpty() &&
+                normalizedNewNip == normalizedExistingNip
+            ) {
+                Log.i("Dolan", "UPDATE")
+                return SaveMode.Update(existing.id)
+            }
+
+            // 🔁 MATCH 2: Brak NIPU, ale ta sama nazwa
+            if (normalizedNewNip.isEmpty() &&
+                normalizedNewName == normalizedExistingName
+            ) {
+                Log.i("Dolan", "UPDATE")
+                return SaveMode.Update(existing.id)
+            }
+
+            // 🔁 MATCH 3: Nazwa ta sama, różne inne dane
+            if (normalizedNewName == normalizedExistingName) {
+                Log.i("Dolan", "UPDATE")
+                return SaveMode.Update(existing.id)
+            }
+        }
+        Log.i("Dolan", "INSERT")
+        return SaveMode.Insert
+    }
+
+}
+
+sealed class SaveMode {
+    data class Update(val existingId: Long) : SaveMode()
+    object Insert : SaveMode()
 }

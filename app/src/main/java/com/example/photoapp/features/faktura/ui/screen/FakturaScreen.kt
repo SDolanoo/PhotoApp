@@ -87,7 +87,7 @@ fun FakturaScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        if (isDeleteMode) "Usuń Raporty Fiskalne" else "Widok Raporty Fiskalne",
+                        if (isDeleteMode) "Usuń Faktury" else "Widok Faktury",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
