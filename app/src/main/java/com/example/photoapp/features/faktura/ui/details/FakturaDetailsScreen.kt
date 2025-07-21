@@ -1,14 +1,11 @@
 package com.example.photoapp.features.faktura.ui.details
 
 import android.util.Log
-import android.util.Log.v
-import androidx.compose.animation.core.estimateAnimationDurationMillis
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -61,8 +58,6 @@ import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import com.example.photoapp.features.faktura.ui.DatePickerTarget
-import com.example.photoapp.features.faktura.ui.FakeData.odbiorca
-import com.example.photoapp.features.faktura.validation.ValidationField
 import com.example.photoapp.features.faktura.validation.ValidationViewModel
 import java.util.Date
 
@@ -547,25 +542,7 @@ fun FakturaDetailsScreen(
                     }
                 }
             } else { // Products
-                items(
-                    items = actualProdukty,
-                    key = { it.id }
-                ) { product ->
-                    ProductReadOnly(
-                        modifier = Modifier,
-                        fields = listOf(
-                            product.nazwaProduktu,
-                            product.ilosc,
-                            product.jednostkaMiary,
-                            product.cenaNetto,
-                            product.stawkaVat,
-                            product.wartoscNetto,
-                            product.wartoscBrutto,
-                            product.rabat,
-                            product.pkwiu,
-                        ),
-                    )
-                }
+                item {ProductReadOnly(modifier = Modifier, produkty = actualProdukty)}
             }
         }
 

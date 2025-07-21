@@ -3,141 +3,55 @@ package com.example.photoapp.features.faktura.composables.readOnly
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.photoapp.features.faktura.composables.common.CustomOutlinedButton
-import com.example.photoapp.R
-import com.example.photoapp.features.faktura.composables.common.CustomText
+import com.example.photoapp.features.faktura.composables.common.DividerLine
+import com.example.photoapp.features.faktura.composables.common.PriceSummary
+import com.example.photoapp.features.faktura.composables.common.ProduktFakturaSection
+import com.example.photoapp.features.faktura.composables.common.SectionCard
+import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 
 @Composable
 fun ProductReadOnly(
     modifier: Modifier,
-    fields: List<String>
+    produkty: List<ProduktFaktura>
 ) {
-    val ROW_HEIGHT = 64.dp
-
-    var state by remember { mutableStateOf("less") } // or more
-
     Column(
         modifier = modifier.padding(4.dp)
     ) {
-
-        CustomText(
-            title = "Nazwa",
-            field = fields[0]
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(ROW_HEIGHT),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        SectionCard(
+            title = "Products",
+            icon = Icons.Filled.ThumbUp
         ) {
-            CustomText(
-                title = "Ilość",
-                field = fields[1],
-                modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
-            )
 
-            CustomText(
-                title = "Jednostka",
-                field = fields[2],
-                modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(ROW_HEIGHT),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            CustomText(
-                title = "Cena netto",
-                field = fields[3],
-                modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
-            )
-
-            CustomText(
-                title = "Vat %",
-                field = fields[4],
-                modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
-            )
-        }
-
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(ROW_HEIGHT),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            CustomText(
-                title = "Wartość netto",
-                field = fields[5],
-                modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
-            )
-
-            CustomText(
-                title = "Wartość brutto",
-                field = fields[6],
-                modifier = Modifier.weight(1f)
-                    .fillMaxHeight()
-            )
-        }
-
-        if (state == "more") {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(ROW_HEIGHT),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                CustomText(
-                    title = "Rabat %",
-                    field = fields[7],
-                    modifier = Modifier.weight(1f)
-                        .fillMaxHeight()
-                )
-
-                CustomText(
-                    title = "PKWiU",
-                    field = fields[8],
-                    modifier = Modifier.weight(1f)
-                        .fillMaxHeight()
-                )
+            produkty.forEach { produkt ->
+                ProduktFakturaSection(produkt)
+                DividerLine()
             }
-        }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            //horizontalArrangement = Arrangement.spacedBy(120.dp)
-        ) {
-            CustomOutlinedButton(
-                title = if (state == "less") "więcej opcji" else "mniej opcji",
-                onClick = { if (state == "less") state = "more" else state = "less" },
-                icon = if (state == "less") painterResource(R.drawable.baseline_expand_more_24) else painterResource(R.drawable.baseline_expand_less_24),
-                height = 28,
-                modifier = Modifier.weight(1f)
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider(color = Color(0xFFDDDDDD), thickness = 1.dp)
+
+            PriceSummary(
+                subtotal = "$1,345.50",
+                tax = "$114.37",
+                total = "$1,459.87"
             )
         }
-
     }
 }
