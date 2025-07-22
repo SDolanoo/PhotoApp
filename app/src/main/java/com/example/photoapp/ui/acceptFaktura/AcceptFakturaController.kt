@@ -12,10 +12,6 @@ import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -27,7 +23,6 @@ class AcceptFakturaController @Inject constructor(
     private val sprzedawcaRepository: SprzedawcaRepository,
     private val odbiorcaRepository: OdbiorcaRepository
 ) : ViewModel() {
-
     fun allProducts(): List<ProduktFaktura> {
         return runBlocking {
             withContext(Dispatchers.IO) {

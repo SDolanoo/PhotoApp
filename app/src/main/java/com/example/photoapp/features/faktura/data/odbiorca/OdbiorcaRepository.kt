@@ -97,4 +97,5 @@ class OdbiorcaRepository @Inject constructor(
 sealed class SaveMode {
     data class Update(val existingId: Long) : SaveMode()
     object Insert : SaveMode()
+    object Skip : SaveMode()
 }

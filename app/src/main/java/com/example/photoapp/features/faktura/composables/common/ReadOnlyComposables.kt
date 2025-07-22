@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
+import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
 
 @Composable
 fun SectionCard(title: String, icon: ImageVector, content: @Composable ColumnScope.() -> Unit) {
@@ -103,16 +104,16 @@ fun DividerLine() {
 }
 
 @Composable
-fun ProduktFakturaSection(produkt: ProduktFaktura) {
+fun ProduktFakturaSection(produkt: ProduktFakturaZProduktem) {
     SectionCard(
         title = "Produkt",
         icon = Icons.Filled.ThumbUp
     ) {
-        InfoRow("Nazwa Produktu", produkt.nazwaProduktu)
-        TwoColumnRow("Ilość", produkt.ilosc, "Jednostka Miary", produkt.jednostkaMiary)
-        TwoColumnRow("Cena Netto", produkt.cenaNetto, "Stawka VAT", produkt.stawkaVat)
-        TwoColumnRow("Wartość Netto", produkt.wartoscNetto, "Wartość Brutto", produkt.wartoscBrutto)
-        TwoColumnRow("Rabat", produkt.rabat, "PKWiU", produkt.pkwiu)
+        InfoRow("Nazwa Produktu", produkt.produkt.nazwaProduktu)
+        TwoColumnRow("Ilość", produkt.produktFaktura.ilosc, "Jednostka Miary", produkt.produkt.jednostkaMiary)
+        TwoColumnRow("Cena Netto", produkt.produkt.cenaNetto, "Stawka VAT", produkt.produkt.stawkaVat)
+        TwoColumnRow("Wartość Netto", produkt.produktFaktura.wartoscNetto, "Wartość Brutto", produkt.produktFaktura.wartoscBrutto)
+        InfoRow("Rabat", produkt.produktFaktura.rabat)
     }
 }
 

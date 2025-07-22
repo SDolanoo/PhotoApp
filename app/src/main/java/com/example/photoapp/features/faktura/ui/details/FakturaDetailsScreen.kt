@@ -54,12 +54,12 @@ import com.example.photoapp.features.faktura.composables.readOnly.NabywcaReadOnl
 import com.example.photoapp.features.faktura.composables.readOnly.ProductReadOnly
 import com.example.photoapp.features.faktura.composables.readOnly.SprzedawcaReadOnly
 import com.example.photoapp.features.faktura.data.faktura.Faktura
+import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import com.example.photoapp.features.faktura.ui.DatePickerTarget
 import com.example.photoapp.features.faktura.validation.ValidationViewModel
-import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,8 +87,6 @@ fun FakturaDetailsScreen(
 
     var showDatePicker by remember { mutableStateOf(false) }
     var datePickerTarget by remember { mutableStateOf<DatePickerTarget?>(null) }
-    var customDateWystawienia by remember { mutableStateOf(convertDateToString(Date())) }
-    var customDateSprzedazy by remember { mutableStateOf(convertDateToString(Date())) }
 
 
     var showOdbiorcaDropdown by remember { mutableStateOf(false) }
@@ -226,8 +224,7 @@ fun FakturaDetailsScreen(
                                     razemBrutto = editedFaktura.razemBrutto,
                                     doZaplaty = editedFaktura.doZaplaty,
                                     waluta = editedFaktura.waluta,
-                                    formaPlatnosci = editedFaktura.formaPlatnosci,
-                                    produktyId = emptyList()
+                                    formaPlatnosci = editedFaktura.formaPlatnosci
                                 ),
                                 callback = {}
                             )
@@ -453,9 +450,9 @@ fun FakturaDetailsScreen(
             if (isEditing) {
                 itemsIndexed(
                     items = editedProdukty,
-                    key = { _, item -> item.id }
+                    key = { _, item -> item.produkt.id }
                 ) { index, product ->
-                    key (product.id) {
+                    key (product.produkt.id) {
 
                         val errorName = validationResult.fieldErrors["PRODUCT_NAME_$index"]
                         val errorQuantity = validationResult.fieldErrors["PRODUCT_QUANTITY_$index"]
@@ -467,15 +464,14 @@ fun FakturaDetailsScreen(
                             errorBrutto?.let { Text(text = it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
                         }
 
-                        val nazwaProduktu = remember { mutableStateOf(product.nazwaProduktu) }
-                        val ilosc = remember { mutableStateOf(product.ilosc) }
-                        val jednostkaMiary = remember { mutableStateOf(product.jednostkaMiary) }
-                        val cenaNetto = remember { mutableStateOf(product.cenaNetto) }
-                        val stawkaVat = remember { mutableStateOf(product.stawkaVat) }
-                        val wartoscNetto = remember { mutableStateOf(product.wartoscNetto) }
-                        val wartoscBrutto = remember { mutableStateOf(product.wartoscBrutto) }
-                        val rabat = remember { mutableStateOf(product.rabat) }
-                        val pkwiu = remember { mutableStateOf(product.pkwiu) }
+                        val nazwaProduktu = remember { mutableStateOf(product.produkt.nazwaProduktu) }
+                        val ilosc = remember { mutableStateOf(product.produktFaktura.ilosc) }
+                        val jednostkaMiary = remember { mutableStateOf(product.produkt.jednostkaMiary) }
+                        val cenaNetto = remember { mutableStateOf(product.produkt.cenaNetto) }
+                        val stawkaVat = remember { mutableStateOf(product.produkt.stawkaVat) }
+                        val wartoscNetto = remember { mutableStateOf(product.produktFaktura.wartoscNetto) }
+                        val wartoscBrutto = remember { mutableStateOf(product.produktFaktura.wartoscBrutto) }
+                        val rabat = remember { mutableStateOf(product.produktFaktura.rabat) }
 
                         ProductForm(
                             modifier = Modifier,
@@ -488,26 +484,30 @@ fun FakturaDetailsScreen(
                                 "Wartość netto" to wartoscNetto,
                                 "Wartość brutto" to wartoscBrutto,
                                 "Rabat %" to rabat,
-                                "PKWiU" to pkwiu,
                             ),
                             onDelete = {
                                 viewModel.deleteEditedProduct(product)
                             },
                             onEdit = {
+                                val produktFaktura = ProduktFaktura(
+                                    id = product.produktFaktura.id,
+                                    fakturaId = product.produktFaktura.fakturaId,
+                                    produktId = product.produktFaktura.produktId,
+                                    ilosc = ilosc.value,
+                                    wartoscNetto = wartoscNetto.value,
+                                    wartoscBrutto = wartoscBrutto.value,
+                                    rabat = rabat.value
+                                )
+                                val produkt = Produkt(
+                                    id = product.produkt.id,
+                                    nazwaProduktu = nazwaProduktu.value,
+                                    jednostkaMiary = jednostkaMiary.value,
+                                    cenaNetto = cenaNetto.value,
+                                    stawkaVat = stawkaVat.value,
+                                )
                                 viewModel.updateEditedProductTemp(
                                     index,
-                                    ProduktFaktura(
-                                        id = product.id,
-                                        nazwaProduktu = nazwaProduktu.value,
-                                        ilosc = ilosc.value,
-                                        jednostkaMiary = jednostkaMiary.value,
-                                        cenaNetto = cenaNetto.value,
-                                        stawkaVat = stawkaVat.value,
-                                        wartoscNetto = wartoscNetto.value,
-                                        wartoscBrutto = wartoscBrutto.value,
-                                        rabat = rabat.value,
-                                        pkwiu = pkwiu.value
-                                    ),
+                                    ProduktFakturaZProduktem(produktFaktura = produktFaktura, produkt = produkt),
                                     callback = {}
                                 )
                             },
@@ -604,7 +604,7 @@ fun FakturaDetailsScreen(
                     Column {
                         Row {
                             Text(text = produkt.nazwaProduktu, fontWeight = FontWeight.Bold)
-                            val formattedPrice = produkt.wartoscBrutto.toDoubleOrNull()?.let {
+                            val formattedPrice = produkt.cenaNetto.toDoubleOrNull()?.let {
                                 "%.2f".format(it)
                             } ?: "Błąd"
                             Text(text = "Cena: $formattedPrice zł")
@@ -615,9 +615,4 @@ fun FakturaDetailsScreen(
             )
         }
     }
-}
-
-enum class DatePickerTarget {
-    WYSTAWIENIA,
-    SPRZEDAZY
 }

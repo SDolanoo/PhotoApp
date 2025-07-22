@@ -28,15 +28,14 @@ data class Faktura(
     @ColumnInfo(name = "razemBrutto") val razemBrutto: String,
     @ColumnInfo(name = "doZaplaty") val doZaplaty: String,
     @ColumnInfo(name = "waluta") val waluta: String,
-    @ColumnInfo(name = "formaPlatnosci") val formaPlatnosci: String,
-    @ColumnInfo(name = "produktyId") val produktyId: List<Long>
+    @ColumnInfo(name = "formaPlatnosci") val formaPlatnosci: String
 ) {
     companion object {
         fun default() = Faktura(
-            id = 1L,
+            id = 0L,
             uzytkownikId = 1L,
-            odbiorcaId = 1L,
-            sprzedawcaId = 1L,
+            odbiorcaId = 0L,
+            sprzedawcaId = 0L,
             typFaktury = "Faktura",
             numerFaktury = "FV-TEST-001",
             dataWystawienia = Date(),
@@ -47,22 +46,55 @@ data class Faktura(
             doZaplaty = "123.00",
             waluta = "PLN",
             formaPlatnosci = "Przelew",
-            miejsceWystawienia = "",
-            produktyId = emptyList()
+            miejsceWystawienia = ""
         )
     }
 }
 
 @Entity
-data class ProduktFaktura(
+data class Produkt(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "nazwaProduktu") val nazwaProduktu: String,
-    @ColumnInfo(name = "ilosc") val ilosc: String,
     @ColumnInfo(name = "jednostkaMiary") val jednostkaMiary: String,
     @ColumnInfo(name = "cenaNetto") val cenaNetto: String,
     @ColumnInfo(name = "stawkaVat") val stawkaVat: String,
-    @ColumnInfo(name = "wartoscNetto") val wartoscNetto: String,
-    @ColumnInfo(name = "wartoscBrutto") val wartoscBrutto: String,
-    @ColumnInfo(name = "rabat") val rabat: String,
-    @ColumnInfo(name = "pkwiu") val pkwiu: String,
+) {
+    companion object {
+        fun default() = Produkt(
+            id = 0L,
+            nazwaProduktu = "Nowy Produkt",
+            jednostkaMiary = "szt",
+            cenaNetto = "100",
+            stawkaVat = "23",
+        )
+    }
+}
+
+@Entity(
+    foreignKeys = [
+        ForeignKey(entity = Faktura::class, parentColumns = ["id"], childColumns = ["fakturaId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = Produkt::class, parentColumns = ["id"], childColumns = ["produktId"], onDelete = ForeignKey.CASCADE)
+    ],
+    indices = [Index("fakturaId"), Index("produktId")]
 )
+data class ProduktFaktura(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val fakturaId: Long,
+    val produktId: Long,
+    val ilosc: String,
+    val rabat: String,
+    val wartoscNetto: String,
+    val wartoscBrutto: String
+) {
+    companion object {
+        fun default() = ProduktFaktura(
+            id = 0L,
+            fakturaId = 1L,
+            produktId = 1L,
+            ilosc = "1",
+            rabat = "0",
+            wartoscNetto = "100",
+            wartoscBrutto = "123"
+        )
+    }
+}

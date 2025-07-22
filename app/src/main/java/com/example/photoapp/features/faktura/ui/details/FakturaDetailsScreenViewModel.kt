@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
+import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.odbiorca.OdbiorcaRepository
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.apache.commons.math3.stat.StatUtils.product
 import java.util.Date
 import javax.inject.Inject
 
@@ -40,11 +42,12 @@ class FakturaDetailsViewModel @Inject constructor(
     val editedFaktura: StateFlow<Faktura> = _editedFaktura.asStateFlow()
 
     // ---- PRODUKTY ----
-    private val _actualProdukty = MutableStateFlow<List<ProduktFaktura>>(emptyList())
-    val actualProdukty: StateFlow<List<ProduktFaktura>> = _actualProdukty.asStateFlow()
+    private val _actualProdukty = MutableStateFlow<List<ProduktFakturaZProduktem>>(emptyList())
+    val actualProdukty: StateFlow<List<ProduktFakturaZProduktem>> = _actualProdukty.asStateFlow()
 
-    private val _editedProdukty = MutableStateFlow<List<ProduktFaktura>>(emptyList())
-    val editedProdukty: StateFlow<List<ProduktFaktura>> = _editedProdukty.asStateFlow()
+    private val _editedProdukty = MutableStateFlow<List<ProduktFakturaZProduktem>>(emptyList())
+    val editedProdukty: StateFlow<List<ProduktFakturaZProduktem>> = _editedProdukty.asStateFlow()
+
 
     // ---- SPRZEDAWCA ----
     private val _actualSprzedawca = MutableStateFlow<Sprzedawca>(Sprzedawca.empty())
@@ -63,15 +66,25 @@ class FakturaDetailsViewModel @Inject constructor(
 
     fun loadProducts(faktura: Faktura) {
         viewModelScope.launch(Dispatchers.IO) {
-            val produkty = repository.getProduktyForFaktura(faktura)
+            val produktyFaktury = repository.getProduktyFakturaForFaktura(faktura)
             val sprzedawca = sprzedawcaRepository.getById(faktura.sprzedawcaId.toLong())
             val odbiorca = odbiorcaRepository.getById(faktura.odbiorcaId.toLong())
             // Ustawienie actual i edited jednocześnie
             _actualFaktura.value = faktura
             _editedFaktura.value = faktura
 
-            _actualProdukty.value = produkty
-            _editedProdukty.value = produkty
+            val produktyZProduktami = produktyFaktury.mapNotNull { produktFaktura ->
+                val produkt = repository.getProduktForProduktFaktura(produktFaktura)
+                produkt.let {
+                    ProduktFakturaZProduktem(
+                        produktFaktura = produktFaktura,
+                        produkt = it
+                    )
+                }
+            }
+
+            _actualProdukty.value = produktyZProduktami
+            _editedProdukty.value = produktyZProduktami
 
             _actualSprzedawca.value = sprzedawca!!
             _editedSprzedawca.value = sprzedawca
@@ -80,14 +93,6 @@ class FakturaDetailsViewModel @Inject constructor(
             _actualOdbiorca.value = odbiorca!!
             _editedOdbiorca.value = odbiorca
             Log.i("Dolan", odbiorca.toString())
-        }
-    }
-
-    fun loadOnlyProducts(faktura: Faktura) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val products = repository.getProduktyForFaktura(faktura)
-            _actualProdukty.value = products
-            _editedProdukty.value = products
         }
     }
 
@@ -119,7 +124,7 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun updateEditedProductTemp(index: Int, produkt: ProduktFaktura, callback: () -> Unit) {
+    fun updateEditedProductTemp(index: Int, produkt: ProduktFakturaZProduktem, callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             _editedProdukty.value = _editedProdukty.value.toMutableList().also {
                 it[index] = produkt
@@ -128,7 +133,7 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun deleteEditedProduct(produkt: ProduktFaktura, callback: () -> Unit = {}) {
+    fun deleteEditedProduct(produkt: ProduktFakturaZProduktem, callback: () -> Unit = {}) {
         viewModelScope.launch(Dispatchers.IO) {
             _editedProdukty.update { currentList ->
                 currentList.filterNot { it == produkt }
@@ -150,27 +155,37 @@ class FakturaDetailsViewModel @Inject constructor(
 
                 // 🧠 OBSŁUGA KAŻDEGO PRODUKTU INDYWIDUALNIE
                 produktyEdited.forEachIndexed { index, produkt ->
-                    val produktId = when (produkt.id) {
-                        in Long.MIN_VALUE until 1L -> repository.insertProdukt(produkt) // Zwraca nowe ID
+                    val produktId = when (produkt.produktFaktura.id) {
+                        in Long.MIN_VALUE until 1L -> repository.insertProduktFaktura(produkt.produktFaktura) // Zwraca nowe ID
                         else -> {
-                            repository.updateProdukt(produkt)
-                            produkt.id
+                            repository.updateProduktFaktura(produkt.produktFaktura)
+                            produkt.produktFaktura.id
                         }
                     }
                     nowaListaId.add(produktId)
                     // Jeżeli był nowy, nadpisujemy id w pamięci
-                    val product = produkt.copy(id = produktId)
-                    updateEditedProductTemp(index, product, callback = {})
+                    val produktFakturaZProduktem = produkt.copy(produktFaktura = produkt.produktFaktura.copy(id = produktId))
+                    updateEditedProductTemp(index, produktFakturaZProduktem, callback = {})
                 }
 
                 // 🔥 DETEKCJA USUNIĘTYCH PRODUKTÓW
-                val editedIds = produktyEdited.map { it.id }.toSet()
+                val aktualnePozycjeZBazy = repository.getProduktyFakturaForFaktura(faktura)
+                val aktualneIdsZBazy = aktualnePozycjeZBazy.map { it.id }.toSet()
+                val aktualneIdsPoEdycji = nowaListaId.toSet()
+
+                val usunieteIds = aktualneIdsZBazy - aktualneIdsPoEdycji
+
+                usunieteIds.forEach { id ->
+                    aktualnePozycjeZBazy.find { it.id == id }?.let { produktDoUsuniecia ->
+                        repository.deleteProduktFakturaFromFaktura(produktDoUsuniecia)
+                    }
+                }
 
                 // 🔁 Aktualizacja sprzedawcy i odbiorcy
                 val sprzedawcaId = sprzedawcaRepository.upsertSprzedawcaSmart(sprzedawca)
                 val odbiorcaId = odbiorcaRepository.upsertOdbiorcaSmart(odbiorca)
 
-                val updatedFaktura = faktura.copy(produktyId = nowaListaId, sprzedawcaId = sprzedawcaId, odbiorcaId = odbiorcaId)
+                val updatedFaktura = faktura.copy(sprzedawcaId = sprzedawcaId, odbiorcaId = odbiorcaId)
                 repository.updateFaktura(updatedFaktura)
                 callback(updatedFaktura)
 
@@ -184,28 +199,18 @@ class FakturaDetailsViewModel @Inject constructor(
 
     fun addOneProductToEdited(callback: () -> Unit = {}) {
         viewModelScope.launch(Dispatchers.IO) {
-            val newProduct = ProduktFaktura(
-                id = nextTempProductId--,
-                nazwaProduktu = "Nazwa Produktu",
-                jednostkaMiary = "szt.",
-                ilosc = "1",
-                cenaNetto = "0",
-                wartoscNetto = "0",
-                wartoscBrutto = "0",
-                stawkaVat = "0%",
-                rabat = "",
-                pkwiu = ""
-            )
+            val newProduct = ProduktFakturaZProduktem(produktFaktura = ProduktFaktura.default().copy(id = nextTempProductId--), produkt = Produkt.default())
+
 
             _editedProdukty.update { currentList ->
-                val index = currentList.indexOfFirst { it.nazwaProduktu == newProduct.nazwaProduktu }
+                val index = currentList.indexOfFirst { it.produkt.nazwaProduktu == newProduct.produkt.nazwaProduktu }
 
                 if (index >= 0) {
                     val existing = currentList[index]
-                    val newIlosc = (existing.ilosc.toIntOrNull() ?: 1) + 1
+                    val newIlosc = (existing.produktFaktura.ilosc.toIntOrNull() ?: 1) + 1
 
                     currentList.toMutableList().apply {
-                        set(index, existing.copy(ilosc = newIlosc.toString()))
+                        set(index, existing.copy(produktFaktura = existing.produktFaktura.copy(ilosc = newIlosc.toString())))
                     }
                 } else {
                     currentList + newProduct
@@ -270,7 +275,7 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun getListOfProdukty(): List<ProduktFaktura> {
+    fun getListOfProdukty(): List<Produkt> {
         return runBlocking {
             withContext(Dispatchers.IO) {
                 repository.getAllProdukty()
@@ -280,11 +285,14 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun replaceEditedProdukt(index: Int, product: ProduktFaktura,  callback: () -> Unit = {}) {
+    fun replaceEditedProdukt(index: Int, product: Produkt,  callback: () -> Unit = {}) {
         viewModelScope.launch(Dispatchers.IO) {
             _editedProdukty.update { currentList ->
                 currentList.toMutableList().apply {
-                    this[index] = product
+                    this[index] = ProduktFakturaZProduktem(
+                        produktFaktura = ProduktFaktura.default().copy(id = nextTempProductId--,
+                            produktId = product.id), produkt = product
+                    )
                 }
             }
             callback()
@@ -292,3 +300,8 @@ class FakturaDetailsViewModel @Inject constructor(
     }
 
 }
+
+data class ProduktFakturaZProduktem(
+    val produktFaktura: ProduktFaktura,
+    val produkt: Produkt
+)

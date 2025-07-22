@@ -166,14 +166,6 @@ fun ProductForm(
                     onEdit = { onEdit() },
                     keyboardType = KeyboardType.NUMERIC
                 )
-
-                CustomTextField(
-                    title = "PKWiU",
-                    field = fields[8].second,
-                    modifier = Modifier.weight(1f)
-                        .fillMaxHeight(),
-                    onEdit = { onEdit() }
-                )
             }
         }
 

@@ -1,7 +1,7 @@
 package com.example.photoapp.features.faktura.validation
 
 import androidx.lifecycle.ViewModel
-import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
+import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +17,7 @@ class ValidationViewModel @Inject constructor() : ViewModel() {
     fun validate(
         sellerName: String,
         buyerName: String,
-        products: List<ProduktFaktura>,
+        products: List<ProduktFakturaZProduktem>,
         callback: (Boolean) -> Unit
     ) {
         val errors = mutableMapOf<String, String>()
@@ -31,13 +31,13 @@ class ValidationViewModel @Inject constructor() : ViewModel() {
         }
 
         products.forEachIndexed { index, product ->
-            if (product.nazwaProduktu.isBlank()) {
+            if (product.produkt.nazwaProduktu.isBlank()) {
                 errors["PRODUCT_NAME_$index"] = "Produkt ${index + 1}: Nazwa nie może być pusta"
             }
-            if (product.ilosc.isBlank()) {
+            if (product.produktFaktura.ilosc.isBlank()) {
                 errors["PRODUCT_QUANTITY_$index"] = "Produkt ${index + 1}: Ilość nie może być pusta"
             }
-            if (product.wartoscBrutto.isBlank()) {
+            if (product.produktFaktura.wartoscBrutto.isBlank()) {
                 errors["PRODUCT_BRUTTO_$index"] = "Produkt ${index + 1}: Wartość brutto nie może być pusta"
             }
         }

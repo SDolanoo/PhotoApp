@@ -5,15 +5,20 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProduktFakturaDTO(
-    @SerialName("nazwaProduktu") val nazwaProduktu: String = "none",
-    @SerialName("ilosc") val ilosc: String = "999",
-    @SerialName("jednostkaMiary") val jednostkaMiary: String = "none",
-    @SerialName("cenaNetto") val cenaNetto: String = "999",
-    @SerialName("stawkaVat") val stawkaVat: String = "999",
-    @SerialName("wartoscNetto") val wartoscNetto: String = "999",
-    @SerialName("wartoscBrutto") val wartoscBrutto: String = "999",
-    @SerialName("rabat") val rabat: String = "999",
-    @SerialName("pkwiu") val pkwiu: String = "999",
+    // Dane produktu
+    @SerialName("nazwaProduktu") val nazwaProduktu: String,
+    @SerialName("jednostkaMiary") val jednostkaMiary: String,
+    @SerialName("cenaNetto") val cenaNetto: String,
+    @SerialName("stawkaVat") val stawkaVat: String,
+
+    // Dane pozycji
+    @SerialName("ilosc") val ilosc: String,
+    @SerialName("rabat") val rabat: String,
+    @SerialName("wartoscNetto") val wartoscNetto: String,
+    @SerialName("wartoscBrutto") val wartoscBrutto: String,
+
+    // Dodatkowe, jeśli potrzebujesz (opcjonalnie)
+    @SerialName("pkwiu") val pkwiu: String = ""
 )
 
 @Serializable
@@ -27,13 +32,26 @@ data class FakturaDTO(
     @SerialName("razemVAT") val razemVAT: String? = "999",
     @SerialName("razemBrutto") val razemBrutto: String = "999",
     @SerialName("doZaplaty") val doZaplaty: String = "999",
-    @SerialName("waluta") val waluta: String = "999",
-    @SerialName("formaPlatnosci") val formaPlatnosci: String = "none",
+    @SerialName("waluta") val waluta: String = "PLN",
+    @SerialName("formaPlatnosci") val formaPlatnosci: String = "Przelew",
 
+    // Osoby
     val odbiorca: OdbiorcaDTO,
     val sprzedawca: SprzedawcaDTO,
+
+    // Pozycje faktury (czyli lista produktów + info pozycji)
     val produkty: List<ProduktFakturaDTO>
 )
+
+
+@Serializable
+data class ProduktDTO(
+    @SerialName("nazwaProduktu") val nazwaProduktu: String = "none",
+    @SerialName("jednostkaMiary") val jednostkaMiary: String = "none",
+    @SerialName("cenaNetto") val cenaNetto: String = "0",
+    @SerialName("stawkaVat") val stawkaVat: String = "0"
+)
+
 
 @Serializable
 data class OdbiorcaDTO(

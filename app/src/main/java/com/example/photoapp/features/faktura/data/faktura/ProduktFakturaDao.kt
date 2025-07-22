@@ -15,12 +15,18 @@ interface ProduktFakturaDao {
     @Query("SELECT * FROM ProduktFaktura WHERE id IN (:ids)")
     fun getProduktyByIds(ids: List<Long>): List<ProduktFaktura>
 
+    @Query("SELECT * FROM Produkt WHERE id IN (:produktId)")
+    fun getProduktForProduktFaktura(produktId: Long): Produkt
+
+    @Query("SELECT * FROM Faktura WHERE id IN (:fakturaId)")
+    fun getAllProduktFakturaForFakturaId(fakturaId: Long): List<ProduktFaktura>
+
     @Insert
-    fun insert(produkt: ProduktFaktura): Long
+    fun insert(produktFaktura: ProduktFaktura): Long
 
     @Upsert
-    fun update(produkt: ProduktFaktura)
+    fun update(produktFaktura: ProduktFaktura)
 
     @Delete
-    fun delete(produkt: ProduktFaktura)
+    fun delete(produktFaktura: ProduktFaktura)
 }

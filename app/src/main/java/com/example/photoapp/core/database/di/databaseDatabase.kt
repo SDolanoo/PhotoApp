@@ -12,6 +12,8 @@ import com.example.photoapp.core.database.data.dao.UzytkownikDao
 import com.example.photoapp.core.database.data.entities.Uzytkownik
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaDao
+import com.example.photoapp.features.faktura.data.faktura.Produkt
+import com.example.photoapp.features.faktura.data.faktura.ProduktDao
 import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.data.faktura.ProduktFakturaDao
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
@@ -26,7 +28,7 @@ import javax.inject.Singleton
 
 @Database(
     entities = [
-        Uzytkownik::class, Odbiorca::class, Sprzedawca::class, Faktura::class, ProduktFaktura::class
+        Uzytkownik::class, Odbiorca::class, Sprzedawca::class, Faktura::class, ProduktFaktura::class, Produkt::class
     ],
     version = 1
 )
@@ -37,6 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun odbiorcaDao(): OdbiorcaDao
     abstract fun fakturaDao(): FakturaDao
     abstract fun produktFakturaDao(): ProduktFakturaDao
+    abstract fun produktDao(): ProduktDao
 
     // Dodaj inne DAO według potrzeby
 
@@ -51,17 +54,6 @@ class Converters {
     @TypeConverter
     fun dateToTimestamp(date: Date?): Long? {
         return date?.time?.toLong()
-    }
-
-    @TypeConverter
-    fun fromListLong(value: List<Long>?): String {
-        return value?.joinToString(",") ?: ""
-    }
-
-    @TypeConverter
-    fun toListLong(value: String): List<Long> {
-        return if (value.isEmpty()) emptyList()
-        else value.split(",").map { it.toLong() }
     }
 }
 
@@ -91,6 +83,11 @@ object DatabaseModule {
     @Provides
     fun provideProduktFakturaDao(appDatabase: AppDatabase): ProduktFakturaDao {
         return appDatabase.produktFakturaDao()
+    }
+
+    @Provides
+    fun provideProduktDao(appDatabase: AppDatabase): ProduktDao {
+        return appDatabase.produktDao()
     }
 
     @Provides

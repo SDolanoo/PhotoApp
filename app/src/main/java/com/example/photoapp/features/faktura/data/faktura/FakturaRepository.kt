@@ -1,6 +1,8 @@
 package com.example.photoapp.features.faktura.data.faktura
 
+import android.provider.SyncStateContract.Helpers.update
 import android.util.Log
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.DisposableEffect
 import com.example.photoapp.core.database.data.FakturaDTO
 import com.example.photoapp.features.faktura.data.odbiorca.OdbiorcaRepository
@@ -8,18 +10,21 @@ import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepositor
 import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.core.utils.jsonTransformer
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
+import com.example.photoapp.features.faktura.data.odbiorca.SaveMode
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.apache.commons.math3.stat.StatUtils.product
+import org.apache.logging.log4j.ThreadContext.trim
 import java.util.Date
 import javax.inject.Inject
 
 class FakturaRepository @Inject constructor(
     private val fakturaDao: FakturaDao,
     private val produktFakturaDao: ProduktFakturaDao,
+    private val produktDao: ProduktDao,
     private val odbiorcaRepository: OdbiorcaRepository,
     private val sprzedawcaRepository: SprzedawcaRepository
 ) {
@@ -36,10 +41,18 @@ class FakturaRepository @Inject constructor(
 
     fun getFakturaByID(id: Long): Faktura? = fakturaDao.getById(id)
 
-    fun getProduktyForFaktura(faktura: Faktura): List<ProduktFaktura> {
+    fun getProduktyFakturaForFaktura(faktura: Faktura): List<ProduktFaktura> {
         return runBlocking {
             withContext(Dispatchers.IO) {
-                produktFakturaDao.getProduktyByIds(faktura.produktyId)
+                produktFakturaDao.getAllProduktFakturaForFakturaId(faktura.id)
+            }
+        }
+    }
+
+    fun getProduktForProduktFaktura(produktFaktura: ProduktFaktura): Produkt {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                produktFakturaDao.getProduktForProduktFaktura(produktFaktura.produktId)
             }
         }
     }
@@ -48,25 +61,69 @@ class FakturaRepository @Inject constructor(
         fakturaDao.insert(faktura)
     }
 
-    fun insertProdukt(produkt: ProduktFaktura): Long {
+    fun insertProduktFaktura(produkt: ProduktFaktura): Long {
         return produktFakturaDao.insert(produkt)
     }
 
-    fun addProductToFaktura(fakturaId: Long, newProductId: Long) {
-        val faktura = fakturaDao.getById(fakturaId)
-        val updatedList = faktura!!.produktyId.toMutableList().apply {
-            if (!contains(newProductId)) add(newProductId)
+    fun insertProdukt(produkt: Produkt): Long {
+        return produktDao.insert(produkt)
+    }
+
+    fun upsertProduktSmart(produkt: Produkt): Long {
+        val existingList = produktDao.getAll()
+        when (val mode = determineSaveModeForProdukt(produkt, existingList)) {
+            is SaveMode.Update -> {
+                val updated = produkt.copy(id = mode.existingId)
+                updateProdukt(updated)
+                updated
+                return mode.existingId
+            }
+            SaveMode.Insert -> {
+                val newId = insertProdukt(produkt)
+                return newId
+            }
+            SaveMode.Skip -> {
+                return 1L
+            }
         }
-        val updatedFaktura = faktura.copy(produktyId = updatedList)
-        fakturaDao.update(updatedFaktura)
+        return 1L
+    }
+
+    fun determineSaveModeForProdukt(
+        produkt: Produkt,
+        existingList: List<Produkt>
+    ): SaveMode {
+        val normalizedNewName = produkt.nazwaProduktu.trim().lowercase()
+        val normalizedNewPrice = produkt.cenaNetto.trim()
+
+        for (existing in existingList) {
+            val normalizedExistingName = existing.nazwaProduktu.trim().lowercase()
+            val normalizedExistingPrice = existing.cenaNetto.trim()
+
+            // 🔁 MATCH 2: Nazwa ta sama, różne inne dane
+            if (normalizedNewName == normalizedExistingName) {
+                return SaveMode.Skip
+            }
+        }
+
+        return SaveMode.Insert
+    }
+
+    fun addProductToFaktura(fakturaId: Long, produktFaktura: ProduktFaktura) {
+        val faktura = fakturaDao.getById(fakturaId)
+        produktFakturaDao.insert(produktFaktura.copy(fakturaId = faktura!!.id))
     }
 
     fun updateFaktura(faktura: Faktura) {
         fakturaDao.update(faktura)
     }
 
-    fun updateProdukt(produkt: ProduktFaktura) {
+    fun updateProduktFaktura(produkt: ProduktFaktura) {
         produktFakturaDao.update(produkt)
+    }
+
+    fun updateProdukt(produkt: Produkt) {
+        produktDao.update(produkt)
     }
 
     fun deleteFaktura(faktura: Faktura) {
@@ -74,12 +131,8 @@ class FakturaRepository @Inject constructor(
         fakturaDao.delete(faktura)
     }
 
-    fun deleteProduktFromFaktura(produkt: ProduktFaktura, faktura: Faktura) {
-        val updatedList = faktura.produktyId.filter { it != produkt.id }
-
-        val updatedFaktura = faktura.copy(produktyId = updatedList)
-
-        fakturaDao.update(updatedFaktura)
+    fun deleteProduktFakturaFromFaktura(produktFaktura: ProduktFaktura) {
+        produktFakturaDao.delete(produktFaktura)
     }
 
     fun addFakturaFromJson(jsonString: String) {
@@ -112,26 +165,31 @@ class FakturaRepository @Inject constructor(
             doZaplaty = fakturaDTO.doZaplaty,
             waluta = fakturaDTO.waluta,
             formaPlatnosci = fakturaDTO.formaPlatnosci,
-            miejsceWystawienia = "",
-            produktyId = emptyList()
+            miejsceWystawienia = ""
         )
 
         val fakturaId = fakturaDao.insert(faktura)
 
-        fakturaDTO.produkty.forEach { produktDTO ->
-            val produkt = ProduktFaktura(
-                nazwaProduktu = produktDTO.nazwaProduktu,
-                ilosc = produktDTO.ilosc,
-                jednostkaMiary = produktDTO.jednostkaMiary,
-                cenaNetto = produktDTO.cenaNetto,
-                stawkaVat = produktDTO.stawkaVat,
-                wartoscNetto = produktDTO.wartoscNetto,
-                wartoscBrutto = produktDTO.wartoscBrutto,
-                rabat = produktDTO.rabat,
-                pkwiu = produktDTO.pkwiu,
+        fakturaDTO.produkty.forEach { dto ->
+            val produkt = Produkt(
+                nazwaProduktu = dto.nazwaProduktu,
+                jednostkaMiary = dto.jednostkaMiary,
+                cenaNetto = dto.cenaNetto,
+                stawkaVat = dto.stawkaVat
             )
-            val productId = insertProdukt(produkt)
-            addProductToFaktura(fakturaId, productId)
+
+            val produktId = produktDao.insert(produkt)
+
+            val pozycja = ProduktFaktura(
+                fakturaId = fakturaId,
+                produktId = produktId,
+                ilosc = dto.ilosc,
+                rabat = dto.rabat,
+                wartoscNetto = dto.wartoscNetto,
+                wartoscBrutto = dto.wartoscBrutto
+            )
+
+            produktFakturaDao.insert(pozycja)
         }
 
         Log.i("FakturaRepository", "Inserted Faktura and ${fakturaDTO.produkty.size} products")
@@ -155,7 +213,7 @@ class FakturaRepository @Inject constructor(
         )
     }
 
-    fun getAllProdukty(): List<ProduktFaktura> {
-        return produktFakturaDao.getAll()
+    fun getAllProdukty(): List<Produkt> {
+        return produktDao.getAll()
     }
 }
