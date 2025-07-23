@@ -16,6 +16,7 @@ import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepositor
 import com.example.photoapp.core.database.data.repos.UzytkownikRepository
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
+import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -112,8 +113,7 @@ class TestingButtonVM @Inject constructor(
                     doZaplaty = "123.00",
                     waluta = "PLN",
                     formaPlatnosci = "Przelew",
-                    miejsceWystawienia = "",
-                    produktyId = emptyList()
+                    miejsceWystawienia = ""
                 )
                 fakturaRepository.insertFaktura(faktura)
             }
@@ -124,21 +124,25 @@ class TestingButtonVM @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val allFaktury = fakturaRepository.getAllFaktury()
 
+            val produkt1 = Produkt(nazwaProduktu = "11111", jednostkaMiary = "szt", cenaNetto = "123", stawkaVat = "23")
+            val id1 = fakturaRepository.insertProdukt(produkt1)
+
+            val produkt2 = Produkt(nazwaProduktu = "22222", jednostkaMiary = "m2", cenaNetto = "321", stawkaVat = "6")
+            val id2 = fakturaRepository.insertProdukt(produkt2)
+
+            val lid = listOf<Long>(id1, id2)
+
             allFaktury.forEach { faktura ->
                 repeat(2) { i ->
                     val produkt = ProduktFaktura(
-                        nazwaProduktu = "Produkt ${i + 1}",
-                        jednostkaMiary = "szt",
+                        fakturaId = faktura.id,
+                        produktId = lid[i],
                         ilosc = "${i + 1}",
-                        cenaNetto = "50.00",
                         wartoscNetto = "11.50",
                         wartoscBrutto = "61.50",
-                        stawkaVat = "23",
-                        rabat = "TODO()",
-                        pkwiu = "TODO()",
+                        rabat = "",
                     )
-                    val produktId = fakturaRepository.insertProdukt(produkt)
-                    fakturaRepository.addProductToFaktura(fakturaId = faktura.id, newProductId = produktId)
+                    fakturaRepository.insertProduktFaktura(produkt)
                 }
             }
         }

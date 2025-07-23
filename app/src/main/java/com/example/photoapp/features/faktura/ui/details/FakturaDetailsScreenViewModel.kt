@@ -11,9 +11,6 @@ import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.odbiorca.OdbiorcaRepository
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepository
-import com.example.photoapp.features.faktura.ui.FakeData.now
-import com.example.photoapp.features.faktura.ui.FakeData.odbiorca
-import com.example.photoapp.features.faktura.ui.FakeData.sprzedawca
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

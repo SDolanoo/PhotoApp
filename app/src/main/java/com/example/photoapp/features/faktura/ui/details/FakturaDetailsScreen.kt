@@ -58,7 +58,6 @@ import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
-import com.example.photoapp.features.faktura.ui.DatePickerTarget
 import com.example.photoapp.features.faktura.validation.ValidationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -450,7 +449,7 @@ fun FakturaDetailsScreen(
             if (isEditing) {
                 itemsIndexed(
                     items = editedProdukty,
-                    key = { _, item -> item.produkt.id }
+                    key = { _, item -> item.produktFaktura.id }
                 ) { index, product ->
                     key (product.produkt.id) {
 
@@ -615,4 +614,9 @@ fun FakturaDetailsScreen(
             )
         }
     }
+}
+
+enum class DatePickerTarget {
+    WYSTAWIENIA,
+    SPRZEDAZY
 }

@@ -54,6 +54,12 @@ class OdbiorcaRepository @Inject constructor(
                 new.copy(id = newId)
                 return newId
             }
+
+            SaveMode.Skip -> {
+                val newId = insert(new)
+                new.copy(id = newId)
+                return newId
+            }
         }
     }
 

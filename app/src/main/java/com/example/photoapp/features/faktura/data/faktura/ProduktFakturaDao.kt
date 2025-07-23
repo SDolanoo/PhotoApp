@@ -18,7 +18,7 @@ interface ProduktFakturaDao {
     @Query("SELECT * FROM Produkt WHERE id IN (:produktId)")
     fun getProduktForProduktFaktura(produktId: Long): Produkt
 
-    @Query("SELECT * FROM Faktura WHERE id IN (:fakturaId)")
+    @Query("SELECT * FROM ProduktFaktura WHERE fakturaId IN (:fakturaId)")
     fun getAllProduktFakturaForFakturaId(fakturaId: Long): List<ProduktFaktura>
 
     @Insert

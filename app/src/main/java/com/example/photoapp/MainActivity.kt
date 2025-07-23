@@ -23,7 +23,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.photoapp.core.navigation.NavGraphViewModel
 import com.example.photoapp.core.navigation.PhotoAppNavGraph
 import com.example.photoapp.core.navigation.PhotoAppNavigationActions
-import com.example.photoapp.features.faktura.ui.NewFakturaPreview
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -139,12 +138,3 @@ private fun rememberSizeAwareDrawerState(isExpandedScreen: Boolean): DrawerState
         DrawerState(DrawerValue.Closed)
     }
 }
-
-
-@Preview(showBackground = true)
-@Composable
-fun CardShowcasePreview() {
-    NewFakturaPreview()
-
-}
-

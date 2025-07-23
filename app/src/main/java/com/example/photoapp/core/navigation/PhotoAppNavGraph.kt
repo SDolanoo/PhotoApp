@@ -162,7 +162,6 @@ fun PhotoAppNavGraph(
             AcceptPhoto(
                 photoUri = photoUri,
                 bitmapPhoto = photoBitmap,
-                addingPhotoFor = addingPhotoFor,
                 contentDescription = null,
                 backToCameraView = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
                 goToAcceptFakturaScreen = { faktura, sprzedawca, odbiorca, produktFakturaZProduktem ->

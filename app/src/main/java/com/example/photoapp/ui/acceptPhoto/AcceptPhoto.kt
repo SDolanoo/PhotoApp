@@ -25,6 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,11 +45,10 @@ import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
 fun AcceptPhoto(
     photoUri: Uri?,
     bitmapPhoto: Bitmap?,
-    addingPhotoFor: String?,
     modifier: Modifier = Modifier.fillMaxSize(),
     contentDescription: String?,
     backToCameraView: () -> Unit,
-    goToAcceptFakturaScreen: (Faktura, Sprzedawca, Odbiorca, ProduktFakturaZProduktem) -> Unit,
+    goToAcceptFakturaScreen: (Faktura, Sprzedawca, Odbiorca, List<ProduktFakturaZProduktem>) -> Unit,
     backToHome: () -> Unit,
     geminiKey: String,
     acceptanceController: AcceptanceController = hiltViewModel()
@@ -57,6 +57,11 @@ fun AcceptPhoto(
     var showDialog by remember { mutableStateOf(false) }
     var dialogData by remember { mutableStateOf("") }
     var isPromptSuccess by remember { mutableStateOf(true) }
+
+    val faktura by acceptanceController.faktura.collectAsState()
+    val sprzedawca by acceptanceController.sprzedawca.collectAsState()
+    val odbiorca by acceptanceController.odbiorca.collectAsState()
+    val produkty by acceptanceController.produkty.collectAsState()
 
     val alphaAnimation by animateFloatAsState(
         targetValue = if (isLoading) 1f else 0f,
@@ -85,7 +90,7 @@ fun AcceptPhoto(
                 painter = rememberAsyncImagePainter(photoUri),
                 contentDescription = contentDescription,
                 modifier = modifier,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
             )
             if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -99,16 +104,68 @@ fun AcceptPhoto(
                 onRetry = { backToCameraView() },
                 onOk = {
                     isLoading = true
-                    acceptanceController.processPhoto(addingPhotoFor, geminiKey, bitmapPhoto) { success, result ->
+                    acceptanceController.processPhoto(geminiKey, bitmapPhoto) { success, result ->
                         isLoading = false
                         isPromptSuccess = success
                         dialogData = result
-                        showDialog = true
+                        if (isPromptSuccess) {
+                            goToAcceptFakturaScreen(faktura, sprzedawca, odbiorca, produkty)
+                        } else {
+                            isLoading = false
+                            dialogData = result
+                            showDialog = true
+                        }
+
                     }
                 }
             )
         }
     }
+    if (showDialog) {
+        ShowDialog(
+            dialogData
+        ) {
+            showDialog = false
+        }
+    }
+}
+
+@Composable
+fun ShowDialog(
+    data: String,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = {
+            onDismiss()
+        },
+        confirmButton = {
+            Button(
+                onClick = { onDismiss() }
+            ) {
+                Text("Ok")
+            }
+        },
+        dismissButton = {
+            Button(onClick = {
+                onDismiss()
+            }) {
+                Text("Anuluj")
+            }
+        },
+        title = {
+            Text("Powtórz zapytanie")
+        },
+        text = {
+            Box(
+                modifier = Modifier
+                    .heightIn(min = 100.dp, max = 300.dp) // Ograniczenie wysokości tekstu
+                    .verticalScroll(rememberScrollState()) // Dodanie przewijalności
+            ) {
+                Text(data)
+            }
+        }
+    )
 }
 
 @Composable
