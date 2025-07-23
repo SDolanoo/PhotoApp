@@ -38,6 +38,7 @@ import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
+import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +46,7 @@ fun AcceptFakturaScreen(
     faktura: Faktura,
     sprzedawca: Sprzedawca,
     odbiorca: Odbiorca,
-    produkty: List<ProduktFaktura>,
+    produkty: List<ProduktFakturaZProduktem>,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     viewModel: AcceptFakturaController = hiltViewModel()

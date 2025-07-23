@@ -57,8 +57,12 @@ class FakturaRepository @Inject constructor(
         }
     }
 
-    fun insertFaktura(faktura: Faktura) {
-        fakturaDao.insert(faktura)
+    fun insertFaktura(faktura: Faktura): Long {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                fakturaDao.insert(faktura)
+            }
+        }
     }
 
     fun insertProduktFaktura(produkt: ProduktFaktura): Long {
@@ -216,4 +220,6 @@ class FakturaRepository @Inject constructor(
     fun getAllProdukty(): List<Produkt> {
         return produktDao.getAll()
     }
+
+
 }

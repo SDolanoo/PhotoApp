@@ -5,17 +5,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
+import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.odbiorca.OdbiorcaRepository
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
 import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepository
+import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.collections.find
 
 @HiltViewModel
 class AcceptFakturaController @Inject constructor(
@@ -23,7 +26,8 @@ class AcceptFakturaController @Inject constructor(
     private val sprzedawcaRepository: SprzedawcaRepository,
     private val odbiorcaRepository: OdbiorcaRepository
 ) : ViewModel() {
-    fun allProducts(): List<ProduktFaktura> {
+
+    fun allProducts(): List<Produkt> {
         return runBlocking {
             withContext(Dispatchers.IO) {
                 repository.getAllProdukty()
@@ -31,7 +35,7 @@ class AcceptFakturaController @Inject constructor(
         }
     }
 
-    fun checkForExistingProducts(produkt: ProduktFaktura, callback: (Long) -> Unit) {
+    fun checkForExistingProducts(produkt: Produkt, callback: (Long) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val existingProducts = allProducts()
 
@@ -55,21 +59,23 @@ class AcceptFakturaController @Inject constructor(
         faktura: Faktura,
         sprzedawca: Sprzedawca,
         odbiorca: Odbiorca,
-        produkty: List<ProduktFaktura>
+        produkty: List<ProduktFakturaZProduktem>
         ) {
         viewModelScope.launch(Dispatchers.IO) {
-            val nowaListaId = mutableListOf<Long>()
 
+            val sprzedawcaId = sprzedawcaRepository.upsertSprzedawcaSmart(sprzedawca)
+            val odbiorcaId = odbiorcaRepository.upsertOdbiorcaSmart(odbiorca)
+
+            val fakturaId = repository.insertFaktura(faktura.copy(sprzedawcaId = sprzedawcaId, odbiorcaId = odbiorcaId))
 
             produkty.forEach { produkt ->
-                checkForExistingProducts(produkt) { produktId ->
-                    nowaListaId.add(produktId)
+                checkForExistingProducts(produkt.produkt) { produktId ->
+                    repository.insertProduktFaktura(produkt.produktFaktura.copy(produktId = produktId, fakturaId = fakturaId))
                 }
             }
-            sprzedawcaRepository.upsertSprzedawcaSmart(sprzedawca)
-            odbiorcaRepository.upsertOdbiorcaSmart(odbiorca)
 
-            repository.insertFaktura(faktura.copy(produktyId = nowaListaId))
+
+
 
         }
     }
