@@ -35,6 +35,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
+import com.example.photoapp.features.faktura.data.faktura.Faktura
+import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
+import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
+import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
 
 @Composable
 fun AcceptPhoto(
@@ -44,6 +48,7 @@ fun AcceptPhoto(
     modifier: Modifier = Modifier.fillMaxSize(),
     contentDescription: String?,
     backToCameraView: () -> Unit,
+    goToAcceptFakturaScreen: (Faktura, Sprzedawca, Odbiorca, ProduktFakturaZProduktem) -> Unit,
     backToHome: () -> Unit,
     geminiKey: String,
     acceptanceController: AcceptanceController = hiltViewModel()
@@ -100,24 +105,10 @@ fun AcceptPhoto(
                         dialogData = result
                         showDialog = true
                     }
-//                    databaseViewModel.addRecipe(bitmapPhoto)
-
                 }
             )
         }
     }
-
-    if (showDialog) {
-        showDialog(
-            dialogData,
-            acceptanceController,
-            addingPhotoFor,
-            isPromptSuccess,
-        ) {
-            showDialog = false
-        }
-    }
-
 }
 
 @Composable
@@ -141,58 +132,3 @@ fun ButtonsLayout(modifier: Modifier, onRetry: () -> Unit, onOk: () -> Unit) {
         }
     }
 }
-
-@Composable
-fun showDialog(
-    data: String,
-    controller: AcceptanceController,
-    addingPhotoFor: String?,
-    isPromptSuccess: Boolean,
-    onDismiss: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = {
-            onDismiss()
-        },
-        confirmButton = {
-            Button(onClick = {
-                if (isPromptSuccess) {
-                    if (addingPhotoFor == "faktura") {
-                        controller.addInvoice()
-                    }
-                }
-                onDismiss()
-            }) {
-                if (isPromptSuccess) {
-                    Text("Akceptuj")
-                } else {
-                    Text("Ok")
-                }
-            }
-        },
-        dismissButton = {
-            Button(onClick = {
-                onDismiss()
-            }) {
-                Text("Anuluj")
-            }
-        },
-        title = {
-            if (isPromptSuccess) {
-                Text("Zatwierdzić dane?")
-            } else {
-                Text("Powtórz zapytanie")
-            }
-        },
-        text = {
-            Box(
-                modifier = Modifier
-                    .heightIn(min = 100.dp, max = 300.dp) // Ograniczenie wysokości tekstu
-                    .verticalScroll(rememberScrollState()) // Dodanie przewijalności
-            ) {
-                Text(data)
-            }
-        }
-    )
-}
-

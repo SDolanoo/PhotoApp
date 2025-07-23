@@ -6,7 +6,14 @@ import androidx.lifecycle.ViewModel
 import coil3.Bitmap
 import android.net.Uri
 import com.example.photoapp.features.faktura.data.faktura.Faktura
+import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
+import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
+import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,6 +43,18 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
     private val _currentlyShowing = MutableLiveData("paragon")
     val currentlyShowing: LiveData<String> get() = _currentlyShowing
 
+    private val _faktura = MutableStateFlow<Faktura>(Faktura.default())
+    val faktura: StateFlow<Faktura> = _faktura.asStateFlow()
+
+    private val _sprzedawca = MutableStateFlow<Sprzedawca>(Sprzedawca.empty())
+    val sprzedawca: StateFlow<Sprzedawca> = _sprzedawca.asStateFlow()
+
+    private val _odbiorca = MutableStateFlow<Odbiorca>(Odbiorca.empty())
+    val odbiorca: StateFlow<Odbiorca> = _odbiorca.asStateFlow()
+
+    private val _produkty = MutableStateFlow<List<ProduktFakturaZProduktem>>(emptyList())
+    val produkty: StateFlow<List<ProduktFakturaZProduktem>> = _produkty.asStateFlow()
+
     // Functions to update states
     fun setPhotoUri(uri: Uri) {
         _photoUri.postValue(uri)
@@ -62,5 +81,29 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
         if ( what == "paragon" || what == "faktura") {
             _currentlyShowing.postValue(what)
         }
+    }
+
+    fun setFaktura(faktura: Faktura) {
+        _faktura.value = faktura
+    }
+
+    fun setSprzedawca(sprzedawca: Sprzedawca) {
+        _sprzedawca.value = sprzedawca
+    }
+
+    fun setOdbiorca(odbiorca: Odbiorca) {
+        _odbiorca.value = odbiorca
+    }
+
+    fun setProdukty(produkty: List<ProduktFakturaZProduktem>) {
+        _produkty.value = produkty
+    }
+
+    fun addProdukt(produkt: ProduktFakturaZProduktem) {
+        _produkty.update { currentList -> currentList + produkt }
+    }
+
+    fun removeProdukt(produkt: ProduktFakturaZProduktem) {
+        _produkty.update { currentList -> currentList - produkt }
     }
 }

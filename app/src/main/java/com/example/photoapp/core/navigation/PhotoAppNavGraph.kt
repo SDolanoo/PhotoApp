@@ -7,6 +7,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -18,8 +19,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.photoapp.features.faktura.ui.details.FakturaDetailsScreen
+import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
 import com.example.photoapp.features.faktura.ui.screen.FakturaScreen
 import com.example.photoapp.ui.ExcelPacker.ExcelPacker
+import com.example.photoapp.ui.acceptFaktura.AcceptFakturaScreen
 import com.example.photoapp.ui.acceptPhoto.AcceptPhoto
 import com.example.photoapp.ui.cameraView.CameraView
 //import com.example.photoapp.ui.FilterScreen.FilterScreen
@@ -60,6 +63,11 @@ fun PhotoAppNavGraph(
     val currentlyShowing by navGraphViewModel.currentlyShowing.observeAsState("paragon")
     val showFilteredFaktura by navGraphViewModel.showFilteredFakturys.observeAsState(false)
     val fakturaFilteredList by navGraphViewModel.fakturaFilteredList.observeAsState(emptyList())
+
+    val faktura by navGraphViewModel.faktura.collectAsState()
+    val sprzedawca by navGraphViewModel.sprzedawca.collectAsState()
+    val odbiorca by navGraphViewModel.odbiorca.collectAsState()
+    val produkty by navGraphViewModel.produkty.collectAsState()
 
     // Example function called when photoUri changes
     fun onPhotoUriChanged() {
@@ -157,8 +165,28 @@ fun PhotoAppNavGraph(
                 addingPhotoFor = addingPhotoFor,
                 contentDescription = null,
                 backToCameraView = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
+                goToAcceptFakturaScreen = { faktura, sprzedawca, odbiorca, produktFakturaZProduktem ->
+                    navGraphViewModel.setFaktura(faktura)
+                    navGraphViewModel.setSprzedawca(sprzedawca)
+                    navGraphViewModel.setOdbiorca(odbiorca)
+                    navGraphViewModel.setProdukty(produkty)
+                    navController.navigate(PhotoAppDestinations.ACCEPT_FAKTURA_ROUTE)
+                                          },
                 backToHome = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)},
                 geminiKey = geminiKey
+            )
+        }
+
+
+        composable (PhotoAppDestinations.ACCEPT_FAKTURA_ROUTE) {
+            Log.i("Dolan", "Odpalam ACCEPT_FAKTURA w navGraph")
+            AcceptFakturaScreen(
+                faktura = faktura,
+                sprzedawca = sprzedawca,
+                odbiorca = odbiorca,
+                produkty = produkty,
+                onConfirm = {},
+                onCancel = {},
             )
         }
 
