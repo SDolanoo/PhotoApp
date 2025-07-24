@@ -5,6 +5,7 @@ import android.net.Uri
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,17 +14,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import com.example.photoapp.features.faktura.data.faktura.Faktura
@@ -80,47 +89,47 @@ fun AcceptPhoto(
             .graphicsLayer(alpha = alphaAnimation) // Animacja przezroczystości
     )
 
-    Column(
-    modifier = Modifier.fillMaxSize(),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center)
-    {
-        Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        // PHOTO preview
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f) // zdjęcie zajmuje większość ekranu
+                .background(Color.Black)
+        ) {
             Image(
                 painter = rememberAsyncImagePainter(photoUri),
                 contentDescription = contentDescription,
-                modifier = modifier,
-                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit
             )
+
             if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
+        }
 
-            ButtonsLayout(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 50.dp)
-                    .align(Alignment.BottomCenter),
-                onRetry = { backToCameraView() },
-                onOk = {
-                    isLoading = true
-                    acceptanceController.processPhoto(geminiKey, bitmapPhoto) { success, result ->
-                        isLoading = false
-                        isPromptSuccess = success
-                        dialogData = result
-                        if (isPromptSuccess) {
-                            goToAcceptFakturaScreen(faktura, sprzedawca, odbiorca, produkty)
-                        } else {
-                            isLoading = false
-                            dialogData = result
-                            showDialog = true
-                        }
-
+        // BUTTONS
+        ButtonsLayout(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            onRetry = { backToCameraView() },
+            onOk = {
+                isLoading = true
+                acceptanceController.processPhoto(geminiKey, bitmapPhoto) { success, result ->
+                    isLoading = false
+                    isPromptSuccess = success
+                    dialogData = result
+                    if (isPromptSuccess) {
+                        goToAcceptFakturaScreen(faktura, sprzedawca, odbiorca, produkty)
+                    } else {
+                        showDialog = true
                     }
                 }
-            )
-        }
+            }
+        )
     }
+
     if (showDialog) {
         ShowDialog(
             dialogData
@@ -169,23 +178,51 @@ fun ShowDialog(
 }
 
 @Composable
-fun ButtonsLayout(modifier: Modifier, onRetry: () -> Unit, onOk: () -> Unit) {
+fun ButtonsLayout(
+    modifier: Modifier,
+    onRetry: () -> Unit,
+    onOk: () -> Unit
+) {
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = modifier
+            .background(Color.White)
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .fillMaxWidth()
+            .navigationBarsPadding(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Button(
+        // 🔁 POWTÓRZ
+        TextButton(
             onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black.copy(alpha = 0.3f))
+            shape = RoundedCornerShape(12.dp),
+            border = BorderStroke(1.dp, Color.LightGray),
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = Color.Black,
+                containerColor = Color.Transparent
+            ),
+            modifier = Modifier
+                .height(56.dp)
+                .weight(1f)
         ) {
-            Text(text = "Powtórz", color = Color.White)
+            Text("Powtórz", fontSize = 16.sp)
         }
 
+        Spacer(modifier = Modifier.width(16.dp))
+
+        // ✅ ZATWIERDŹ
         Button(
             onClick = onOk,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black.copy(alpha = 0.3f))
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
+            ),
+            modifier = Modifier
+                .height(56.dp)
+                .weight(1f)
         ) {
-            Text(text = "Zatwierdź", color = Color.White)
+            Text("Zatwierdź", fontSize = 16.sp)
         }
     }
 }
