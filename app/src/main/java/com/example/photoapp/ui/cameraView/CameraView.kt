@@ -18,13 +18,16 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,14 +35,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,8 +56,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -61,6 +67,7 @@ import java.util.*
 import java.util.concurrent.Executor
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import com.example.photoapp.R
 
 lateinit var photoUri: Uri
 lateinit var filePath: String
@@ -74,16 +81,14 @@ fun CameraView(
     onError: (ImageCaptureException) -> Unit,
     backToHomeScreen: () -> Unit
 ) {
-
-
     var openCamera by remember { mutableStateOf(false) }
     var openGallery by remember { mutableStateOf(false) }
 
-    // 3
-
     if (openCamera == false && openGallery == false) {
-        Box(modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Button(onClick = {openCamera = true}) { Text("Otwórz aparat") }
                 Button(onClick = {openGallery = true}) { Text("Otwórz Galerie") }
@@ -112,13 +117,14 @@ fun MakePhoto(
 ) {
     // 1
     val lensFacing = CameraSelector.LENS_FACING_BACK
+
     val context = LocalContext.current
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-    Log.i("Dolan", "lifecycleOwner = $lifecycleOwner")
 
     val preview = Preview.Builder()
         .setTargetAspectRatio(AspectRatio.RATIO_16_9)
         .build()
+
     val previewView = remember {
         PreviewView(context).apply {
             scaleType = PreviewView.ScaleType.FIT_CENTER
@@ -129,14 +135,12 @@ fun MakePhoto(
         .setTargetAspectRatio(AspectRatio.RATIO_16_9)
         .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
         .build()
+
     val cameraSelector = CameraSelector.Builder()
         .requireLensFacing(lensFacing)
         .build()
 
-//    fun goBack() {
-//        onImageCaptured()
-//    }
-    // 2
+
     LaunchedEffect(lensFacing) {
         val cameraProvider = context.getCameraProvider()
         cameraProvider.unbindAll()
@@ -150,63 +154,130 @@ fun MakePhoto(
         preview.setSurfaceProvider(previewView.surfaceProvider)
     }
 
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    val previewHeight = screenWidth * (16f / 9f) // <- 9:16 proporcje
+    Column(modifier = Modifier.fillMaxSize()) {
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .fillMaxHeight()
-        .background(Color.Black)) {
-        AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
-
-        IconButton(
+        // CAMERA PREVIEW with exact aspect ratio
+        Box(
             modifier = Modifier
-                .padding(bottom = 50.dp)
-                .align(Alignment.BottomCenter),
-            onClick = {
-                Log.i("kilo", "ON CLICK")
-                takePhoto(
-                    filenameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
-                    imageCapture = imageCapture,
-                    outputDirectory = outputDirectory,
-                    executor = executor,
-                    onImageCaptured = onImageCaptured,
-                    onError = onError
-                )
+                .fillMaxWidth()
+                .aspectRatio(9f / 16f)
+                .background(Color.Black)
+        ) {
+            AndroidView(
+                factory = { previewView },
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
-            },
-            content = {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Take picture",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(1.dp)
-                        .border(1.dp, Color.White, CircleShape)
-                )
-            }
-        )
-
-        IconButton(
+        // BOTTOM CONTROL BAR
+        Box(
             modifier = Modifier
-                .padding(all = 20.dp)
-                .align(Alignment.TopStart),
-            onClick = { backToHomeScreen() },
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(modifier = Modifier.fillMaxWidth()) {
 
-            content = {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
-                    tint = Color.White,
+                // Wróć (po lewej)
+                TextButton(
+                    onClick = backToHomeScreen,
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, Color.LightGray),
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = Color.Black,
+                        containerColor = Color.Transparent
+                    ),
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Wróć")
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Wróć")
+                }
+
+                // Zrób zdjęcie (na środku)
+                IconButton(
+                    onClick = {
+                        takePhoto(
+                            filenameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
+                            imageCapture = imageCapture,
+                            outputDirectory = outputDirectory,
+                            executor = executor,
+                            onImageCaptured = onImageCaptured,
+                            onError = onError
+                        )
+                    },
                     modifier = Modifier
-                        .size(100.dp)
-                        .padding(1.dp)
-                        .border(1.dp, Color.White, CircleShape)
-                )
+                        .size(72.dp)
+                        .align(Alignment.Center)
+                        .background(Color.Gray, shape = CircleShape)
+                        .border(3.dp, Color.Black, shape = CircleShape)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_photo_camera_24),
+                        contentDescription = "Zrób zdjęcie",
+                        tint = Color.White,
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
             }
-        )
+        }
     }
+
+//    Box(modifier = Modifier
+//        .fillMaxWidth()
+//        .fillMaxHeight()
+//        .background(Color.Black)) {
+//        AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
+//
+//        IconButton(
+//            modifier = Modifier
+//                .padding(bottom = 50.dp)
+//                .align(Alignment.BottomCenter),
+//            onClick = {
+//                Log.i("kilo", "ON CLICK")
+//                takePhoto(
+//                    filenameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
+//                    imageCapture = imageCapture,
+//                    outputDirectory = outputDirectory,
+//                    executor = executor,
+//                    onImageCaptured = onImageCaptured,
+//                    onError = onError
+//                )
+//
+//            },
+//            content = {
+//                Icon(
+//                    imageVector = Icons.Default.Settings,
+//                    contentDescription = "Take picture",
+//                    tint = Color.White,
+//                    modifier = Modifier
+//                        .size(100.dp)
+//                        .padding(1.dp)
+//                        .border(1.dp, Color.White, CircleShape)
+//                )
+//            }
+//        )
+//
+//        IconButton(
+//            modifier = Modifier
+//                .padding(all = 20.dp)
+//                .align(Alignment.TopStart),
+//            onClick = { backToHomeScreen() },
+//
+//            content = {
+//                Icon(
+//                    imageVector = Icons.Default.Close,
+//                    contentDescription = "Close",
+//                    tint = Color.White,
+//                    modifier = Modifier
+//                        .size(100.dp)
+//                        .padding(1.dp)
+//                        .border(1.dp, Color.White, CircleShape)
+//                )
+//            }
+//        )
+//    }
 }
 
 
