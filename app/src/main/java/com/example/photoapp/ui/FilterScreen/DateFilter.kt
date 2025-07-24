@@ -1,6 +1,5 @@
 package com.example.photoapp.ui.FilterScreen
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -8,9 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.DatePicker
@@ -20,10 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -37,116 +32,47 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import java.util.Calendar
-import java.util.Date
+import com.example.photoapp.core.utils.convertMillisToString
 
-@SuppressLint("NewApi")
 @Composable
-fun DateFilter(
-    filterController: FilterController,
-    onDateRangeSelected: (Date?, Date?) -> Unit
-) {
-    val today = Date()
+fun DateRangeSection(state: FilterState, onUpdate: (FilterState) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
 
-    var selectedOption by filterController.dateSelectedOption
-
-//    var selectedOption by remember { mutableStateOf("week") }
-    var customDateFrom by remember { mutableStateOf<Long?>(null) }
-    var customDateTo by remember { mutableStateOf<Long?>(null) }
+    var selectedOption by remember { mutableStateOf("") }
 
     var showDatePicker by remember { mutableStateOf(false) }
 
-    if (customDateFrom != null && customDateTo != null) {
-        val x: String = filterController.convertMillisToString(customDateFrom!!)
-        val y: String = filterController.convertMillisToString(customDateTo!!)
-        val (from, to) = filterController.convertStringToDate(Pair(x, y))
-        onDateRangeSelected(from, to)
-    }
+    Column(Modifier.padding(vertical = 8.dp)) {
+        Text("Date Range")
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        if (filterController.currentFilter.value == "faktura") {
-            SegmentedButtonsDateFilter { value -> //dataWystawienia or dataSprzedazy
-                filterController.setCurrentFakturyDateFilter(value)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Pricing Type")
+            Row {
+                Text("Net")
+                Switch(
+                    checked = state.isGross,
+                    onCheckedChange = { onUpdate(state.copy(isGross = it)) }
+                )
+                Text("Gross")
             }
         }
-        Text(text = "Data zakupu")
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(
-                selected = selectedOption == "week",
-                onClick = {
-                    filterController.setDateSelectedOption("week")
-                    val calendar = Calendar.getInstance()
-                    calendar.time = today
-                    calendar.add(Calendar.DAY_OF_YEAR, -7)
-                    calendar.set(Calendar.HOUR_OF_DAY, 0)
-                    calendar.set(Calendar.MINUTE, 0)
-                    calendar.set(Calendar.SECOND, 0)
-                    onDateRangeSelected(calendar.time, today)
-                    customDateFrom = null
-                    customDateTo = null
-                }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Ostatni tydzień")
-        }
+        Spacer(Modifier.height(8.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(
-                selected = selectedOption == "month",
-                onClick = {
-                    filterController.setDateSelectedOption("month")
-                    val calendar = Calendar.getInstance()
-                    calendar.time = today
-                    calendar.set(Calendar.DAY_OF_MONTH, 1)
-                    calendar.set(Calendar.HOUR_OF_DAY, 0)
-                    calendar.set(Calendar.MINUTE, 0)
-                    calendar.set(Calendar.SECOND, 0)
-                    onDateRangeSelected(calendar.time, today)
-                    customDateFrom = null
-                    customDateTo = null
-                }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Ostatni miesiąc")
-        }
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(
-                selected = selectedOption == "year",
-                onClick = {
-                    filterController.setDateSelectedOption("year")
-                    val calendar = Calendar.getInstance()
-                    calendar.time = today
-                    calendar.set(Calendar.DAY_OF_YEAR, 1)
-                    calendar.set(Calendar.HOUR_OF_DAY, 0)
-                    calendar.set(Calendar.MINUTE, 0)
-                    calendar.set(Calendar.SECOND, 0)
-                    onDateRangeSelected(calendar.time, today)
-                    customDateFrom = null
-                    customDateTo = null
-                }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Ostatni rok")
-        }
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
-                value = customDateFrom?.let  { filterController.convertMillisToString(it) } ?: "",
+                value = state.fromDate,
                 onValueChange = { },
-                label = { Text("From") },
+                label = { Text("Od") },
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.DateRange, contentDescription = "Pick Start Date")
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .pointerInput(customDateTo) {
+                    .pointerInput(state.fromDate) {
                         awaitEachGesture {
                             // Modifier.clickable doesn't work for text fields, so we use Modifier.pointerInput
                             // in the Initial pass to observe events before the text field consumes them
@@ -154,19 +80,16 @@ fun DateFilter(
                             awaitFirstDown(pass = PointerEventPass.Initial)
                             val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
                             if (upEvent != null) {
-                                filterController.setDateSelectedOption("From")
+                                selectedOption = "From"
                                 showDatePicker = true
                             }
                         }
                     }
             )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
             OutlinedTextField(
-                value = customDateTo?.let  { filterController.convertMillisToString(it) } ?: "",
+                value = state.toDate,
                 onValueChange = { },
-                label = { Text("To") },
+                label = { Text("Do") },
                 trailingIcon = {
                     IconButton(onClick = { /* Show Date Picker */ }) {
                         Icon(imageVector = Icons.Default.DateRange, contentDescription = "Pick End Date")
@@ -174,7 +97,7 @@ fun DateFilter(
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .pointerInput(customDateTo) {
+                    .pointerInput(state.toDate) {
                         awaitEachGesture {
                             // Modifier.clickable doesn't work for text fields, so we use Modifier.pointerInput
                             // in the Initial pass to observe events before the text field consumes them
@@ -182,7 +105,7 @@ fun DateFilter(
                             awaitFirstDown(pass = PointerEventPass.Initial)
                             val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
                             if (upEvent != null) {
-                                filterController.setDateSelectedOption("To")
+                                selectedOption = "To"
                                 showDatePicker = true
                             }
                         }
@@ -194,38 +117,13 @@ fun DateFilter(
             DatePickerModalInput(
                 onDateSelected = {
                     if (selectedOption == "From") {
-                        customDateFrom = it
+                        onUpdate(state.copy(fromDate = it?. let { convertMillisToString(it) } ?: state.fromDate))
                     } else {
-                        customDateTo = it
+                        onUpdate(state.copy(fromDate = it?. let { convertMillisToString(it) } ?: state.toDate))
                     }
                     selectedOption = ""
                 },
                 onDismiss = { showDatePicker = false }
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SegmentedButtonsDateFilter(onChoice: (String) -> Unit){
-    var selectedIndex by remember { mutableStateOf(0) }
-    val options = listOf("Data wystawien", "Data sprzedazy")
-
-    SingleChoiceSegmentedButtonRow {
-        options.forEachIndexed { index, label ->
-            SegmentedButton(
-                shape = SegmentedButtonDefaults.itemShape(
-                    index = index,
-                    count = options.size
-                ),
-                onClick = {
-                    selectedIndex = index
-                    val choice = options[index]
-                    onChoice(choice)
-                },
-                selected = index == selectedIndex,
-                label = { Text(label) }
             )
         }
     }

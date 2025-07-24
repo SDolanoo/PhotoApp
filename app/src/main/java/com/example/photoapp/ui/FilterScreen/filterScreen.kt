@@ -3,77 +3,94 @@ package com.example.photoapp.ui.FilterScreen
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.photoapp.ui.FilterScreen.expandableSections.ExpandableSection
-import java.util.Date
+import androidx.hilt.navigation.compose.hiltViewModel
 
-data class FilterResult(
-    val filterType: String,
-    val startDate: Date?,
-    val endDate: Date?,
-    val minPrice: Double?,
-    val maxPrice: Double?,
-    val dateFilterOption: String? = null, // for Faktura only
-    val priceFilterOption: String? = null // for Faktura only
-)
 
-sealed class FilterType(val id: String) {
-    object Paragon : FilterType("paragon")
-    object Faktura : FilterType("faktura")
-    // Add more types here
-}
 
 // Main FilterScreen Composable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterScreenContent(
-    filterController: FilterController,
-    )
-{
-    val currentFilter by filterController.currentFilter
-
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    onApplyFilters: (FilterState) -> Unit,
+    onClearAll: () -> Unit,
+    filterController: FilterController = hiltViewModel(),
     ) {
-        SegmentedButtonsFilterChange(
-            selectedFilter = currentFilter,
-            onFilterChange = { new ->
-                filterController.changeFilter(
-                    when (new) {
-                        "paragon" -> FilterType.Paragon
-                        "faktura" -> FilterType.Faktura
-                        else -> error("Unsupported filter type")
-                    }.toString()
-                )
+    var state by remember { mutableStateOf(FilterState.default()) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Filters") },
+                navigationIcon = {
+                    IconButton(onClick = { /* Handle back */ }) {
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            // Date Range Section
+            DateRangeSection(state = state, onUpdate = { state = it })
+
+            // Price Range Section
+            PriceRangeSection(state = state, onUpdate = { state = it })
+
+            // Buyer, Seller, Product
+            FilterTextRow("Buyer", state.buyer) {
+                state = state.copy(buyer = it)
             }
+            FilterTextRow("Seller", state.seller) {
+                state = state.copy(seller = it)
+            }
+            FilterTextRow("Product", state.product) {
+                state = state.copy(product = it)
+            }
+
+            // Buttons
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedButton(onClick = {
+                    state = FilterState.default()
+                    onClearAll()
+                }) {
+                    Text("Clear All")
+                }
+                Button(onClick = { onApplyFilters(state) }) {
+                    Text("Apply Filters")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun FilterTextRow(label: String, value: String, onChange: (String) -> Unit) {
+    Column(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        Text(label)
+        OutlinedTextField(
+            value = value,
+            onValueChange = onChange,
+            placeholder = { Text("Enter $label") },
+            modifier = Modifier.fillMaxWidth()
         )
-
-        ExpandableSection(title = "Data") {
-            DateFilter(
-                filterController = filterController,
-                onDateRangeSelected = { A, B -> filterController.setDateRange(Pair(A, B)) }
-            )
-        }
-
-        ExpandableSection(title = "Cena") {
-            PriceFilter(
-                filterController = filterController,
-                onPriceRangeSelected = { A, B -> filterController.setPriceRange(Pair(A, B)) }
-            )
-        }
-
-        // Add other filter sections here (recipients, vendors, etc.)
-
-        // Other filters (e.g., recipients, vendors, stores)
-        Text("Other Filters (Recipients, Vendors, Stores) are placeholders.")
     }
 }
 
