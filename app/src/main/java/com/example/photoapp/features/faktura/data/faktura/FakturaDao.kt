@@ -30,25 +30,32 @@ interface FakturaDao {
     fun delete(faktura: Faktura)
 
     @Query("""
-        SELECT * FROM Faktura 
-        WHERE (:startDate IS NULL OR 
-              (:filterDate = 'dataWystawienia' AND dataWystawienia >= :startDate) OR 
-              (:filterDate = 'dataSprzedazy' AND dataSprzedazy >= :startDate)) 
-        AND (:endDate IS NULL OR 
-              (:filterDate = 'dataWystawienia' AND dataWystawienia <= :endDate) OR 
-              (:filterDate = 'dataSprzedazy' AND dataSprzedazy <= :endDate)) 
-        AND (:minPrice IS NULL OR 
-            (:filterPrice = 'brutto' AND razemBrutto >= :minPrice) OR
-            (:filterPrice = 'netto' AND razemNetto >= :minPrice))
-        AND (:maxPrice IS NULL OR
-            (:filterPrice = 'brutto' AND razemBrutto <= :maxPrice) OR
-            (:filterPrice = 'netto' AND razemNetto <= :maxPrice))
-        ORDER BY 
-            CASE :filterDate
-                WHEN 'dataWystawienia' THEN dataWystawienia 
-                WHEN 'dataSprzedazy' THEN dataSprzedazy 
-            END DESC
-    """)
+    SELECT * FROM Faktura 
+    WHERE 
+        (
+            (:filterDate = 'dataWystawienia' AND 
+             (:startDate IS NULL OR dataWystawienia >= :startDate) AND 
+             (:endDate IS NULL OR dataWystawienia <= :endDate))
+            OR
+            (:filterDate = 'dataSprzedazy' AND 
+             (:startDate IS NULL OR dataSprzedazy >= :startDate) AND 
+             (:endDate IS NULL OR dataSprzedazy <= :endDate))
+        )
+        AND 
+        (
+            (:filterPrice = 'brutto' AND 
+             (:minPrice IS NULL OR razemBrutto >= :minPrice) AND 
+             (:maxPrice IS NULL OR razemBrutto <= :maxPrice))
+            OR
+            (:filterPrice = 'netto' AND 
+             (:minPrice IS NULL OR razemNetto >= :minPrice) AND 
+             (:maxPrice IS NULL OR razemNetto <= :maxPrice))
+        )
+    ORDER BY 
+        CASE WHEN :filterDate = 'dataWystawienia' THEN dataWystawienia
+             WHEN :filterDate = 'dataSprzedazy' THEN dataSprzedazy
+        END DESC
+""")
     fun getFilteredFaktury(
         startDate: Date?,
         endDate: Date?,

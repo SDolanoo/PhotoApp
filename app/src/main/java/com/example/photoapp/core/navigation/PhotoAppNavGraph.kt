@@ -22,6 +22,7 @@ import com.example.photoapp.features.faktura.ui.details.FakturaDetailsScreen
 import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
 import com.example.photoapp.features.faktura.ui.screen.FakturaScreen
 import com.example.photoapp.ui.ExcelPacker.ExcelPacker
+import com.example.photoapp.ui.FilterScreen.FilterScreenContent
 import com.example.photoapp.ui.acceptFaktura.AcceptFakturaScreen
 import com.example.photoapp.ui.acceptPhoto.AcceptPhoto
 import com.example.photoapp.ui.cameraView.CameraView
@@ -131,14 +132,6 @@ fun PhotoAppNavGraph(
                     navGraphViewModel.setFakturaViewedNow(faktura)
                     navController.navigate(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE)
                 }
-            )
-        }
-
-        composable(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE) {
-            Log.i("Dolan", "Odpalam PARAGON_DETAILS_SCREEN w navGraph")
-            FakturaDetailsScreen(
-                faktura = fakturaViewedNow!!,
-                leaveDetailsScreen = { navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)},
             )
         }
 

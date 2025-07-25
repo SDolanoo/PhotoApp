@@ -1,6 +1,7 @@
 package com.example.photoapp.features.faktura.ui.screen
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,10 +11,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -22,6 +26,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,29 +35,40 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
+import com.example.photoapp.R
 import com.example.photoapp.core.navigation.PhotoAppDestinations
 import com.example.photoapp.features.faktura.data.faktura.Faktura
+import com.example.photoapp.features.faktura.ui.details.FakturaDetailsScreen
+import com.example.photoapp.ui.ExcelPacker.FakturaItem
 import com.example.photoapp.ui.FilterScreen.FilterController
-import com.example.photoapp.ui.FilterScreen.FilterResult
 import com.example.photoapp.ui.FilterScreen.FilterScreenContent
+import com.example.photoapp.ui.FilterScreen.FilterState
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,19 +83,22 @@ fun FakturaScreen(
     viewModel: FakturaScreenViewModel = hiltViewModel(),
     filterController: FilterController = hiltViewModel()
 ) {
-    val isFilterExpanded = remember { mutableStateOf(false) }
-
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    var isInit by remember { mutableStateOf(true) }
 
     val allFakturyLive by viewModel.allFakturyLive.observeAsState(emptyList())
 
-    val groupedFaktury = viewModel.getGroupedFakturaList(allFakturyLive)
+    var isFilterExpanded by remember { mutableStateOf(false) }
+    var filterState = remember { mutableStateOf(FilterState.default()) }
 
-    Log.i("Dolan", "Showing paragony: $allFakturyLive")
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+
+    val groupedFaktury by viewModel.groupedFaktury.collectAsState()
 
     val isDeleteMode by viewModel.isDeleteMode
 
     val selectedItems = viewModel.selectedItems
+
+
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -87,7 +106,7 @@ fun FakturaScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        if (isDeleteMode) "Usuń Faktury" else "Widok Faktury",
+                        if (isDeleteMode) "Usuń Faktury" else if (isFilterExpanded) "Filtry" else "Widok Faktury",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -96,6 +115,10 @@ fun FakturaScreen(
                     if (isDeleteMode) {
                         IconButton(onClick = { viewModel.deleteSelectedItems() }) {
                             Icon(Icons.Default.Close, contentDescription = "Cancel Deletion")
+                        }
+                    } else if (isFilterExpanded) {
+                        IconButton(onClick = { isFilterExpanded = false }) {
+                            Icon(Icons.Default.Close, contentDescription = "Exit Filters")
                         }
                     } else {
                         IconButton(onClick = { navController.navigate(PhotoAppDestinations.HOME_ROUTE) }) {
@@ -109,8 +132,15 @@ fun FakturaScreen(
                         IconButton(onClick = { viewModel.deleteSelectedItems() }) {
                             Icon(Icons.Default.Done, contentDescription = "Confirm Deletion")
                         }
+                    } else if (isFilterExpanded) {
+
                     } else {
-                        IconButton(onClick = { viewModel.toggleDeleteMode() }) {
+                        IconButton(onClick = { isFilterExpanded = true }) {
+                            Icon(painter = painterResource(R.drawable.baseline_filter_list_alt_24), contentDescription = "Exit Filters")
+                        }
+                        IconButton(onClick = {
+                            viewModel.toggleDeleteMode()
+                        }) {
                             Icon(Icons.Default.Delete, contentDescription = "Enable Delete Mode")
                         }
                     }
@@ -119,7 +149,7 @@ fun FakturaScreen(
             )
         },
         floatingActionButton = {
-            if (!isDeleteMode) {
+            if (!isDeleteMode && !isFilterExpanded) {
                 FloatingActionButton(onClick = {
                     navigateToCameraView("faktura")
                 }) {
@@ -127,44 +157,70 @@ fun FakturaScreen(
                 }
             }
         },
-    ) { innerPadding ->
-        Column {
-            if (isFilterExpanded.value) {
-                FilterScreenContent(filterController = filterController)
-
-                Row(
+        bottomBar = {
+            if (isFilterExpanded) {
+                Column(
                     modifier = Modifier
-                        .padding(innerPadding)
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(16.dp)
+                        .navigationBarsPadding()
                 ) {
-                    OutlinedButton(onClick = {
-                        filterController.clearAllValues()
-                    }) {
-                        Text("Clear")
-                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // 🔁 POWTÓRZ
+                        TextButton(
+                            onClick = {
+                                viewModel.clearFilters()
+                                isFilterExpanded = false
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.dp, Color.LightGray),
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = Color.Black,
+                                containerColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .height(56.dp)
+                                .weight(1f)
+                        ) {
+                            Text("Wyczyść", fontSize = 16.sp)
+                        }
 
-                    Button(onClick = {
-                        val (startDate, endDate) = filterController.dateRange.value
-                        val (minPrice, maxPrice) = filterController.priceRange.value
+                        Spacer(modifier = Modifier.width(16.dp))
 
-                        val filterResult = FilterResult(
-                            filterType = "paragon",
-                            startDate = startDate,
-                            endDate = endDate,
-                            minPrice = minPrice,
-                            maxPrice = maxPrice,
-                            dateFilterOption = filterController.currentFakturyDateFilter.value,
-                            priceFilterOption = filterController.currentFakturyPriceFilter.value
-                        )
-
-                        viewModel.applyFakturaFilters(filterResult)
-                        isFilterExpanded.value = false
-                    }) {
-                        Text("Apply")
+                        // ✅ ZATWIERDŹ
+                        Button(
+                            onClick = {
+                                if (filterController.isAllValid(filterState.value)) {
+                                    val ff: List<Faktura> = filterController.applyFakturysFilters(filterState.value)
+                                    viewModel.applyFilters(ff)
+                                    isFilterExpanded = false
+                                }
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = Color.White
+                            ),
+                            modifier = Modifier
+                                .height(56.dp)
+                                .weight(1f)
+                        ) {
+                            Text("Zatwierdź", fontSize = 16.sp)
+                        }
                     }
                 }
+            }
+        }
+    ) { innerPadding ->
+        Column {
+            if (isFilterExpanded) {
+                FilterScreenContent(
+                    state = filterState,
+                    paddingValues = innerPadding
+                )
             } else {
                 FakturaScrollContent(
                     innerPadding,
@@ -207,7 +263,9 @@ fun FakturaScrollContent(
                         Icon(
                             imageVector = calendarIcon,
                             contentDescription = "Calendar icon",
-                            modifier = Modifier.padding(all = 5.dp).size(24.dp * 0.8f)
+                            modifier = Modifier
+                                .padding(all = 5.dp)
+                                .size(24.dp * 0.8f)
                         )
                         Text(
                             text = formattedDate,

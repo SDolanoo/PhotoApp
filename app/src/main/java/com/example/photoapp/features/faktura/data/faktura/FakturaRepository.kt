@@ -207,14 +207,20 @@ class FakturaRepository @Inject constructor(
         filterDate: String,
         filterPrice: String
     ): List<Faktura> {
-        return fakturaDao.getFilteredFaktury(
-            startDate,
-            endDate,
-            minPrice,
-            maxPrice,
-            filterDate,
-            filterPrice
-        )
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                fakturaDao.getFilteredFaktury(
+                    startDate,
+                    endDate,
+                    minPrice,
+                    maxPrice,
+                    filterDate,
+                    filterPrice
+                )
+            }
+        }
+
+
     }
 
     fun getAllProdukty(): List<Produkt> {

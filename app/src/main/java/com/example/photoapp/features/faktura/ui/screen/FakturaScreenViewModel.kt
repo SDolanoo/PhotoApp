@@ -6,10 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import com.example.photoapp.core.utils.normalizedDate
 import com.example.photoapp.features.faktura.data.faktura.Faktura
-import com.example.photoapp.ui.FilterScreen.FilterResult
+import com.example.photoapp.ui.FilterScreen.FilterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,10 +25,9 @@ class FakturaScreenViewModel @Inject constructor(
     private val repository: FakturaRepository
 ) : ViewModel() {
 
-    val allFakturyLive: LiveData<List<Faktura>> = repository.getAllLiveFaktury()
 
-    private val _filteredFaktury = MutableStateFlow<List<Faktura>>(emptyList())
-    val filteredFaktury: StateFlow<List<Faktura>> = _filteredFaktury
+
+    val allFakturyLive: LiveData<List<Faktura>> = repository.getAllLiveFaktury()
 
     private val _isDeleteMode = mutableStateOf(false)
     val isDeleteMode: State<Boolean> = _isDeleteMode
@@ -35,7 +35,7 @@ class FakturaScreenViewModel @Inject constructor(
     private val _selectedItems = mutableStateListOf<Faktura>()
     val selectedItems: List<Faktura> get() = _selectedItems
 
-    private val _groupedFaktury = MutableStateFlow<Map<Date?, List<Faktura>>>(emptyMap())
+    private val _groupedFaktury = MutableStateFlow<Map<Date?, List<Faktura>>>(getGroupedFakturaList(repository.getAllFaktury()))
     val groupedFaktury: StateFlow<Map<Date?, List<Faktura>>> = _groupedFaktury
 
     fun getGroupedFakturaList(fakturyList: List<Faktura>): Map<Date?, List<Faktura>> {
@@ -65,32 +65,11 @@ class FakturaScreenViewModel @Inject constructor(
         }
     }
 
-    fun applyFakturaFilters(filterResult: FilterResult) {
-        val (startDate, endDate) = filterResult.startDate to filterResult.endDate
-        val (minPrice, maxPrice) = filterResult.minPrice to filterResult.maxPrice
+    fun applyFilters(filtered: List<Faktura>) {
+        _groupedFaktury.value = getGroupedFakturaList(filtered)
+    }
 
-        val filtered = allFakturyLive.value.filter { faktura ->
-            val matchesDate = when {
-                startDate == null && endDate == null -> true
-                startDate != null && endDate != null ->
-                    faktura.dataWystawienia?.after(startDate) == true &&
-                            faktura.dataWystawienia?.before(endDate) == true
-                else -> true
-            }
-
-            val matchesPrice = when {
-                minPrice == null && maxPrice == null -> true
-                minPrice != null && maxPrice != null ->
-                    faktura.razemBrutto.toDouble() in minPrice..maxPrice
-                minPrice != null -> faktura.razemBrutto.toDouble() >= minPrice
-                maxPrice != null -> faktura.razemBrutto.toDouble() <= maxPrice
-                else -> true
-            }
-
-            matchesDate && matchesPrice
-        }
-
-        // Update filtered UI state
-        _filteredFaktury.value = filtered
+    fun clearFilters() {
+        _groupedFaktury.value = getGroupedFakturaList(allFakturyLive.value!!)
     }
 }
