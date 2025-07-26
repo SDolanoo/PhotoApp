@@ -186,15 +186,6 @@ fun PhotoAppNavGraph(
             Log.i("Dolan", "Odpalam EXCEL_PACKER_ROUTE w navGraph")
             ExcelPacker(
                 navController = navController,
-                navigateToFakturaDetailsScreen = { faktura ->
-                    navGraphViewModel.setFakturaViewedNow(faktura)
-                    navController.navigate(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE)
-                },
-                navigateToFiltersScreen = {
-                    navController.navigate(PhotoAppDestinations.FILTERS_SCREEN_ROUTE)
-                },
-                showFilteredFaktura = showFilteredFaktura,
-                fakturaFilteredList = fakturaFilteredList,
             )
         }
 

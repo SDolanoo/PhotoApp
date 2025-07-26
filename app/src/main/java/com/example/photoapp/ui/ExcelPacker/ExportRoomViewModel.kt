@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import com.example.photoapp.BuildConfig
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
+import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -30,48 +31,6 @@ class ExportRoomViewModel @Inject constructor(
 ): ViewModel() {
 
     val baseApplication = context.applicationContext
-
-    val allFaktura: LiveData<List<Faktura>> = fakturaRepository.getAllLiveFaktury()
-
-    fun <T : Any> exportListToExcel(
-        workbook: XSSFWorkbook,
-        listToExport: List<T>,
-        sheetName: String,
-        preferredFields: List<String>
-    ) {
-        val sheet = workbook.createSheet(sheetName)
-
-        if (listToExport.isEmpty()) return
-
-        val clazz = listToExport.first()::class.java
-        val allFields = clazz.declaredFields
-        val fieldsToExport = preferredFields.mapNotNull { fieldName ->
-            allFields.find { it.name == fieldName }?.apply { isAccessible = true }
-        }
-
-        // Header Row
-        val headerRow = sheet.createRow(0)
-        val headerStyle = createHeaderStyle(workbook)
-
-        fieldsToExport.forEachIndexed { index, field ->
-            val cell = headerRow.createCell(index)
-            cell.setCellValue(field.name)
-            cell.cellStyle = headerStyle
-        }
-
-        // Data Rows
-        listToExport.forEachIndexed { rowIndex, item ->
-            val row = sheet.createRow(rowIndex + 1)
-            fieldsToExport.forEachIndexed { colIndex, field ->
-                try {
-                    val value = field.get(item)?.toString() ?: ""
-                    row.createCell(colIndex).setCellValue(value)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
-    }
 
     fun createHeaderStyle(workbook: XSSFWorkbook): XSSFCellStyle {
 
@@ -108,12 +67,10 @@ class ExportRoomViewModel @Inject constructor(
             if (!folder.exists()) folder.mkdirs()
 
             when (whatToExport) {
-                "faktura" -> exportListToExcel(
-                    workbook,
-                    listToExport.filterIsInstance<Faktura>(),
-                    "Produkty",
-                    listOf("productName", "category", "price")
-                )
+                "faktura" -> {
+                    val faktury = listToExport.filterIsInstance<Faktura>()
+                    exportFaktura(workbook, faktury)
+                }
             }
 
             val file = File(folder, "Exported.xlsx")
@@ -151,186 +108,85 @@ class ExportRoomViewModel @Inject constructor(
         }
     }
 
+    fun exportFaktura(
+        workbook: XSSFWorkbook,
+        faktury: List<Faktura>
+    ) {
+        val produktyFaktury: List<ProduktFakturaZProduktem> = fakturaRepository.getListProduktyFakturaZProduktemForListFaktura(faktury)
 
-//    fun exportParagon(
-//        workbook: XSSFWorkbook,
-//        listToExport: List<Paragon?>
-//    ) {
-//        val sheet = workbook.createSheet("Paragony")
-//
-//        val preferredParagonFields = arrayOf(
-//            "dataZakupu",
-//            "nazwaSklepu",
-//            "kwotaCalkowita"
-//        )
-//
-//        val allParagonFields = Paragon::class.java.declaredFields
-//
-//        val paragonFieldsToExport = arrayOfNulls<Field>(preferredParagonFields.size)
-//
-//        for (i in preferredParagonFields.indices) {
-//            for (field in allParagonFields) {
-//                if (field.name == preferredParagonFields[i]) {
-//                    field.isAccessible = true // make private field accessible
-//                    paragonFieldsToExport[i] = field
-//                    break
-//                }
-//            }
-//        }
-//        // header row
-//        val headerRow = sheet.createRow(0)
-//
-//        val headerStyle = createHeaderStyle(workbook)
-//
-//        for (i in paragonFieldsToExport.indices) {
-//            val cell = headerRow.createCell(i)
-//            cell.setCellValue(paragonFieldsToExport[i]?.name)
-//            cell.cellStyle = headerStyle
-//        }
-//
-//        //fetch data
-//
-//        var rowNum = 1
-//        for (paragon in listToExport) {
-//            val row = sheet.createRow(rowNum++)
-//            for (i in paragonFieldsToExport.indices) {
-//                try {
-//                    // Access the field using reflection
-//                    val value = paragonFieldsToExport[i]?.get(paragon)
-//                    row.createCell(i).setCellValue(value.toString())
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                }
-//            }
-//        }
-//
-//
-//    }
-//
-//    fun exportRaportFiskalny(
-//        workbook: XSSFWorkbook,
-//        listToExport: List<ProduktRaportFiskalny>
-//    ) {
-//        val sheet = workbook.createSheet("Raport Fiskalny")
-//
-//        val preferred_RF_Fields = arrayOf(
-//            "nrPLU",
-//            "ilosc"
-//        )
-//
-//        val all_RF_Fields = Paragon::class.java.declaredFields
-//
-//        val rF_FieldsToExport = arrayOfNulls<Field>(preferred_RF_Fields.size)
-//
-//        for (i in preferred_RF_Fields.indices) {
-//            for (field in all_RF_Fields) {
-//                if (field.name == preferred_RF_Fields[i]) {
-//                    field.isAccessible = true // make private field accessible
-//                    rF_FieldsToExport[i] = field
-//                    break
-//                }
-//            }
-//        }
-//        // header row
-//        val headerRow = sheet.createRow(0)
-//
-//        val headerStyle = createHeaderStyle(workbook)
-//
-//        for (i in rF_FieldsToExport.indices) {
-//            val cell = headerRow.createCell(i)
-//            cell.setCellValue(rF_FieldsToExport[i]?.name)
-//            cell.cellStyle = headerStyle
-//        }
-//
-//        //fetch data
-//
-//        var rowNum = 1
-//        for (rF in listToExport) {
-//            val row = sheet.createRow(rowNum++)
-//            for (i in rF_FieldsToExport.indices) {
-//                try {
-//                    // Access the field using reflection
-//                    val value = rF_FieldsToExport[i]?.get(rF)
-//                    row.createCell(i).setCellValue(value.toString())
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                }
-//            }
-//        }
-//    }
-//
-//    fun createHeaderStyle(workbook: XSSFWorkbook): XSSFCellStyle {
-//
-//        // Create a new cell style for the header
-//        val headerStyle: XSSFCellStyle = workbook.createCellStyle()
-//
-//        // Set background color
-//        headerStyle.fillForegroundColor = IndexedColors.LIGHT_BLUE.index
-//        headerStyle.fillPattern = FillPatternType.SOLID_FOREGROUND
-//
-//        // Set font color and make it bold
-//        val font: XSSFFont = workbook.createFont()
-//        font.bold = true
-//        font.color = IndexedColors.WHITE.index
-//        headerStyle.setFont(font)
-//
-//        // Set alignment
-//        headerStyle.alignment = HorizontalAlignment.CENTER
-//        headerStyle.verticalAlignment = VerticalAlignment.CENTER
-//        return headerStyle
-//    }
-//
-//    suspend fun exportToExcel(whatToExport: String, listToExport: List<Any>) {
-//        try {
-//            val workbook = XSSFWorkbook()
-//            val folder = File(baseApplication.filesDir, "exported_files")
-//            //check if folder exists
-//            if (!folder.exists()) {
-//                folder.mkdirs()
-//            }
-//// If we want to add another sheet to the workbook, we simply call the function to //export that table and pass in the workbook
-//
-//            exportParagon(workbook, listToExport = listToExport)
-//            val file = File(folder, "Exported.xlsx")
-//            try {
-//                //write workbook to file
-//                withContext(Dispatchers.IO) {
-//                    FileOutputStream(file).use { outputStream ->
-//                        workbook.write(outputStream)
-//                    }
-//                    //Get file uri. In newer versions of android, enable buildconfig in app           // module
-//                    val fileUri = FileProvider.getUriForFile(
-//                        baseApplication.applicationContext,
-//                        BuildConfig.APPLICATION_ID + ".fileprovider",
-//                        file
-//                    )
-//                    //Open file
-//                    val viewIntent = Intent(Intent.ACTION_VIEW).apply {
-//                        setDataAndType(fileUri, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-//                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//                    }
-//                    //Share file
-//                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-//                        type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-//                        putExtra(Intent.EXTRA_STREAM, fileUri)
-//                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//                    }
-//                    val chooserIntent =
-//                        Intent.createChooser(
-//                            shareIntent,
-//                            "Open or Share File"
-//                        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                    // Add the viewIntent as an extra option
-//                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(viewIntent))
-//                    baseApplication.startActivity(chooserIntent)
-//                }
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//    }
+        val sheetFaktura = workbook.createSheet("Faktury")
+        val sheetProdukt = workbook.createSheet("Produkty")
 
+        val headerStyle = createHeaderStyle(workbook)
 
+        // Nagłówki arkusza Faktura
+        val fakturaHeaders = listOf(
+            "ID Faktury", "Typ", "Nazwa", "Numer", "Data Wystawienia", "Data Sprzedaży", "Miejsce Wystawienia",
+            "Razem Netto", "Razem VAT", "Razem Brutto", "Do Zapłaty", "Waluta", "Forma Płatności"
+        )
+
+        // Wiersz nagłówków
+        val fakturaHeaderRow = sheetFaktura.createRow(0)
+        fakturaHeaders.forEachIndexed { index, header ->
+            val cell = fakturaHeaderRow.createCell(index)
+            cell.setCellValue(header)
+            cell.cellStyle = headerStyle
+        }
+
+        // Dane faktur
+        faktury.forEachIndexed { rowIndex, faktura ->
+            val row = sheetFaktura.createRow(rowIndex + 1)
+            val cellValues = listOf(
+                faktura.id.toString(),
+                faktura.typFaktury,
+                "Nazwa klienta", // <- zamień na dane z Odbiorcy lub innej relacji
+                faktura.numerFaktury,
+                faktura.dataWystawienia?.toString() ?: "",
+                faktura.dataSprzedazy?.toString() ?: "",
+                faktura.miejsceWystawienia,
+                faktura.razemNetto,
+                faktura.razemVAT,
+                faktura.razemBrutto,
+                faktura.doZaplaty,
+                faktura.waluta,
+                faktura.formaPlatnosci
+            )
+            cellValues.forEachIndexed { colIndex, value ->
+                row.createCell(colIndex).setCellValue(value)
+            }
+        }
+
+        // Arkusz Produkty - nagłówki
+        val produktHeaders = listOf(
+            "ID Faktury", "Nazwa", "Jednostka miary", "Cena Netto", "Stawka Vat", "Ilość",
+            "Wartość Netto", "Wartość Brutto", "Rabat Wartość"
+        )
+        val produktHeaderRow = sheetProdukt.createRow(0)
+        produktHeaders.forEachIndexed { index, header ->
+            val cell = produktHeaderRow.createCell(index)
+            cell.setCellValue(header)
+            cell.cellStyle = headerStyle
+        }
+
+        // Dane produktów
+        var produktRowIndex = 1
+        for (pfzp in produktyFaktury) { // pzpf = ProduktFakturaZProduktem
+            val row = sheetProdukt.createRow(produktRowIndex++)
+
+            val cellValues = listOf(
+                pfzp.produktFaktura.fakturaId.toString(),
+                pfzp.produkt.nazwaProduktu,
+                pfzp.produkt.jednostkaMiary,
+                pfzp.produkt.cenaNetto,
+                pfzp.produkt.stawkaVat,
+                pfzp.produktFaktura.ilosc,
+                pfzp.produktFaktura.wartoscNetto,
+                pfzp.produktFaktura.wartoscBrutto,
+                pfzp.produktFaktura.rabat
+            )
+            cellValues.forEachIndexed { colIndex, value ->
+                row.createCell(colIndex).setCellValue(value)
+            }
+        }
+    }
 }

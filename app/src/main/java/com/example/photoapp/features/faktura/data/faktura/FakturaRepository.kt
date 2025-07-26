@@ -12,6 +12,7 @@ import com.example.photoapp.core.utils.jsonTransformer
 import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
 import com.example.photoapp.features.faktura.data.odbiorca.SaveMode
 import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
+import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -219,13 +220,27 @@ class FakturaRepository @Inject constructor(
                 )
             }
         }
-
-
     }
 
     fun getAllProdukty(): List<Produkt> {
         return produktDao.getAll()
     }
 
+    fun getListProduktyFakturaZProduktemForListFaktura(faktury: List<Faktura>): List<ProduktFakturaZProduktem> {
+        val resultList = mutableListOf<ProduktFakturaZProduktem>()
 
+        for (faktura in faktury) {
+            val produktyFaktura = getProduktyFakturaForFaktura(faktura)
+            for (produktFaktura in produktyFaktura) {
+                val produkt: Produkt = getProduktForProduktFaktura(produktFaktura)
+                val pfzp: ProduktFakturaZProduktem = ProduktFakturaZProduktem(
+                    produktFaktura = produktFaktura,
+                    produkt = produkt
+                )
+                resultList.add(pfzp)
+
+            }
+        }
+        return resultList
+    }
 }

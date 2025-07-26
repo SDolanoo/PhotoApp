@@ -1,6 +1,5 @@
 package com.example.photoapp.features.faktura.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +35,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -60,19 +61,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
 import com.example.photoapp.R
+import com.example.photoapp.core.components.MyNavigationBar
+import com.example.photoapp.core.navigation.NavBarDestinations
 import com.example.photoapp.core.navigation.PhotoAppDestinations
 import com.example.photoapp.features.faktura.data.faktura.Faktura
-import com.example.photoapp.features.faktura.ui.details.FakturaDetailsScreen
-import com.example.photoapp.ui.ExcelPacker.FakturaItem
 import com.example.photoapp.ui.FilterScreen.FilterController
 import com.example.photoapp.ui.FilterScreen.FilterScreenContent
 import com.example.photoapp.ui.FilterScreen.FilterState
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -212,6 +211,12 @@ fun FakturaScreen(
                         }
                     }
                 }
+            }
+            if (!isDeleteMode && !isFilterExpanded) {
+                MyNavigationBar(
+                    navController = navController,
+                    destinations = NavBarDestinations.entries
+                )
             }
         }
     ) { innerPadding ->
