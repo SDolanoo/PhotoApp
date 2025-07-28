@@ -54,17 +54,6 @@ fun PhotoAppNavGraph(
     val photoUri by navGraphViewModel.photoUri.observeAsState()
     val photoBitmap by navGraphViewModel.photoBitmap.observeAsState()
 
-    // For photo and acceptance
-    val addingPhotoFor by navGraphViewModel.addingPhotoFor.observeAsState()
-
-    // For details
-    val fakturaViewedNow by navGraphViewModel.fakturaViewedNow.observeAsState()
-
-    // For homeScreen
-    val currentlyShowing by navGraphViewModel.currentlyShowing.observeAsState("paragon")
-    val showFilteredFaktura by navGraphViewModel.showFilteredFakturys.observeAsState(false)
-    val fakturaFilteredList by navGraphViewModel.fakturaFilteredList.observeAsState(emptyList())
-
     val faktura by navGraphViewModel.faktura.collectAsState()
     val sprzedawca by navGraphViewModel.sprzedawca.collectAsState()
     val odbiorca by navGraphViewModel.odbiorca.collectAsState()
@@ -80,9 +69,8 @@ fun PhotoAppNavGraph(
     LaunchedEffect(photoUri) {
         photoUri?.let {
             onPhotoUriChanged() // Trigger your desired logic
-        }}
-
-
+        }
+    }
 
     NavHost(
         navController = navController,

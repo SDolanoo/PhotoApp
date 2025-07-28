@@ -22,6 +22,9 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import com.example.photoapp.core.navigation.NavGraphViewModel
 import com.example.photoapp.core.navigation.PhotoAppNavGraph
+import com.example.photoapp.ui.ObjectsEditingScreen.InvoicesScreen
+import com.example.photoapp.ui.ObjectsEditingScreen.SelectorScreen
+import com.example.photoapp.ui.ObjectsEditingScreen.sampleInvoices
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -133,4 +136,10 @@ private fun rememberSizeAwareDrawerState(isExpandedScreen: Boolean): DrawerState
         // don't want to keep track of any changes and always keep it closed
         DrawerState(DrawerValue.Closed)
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShowCasePreview() {
+    InvoicesScreen(invoices = sampleInvoices)
 }
