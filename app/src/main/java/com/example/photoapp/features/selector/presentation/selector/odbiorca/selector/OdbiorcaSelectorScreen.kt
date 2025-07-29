@@ -1,4 +1,4 @@
-package com.example.photoapp.features.selector.presentation.odbiorca
+package com.example.photoapp.features.selector.presentation.selector.odbiorca.selector
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import com.example.photoapp.features.odbiorca.data.Odbiorca
 
 @Composable
-fun OdbiorcaEditingScreen(odbiorcy: List<Odbiorca>) {
+fun OdbiorcaSelectorScreen(odbiorcy: List<Odbiorca>) {
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
             value = "",

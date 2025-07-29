@@ -1,4 +1,4 @@
-package com.example.photoapp.features.faktura.composables.common
+package com.example.photoapp.core.components.common
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

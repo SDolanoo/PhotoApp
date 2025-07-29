@@ -1,4 +1,4 @@
-package com.example.photoapp.features.selector.presentation.sprzedawca
+package com.example.photoapp.features.selector.presentation.selector.sprzedawca.selector
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 
 @Composable
-fun SprzedawcaEditingScreen(sprzedawcy: List<Sprzedawca>) {
+fun SprzedawcaSelectorScreen(sprzedawcy: List<Sprzedawca>) {
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
             value = "",

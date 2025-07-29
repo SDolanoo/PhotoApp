@@ -1,4 +1,4 @@
-package com.example.photoapp.features.faktura.composables.forms
+package com.example.photoapp.features.sprzedawca.composables.form
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,10 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.photoapp.R
-import com.example.photoapp.features.faktura.composables.common.CustomOutlinedButton
-import com.example.photoapp.features.faktura.composables.common.CustomTextField
-import com.example.photoapp.features.faktura.composables.common.CustomTextFieldWithButton
-import com.example.photoapp.features.faktura.composables.common.KeyboardType
+import com.example.photoapp.core.components.common.CustomOutlinedButton
+import com.example.photoapp.core.components.common.CustomTextField
+import com.example.photoapp.core.components.common.CustomTextFieldWithButton
+import com.example.photoapp.core.components.common.KeyboardType
 
 @Composable
 fun SprzedawcaForm(

@@ -1,4 +1,4 @@
-package com.example.photoapp.features.selector.presentation.produkt
+package com.example.photoapp.features.selector.presentation.selector.produkt.selector
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.example.photoapp.features.faktura.data.faktura.Produkt
 
 @Composable
-fun ProductsEditingScreen(produkty: List<Produkt>) {
+fun ProductsSelectorScreen(produkty: List<Produkt>) {
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
             value = "",

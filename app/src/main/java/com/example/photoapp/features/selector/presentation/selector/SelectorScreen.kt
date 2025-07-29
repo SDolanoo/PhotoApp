@@ -1,4 +1,4 @@
-package com.example.photoapp.features.selector.presentation
+package com.example.photoapp.features.selector.presentation.selector
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,9 +41,9 @@ import androidx.navigation.NavHostController
 import com.example.photoapp.R
 import com.example.photoapp.core.components.MyNavigationBar
 import com.example.photoapp.core.navigation.NavBarDestinations
-import com.example.photoapp.features.selector.presentation.odbiorca.OdbiorcaEditingScreen
-import com.example.photoapp.features.selector.presentation.produkt.ProductsEditingScreen
-import com.example.photoapp.features.selector.presentation.sprzedawca.SprzedawcaEditingScreen
+import com.example.photoapp.features.selector.presentation.selector.odbiorca.selector.OdbiorcaSelectorScreen
+import com.example.photoapp.features.selector.presentation.selector.produkt.selector.ProductsSelectorScreen
+import com.example.photoapp.features.selector.presentation.selector.sprzedawca.selector.SprzedawcaSelectorScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,17 +102,17 @@ fun SelectorScreen(
             )
         }
         if (currentlyViewing == "Sprzedawcy") {
-            SprzedawcaEditingScreen(
+            SprzedawcaSelectorScreen(
                 sprzedawcy = allSprzedawcy.value
             )
         }
         if (currentlyViewing == "Odbiorcy") {
-            OdbiorcaEditingScreen(
+            OdbiorcaSelectorScreen(
                 odbiorcy = allOdbiorcy.value
             )
         }
         if (currentlyViewing == "Produkty") {
-            ProductsEditingScreen(
+            ProductsSelectorScreen(
                 produkty = allProdukty.value
             )
         }

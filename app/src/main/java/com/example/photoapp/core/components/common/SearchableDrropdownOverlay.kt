@@ -1,4 +1,4 @@
-package com.example.photoapp.features.faktura.composables.common
+package com.example.photoapp.core.components.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

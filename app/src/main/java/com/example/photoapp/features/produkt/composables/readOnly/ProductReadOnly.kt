@@ -1,4 +1,4 @@
-package com.example.photoapp.features.faktura.composables.readOnly
+package com.example.photoapp.features.produkt.composables.readOnly
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,10 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.photoapp.features.faktura.composables.common.DividerLine
-import com.example.photoapp.features.faktura.composables.common.PriceSummary
-import com.example.photoapp.features.faktura.composables.common.ProduktFakturaSection
-import com.example.photoapp.features.faktura.composables.common.SectionCard
+import com.example.photoapp.core.components.common.DividerLine
+import com.example.photoapp.core.components.common.PriceSummary
+import com.example.photoapp.core.components.common.ProduktFakturaSection
+import com.example.photoapp.core.components.common.SectionCard
 import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
 
 @Composable

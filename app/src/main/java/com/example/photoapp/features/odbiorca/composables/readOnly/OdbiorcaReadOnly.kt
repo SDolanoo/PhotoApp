@@ -1,20 +1,20 @@
-package com.example.photoapp.features.faktura.composables.readOnly
+package com.example.photoapp.features.odbiorca.composables.readOnly
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.photoapp.features.faktura.composables.common.InfoRow
-import com.example.photoapp.features.faktura.composables.common.SectionCard
-import com.example.photoapp.features.faktura.composables.common.TwoColumnRow
+import com.example.photoapp.core.components.common.InfoRow
+import com.example.photoapp.core.components.common.SectionCard
+import com.example.photoapp.core.components.common.TwoColumnRow
 
 @Composable
-fun NabywcaReadOnly(
+fun OdbiorcaReadOnly(
     modifier: Modifier,
     fields: List<String>
 ) {
     SectionCard(
-        title = "Nabywca",
+        title = "Odbiorca",
         icon = Icons.Filled.Person
     ) {
         InfoRow("Nazwa firmy", fields[0])

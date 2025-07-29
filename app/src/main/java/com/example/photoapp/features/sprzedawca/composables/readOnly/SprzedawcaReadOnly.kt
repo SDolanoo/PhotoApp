@@ -1,4 +1,4 @@
-package com.example.photoapp.features.faktura.composables.readOnly
+package com.example.photoapp.features.sprzedawca.composables.readOnly
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -7,9 +7,9 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.photoapp.features.faktura.composables.common.InfoRow
-import com.example.photoapp.features.faktura.composables.common.SectionCard
-import com.example.photoapp.features.faktura.composables.common.TwoColumnRow
+import com.example.photoapp.core.components.common.InfoRow
+import com.example.photoapp.core.components.common.SectionCard
+import com.example.photoapp.core.components.common.TwoColumnRow
 
 @Composable
 fun SprzedawcaReadOnly(
