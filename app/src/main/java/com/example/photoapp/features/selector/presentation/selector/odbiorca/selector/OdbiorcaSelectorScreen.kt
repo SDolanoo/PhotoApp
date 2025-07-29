@@ -29,7 +29,10 @@ import androidx.compose.ui.graphics.Color
 import com.example.photoapp.features.odbiorca.data.Odbiorca
 
 @Composable
-fun OdbiorcaSelectorScreen(odbiorcy: List<Odbiorca>) {
+fun OdbiorcaSelectorScreen(
+    odbiorcy: List<Odbiorca>,
+    onClick: (Odbiorca) -> Unit
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
             value = "",
@@ -45,7 +48,10 @@ fun OdbiorcaSelectorScreen(odbiorcy: List<Odbiorca>) {
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(odbiorcy) { odbiorca ->
-                OdbiorcaCard(odbiorca = odbiorca)
+                OdbiorcaCard(
+                    odbiorca = odbiorca,
+                    onClick = {onClick(it)}
+                )
             }
         }
     }
@@ -55,7 +61,7 @@ fun OdbiorcaSelectorScreen(odbiorcy: List<Odbiorca>) {
 fun OdbiorcaCard(
     odbiorca: Odbiorca,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (Odbiorca) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -63,7 +69,7 @@ fun OdbiorcaCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(enabled = onClick != null) { onClick?.invoke() }
+            .clickable { onClick(odbiorca) }
     ) {
         Row(
             modifier = Modifier

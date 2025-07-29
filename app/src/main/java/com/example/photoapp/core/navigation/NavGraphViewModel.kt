@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import coil3.Bitmap
 import android.net.Uri
 import com.example.photoapp.features.faktura.data.faktura.Faktura
+import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
 import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
@@ -54,6 +55,9 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
 
     private val _produkty = MutableStateFlow<List<ProduktFakturaZProduktem>>(emptyList())
     val produkty: StateFlow<List<ProduktFakturaZProduktem>> = _produkty.asStateFlow()
+
+    private val _produkt = MutableStateFlow<Produkt>(Produkt.default())
+    val produkt: StateFlow<Produkt> = _produkt.asStateFlow()
 
     // Functions to update states
     fun setPhotoUri(uri: Uri) {
@@ -105,5 +109,9 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
 
     fun removeProdukt(produkt: ProduktFakturaZProduktem) {
         _produkty.update { currentList -> currentList - produkt }
+    }
+
+    fun setProdukt(produkt: Produkt) {
+        _produkt.value = produkt
     }
 }

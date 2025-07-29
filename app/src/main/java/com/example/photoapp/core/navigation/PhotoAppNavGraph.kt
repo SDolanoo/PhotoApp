@@ -24,6 +24,9 @@ import com.example.photoapp.features.captureFlow.presentation.acceptFaktura.Acce
 import com.example.photoapp.features.captureFlow.presentation.acceptPhoto.AcceptPhoto
 import com.example.photoapp.features.captureFlow.presentation.cameraView.CameraView
 import com.example.photoapp.features.faktura.presentation.details.FakturaDetailsScreen
+import com.example.photoapp.features.selector.presentation.selector.odbiorca.details.OdbiorcaDetailsScreen
+import com.example.photoapp.features.selector.presentation.selector.produkt.details.ProduktDetailsScreen
+import com.example.photoapp.features.selector.presentation.selector.sprzedawca.details.SprzedawcaDetailsScreen
 //import com.example.photoapp.ui.FilterScreen.FilterScreen
 import com.example.photoapp.ui.home.HomeDrawer
 import com.example.photoapp.ui.home.HomeScreen
@@ -54,6 +57,7 @@ fun PhotoAppNavGraph(
     val photoUri by navGraphViewModel.photoUri.observeAsState()
     val photoBitmap by navGraphViewModel.photoBitmap.observeAsState()
 
+    val produkt by navGraphViewModel.produkt.collectAsState()
     val faktura by navGraphViewModel.faktura.collectAsState()
     val sprzedawca by navGraphViewModel.sprzedawca.collectAsState()
     val odbiorca by navGraphViewModel.odbiorca.collectAsState()
@@ -196,7 +200,42 @@ fun PhotoAppNavGraph(
             Log.i("Dolan", "Odpalam EDITING_SELECTOR w navGraph")
             SelectorScreen(
                 navController = navController,
+                goToOdbiorcaDetails = { o ->
+                    navGraphViewModel.setOdbiorca(o)
+                    navController.navigate(PhotoAppDestinations.ODBIORCA_DETAILS_SCREEN_ROUTE)},
+                goToSprzedawcaDetails = { s ->
+                    navGraphViewModel.setSprzedawca(s)
+                    navController.navigate(PhotoAppDestinations.SPRZEDAWCA_DETAILS_SCREEN_ROUTE)
+                                        },
+                goToProduktDetails = { p ->
+                    navGraphViewModel.setProdukt(p)
+                    navController.navigate(PhotoAppDestinations.PRODUKT_DETAILS_SCREEN_ROUTE)
+                                     },
                 goBack = {navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)}
+            )
+        }
+
+        composable(PhotoAppDestinations.ODBIORCA_DETAILS_SCREEN_ROUTE) {
+            Log.i("Dolan", "Odpalam ODBIORCA_DETAILS_SCREEN_ROUTE w navGraph")
+            OdbiorcaDetailsScreen(
+                odbiorca = odbiorca,
+                leaveDetailsScreen = {navController.navigate(PhotoAppDestinations.EDITING_SELECTOR)},
+            )
+        }
+
+        composable(PhotoAppDestinations.SPRZEDAWCA_DETAILS_SCREEN_ROUTE) {
+            Log.i("Dolan", "Odpalam SPRZEDAWCA_DETAILS_SCREEN_ROUTE w navGraph")
+            SprzedawcaDetailsScreen(
+                sprzedawca = sprzedawca,
+                leaveDetailsScreen = {navController.navigate(PhotoAppDestinations.EDITING_SELECTOR)},
+            )
+        }
+
+        composable(PhotoAppDestinations.PRODUKT_DETAILS_SCREEN_ROUTE) {
+            Log.i("Dolan", "Odpalam PRODUKT_DETAILS_SCREEN_ROUTE w navGraph")
+            ProduktDetailsScreen(
+                produkt = produkt,
+                leaveDetailsScreen = {navController.navigate(PhotoAppDestinations.EDITING_SELECTOR)},
             )
         }
     }

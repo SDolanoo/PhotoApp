@@ -41,15 +41,21 @@ import androidx.navigation.NavHostController
 import com.example.photoapp.R
 import com.example.photoapp.core.components.MyNavigationBar
 import com.example.photoapp.core.navigation.NavBarDestinations
+import com.example.photoapp.features.faktura.data.faktura.Produkt
+import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.selector.presentation.selector.odbiorca.selector.OdbiorcaSelectorScreen
 import com.example.photoapp.features.selector.presentation.selector.produkt.selector.ProductsSelectorScreen
 import com.example.photoapp.features.selector.presentation.selector.sprzedawca.selector.SprzedawcaSelectorScreen
+import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectorScreen(
     navController: NavHostController,
+    goToOdbiorcaDetails: (Odbiorca) -> Unit,
+    goToSprzedawcaDetails: (Sprzedawca) -> Unit,
+    goToProduktDetails: (Produkt) -> Unit,
     goBack: () -> Unit,
     viewModel: SelectorViewModel = hiltViewModel()
 ) {
@@ -96,24 +102,27 @@ fun SelectorScreen(
         if (currentlyViewing == "main") {
             SelectorScreenContent(
                 paddingValues = innerPadding,
-                onSprzedawcyClick = {},
-                onOdbiorcyClick = {},
-                onProduktyClick = {},
+                onSprzedawcyClick = { currentlyViewing = "Sprzedawcy" },
+                onOdbiorcyClick = { currentlyViewing = "Odbiorcy" },
+                onProduktyClick = { currentlyViewing = "Produkty" },
             )
         }
         if (currentlyViewing == "Sprzedawcy") {
             SprzedawcaSelectorScreen(
-                sprzedawcy = allSprzedawcy.value
+                sprzedawcy = allSprzedawcy.value,
+                onClick = {goToSprzedawcaDetails(it)}
             )
         }
         if (currentlyViewing == "Odbiorcy") {
             OdbiorcaSelectorScreen(
-                odbiorcy = allOdbiorcy.value
+                odbiorcy = allOdbiorcy.value,
+                onClick = {goToOdbiorcaDetails(it)}
             )
         }
         if (currentlyViewing == "Produkty") {
             ProductsSelectorScreen(
-                produkty = allProdukty.value
+                produkty = allProdukty.value,
+                onClick = {goToProduktDetails(it)}
             )
         }
     }

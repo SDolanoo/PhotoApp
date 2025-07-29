@@ -26,10 +26,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 
 @Composable
-fun SprzedawcaSelectorScreen(sprzedawcy: List<Sprzedawca>) {
+fun SprzedawcaSelectorScreen(
+    sprzedawcy: List<Sprzedawca>,
+    onClick: (Sprzedawca) -> Unit
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
             value = "",
@@ -45,7 +49,10 @@ fun SprzedawcaSelectorScreen(sprzedawcy: List<Sprzedawca>) {
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(sprzedawcy) { sprzedawca ->
-                SprzedawcaCard(sprzedawca = sprzedawca)
+                SprzedawcaCard(
+                    sprzedawca = sprzedawca,
+                    onClick = {onClick(it)}
+                )
             }
         }
     }
@@ -55,7 +62,7 @@ fun SprzedawcaSelectorScreen(sprzedawcy: List<Sprzedawca>) {
 fun SprzedawcaCard(
     sprzedawca: Sprzedawca,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (Sprzedawca) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -63,7 +70,7 @@ fun SprzedawcaCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(enabled = onClick != null) { onClick?.invoke() }
+            .clickable { onClick(sprzedawca) }
     ) {
         Row(
             modifier = Modifier

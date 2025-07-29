@@ -1,5 +1,6 @@
 package com.example.photoapp.features.selector.presentation.selector.produkt.selector
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,9 +26,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.photoapp.features.faktura.data.faktura.Produkt
+import com.example.photoapp.features.odbiorca.data.Odbiorca
+import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 
 @Composable
-fun ProductsSelectorScreen(produkty: List<Produkt>) {
+fun ProductsSelectorScreen(
+    produkty: List<Produkt>,
+    onClick: (Produkt) -> Unit
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
             value = "",
@@ -43,20 +49,28 @@ fun ProductsSelectorScreen(produkty: List<Produkt>) {
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(produkty) { produkt ->
-                ProductsCard(produkt = produkt)
+                ProductsCard(
+                    produkt = produkt,
+                    onClick = {onClick(it)}
+                )
             }
         }
     }
 }
 
 @Composable
-fun ProductsCard(produkt: Produkt, modifier: Modifier = Modifier) {
+fun ProductsCard(
+    produkt: Produkt,
+    modifier: Modifier = Modifier,
+    onClick: (Produkt) -> Unit
+) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onClick(produkt) }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 

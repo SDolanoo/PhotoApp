@@ -14,4 +14,7 @@ object PhotoAppDestinations {
     const val FILTERS_SCREEN_ROUTE = "filtersScreen"
     const val EXCEL_PACKER_ROUTE = "excelPacker"
     const val EDITING_SELECTOR = "editingSelector"
+    const val ODBIORCA_DETAILS_SCREEN_ROUTE = "odbiorcaDetailsScreen"
+    const val SPRZEDAWCA_DETAILS_SCREEN_ROUTE = "sprzedawcaDetailsScreen"
+    const val PRODUKT_DETAILS_SCREEN_ROUTE = "produktDetailsScreen"
 }
