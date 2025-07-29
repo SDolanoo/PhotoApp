@@ -13,19 +13,17 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.photoapp.features.faktura.ui.details.FakturaDetailsScreen
-import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
-import com.example.photoapp.features.faktura.ui.screen.FakturaScreen
-import com.example.photoapp.ui.ExcelPacker.ExcelPacker
-import com.example.photoapp.ui.FilterScreen.FilterScreenContent
-import com.example.photoapp.ui.acceptFaktura.AcceptFakturaScreen
-import com.example.photoapp.ui.acceptPhoto.AcceptPhoto
-import com.example.photoapp.ui.cameraView.CameraView
+import com.example.photoapp.features.faktura.presentation.screen.FakturaScreen
+import com.example.photoapp.features.excelPacker.presentation.ExcelPacker
+import com.example.photoapp.features.selector.presentation.SelectorScreen
+import com.example.photoapp.features.captureFlow.presentation.acceptFaktura.AcceptFakturaScreen
+import com.example.photoapp.features.captureFlow.presentation.acceptPhoto.AcceptPhoto
+import com.example.photoapp.features.captureFlow.presentation.cameraView.CameraView
+import com.example.photoapp.features.faktura.presentation.details.FakturaDetailsScreen
 //import com.example.photoapp.ui.FilterScreen.FilterScreen
 import com.example.photoapp.ui.home.HomeDrawer
 import com.example.photoapp.ui.home.HomeScreen
@@ -49,6 +47,8 @@ fun PhotoAppNavGraph(
 ) {
     var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
+
+    val fakturaViewedNow by navGraphViewModel.fakturaViewedNow.collectAsState()
 
     // Observable states
     val photoUri by navGraphViewModel.photoUri.observeAsState()
@@ -123,6 +123,14 @@ fun PhotoAppNavGraph(
             )
         }
 
+        composable(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE) {
+            Log.i("Dolan", "Odpalam FAKTURA_DETAILS_SCREEN_ROUTE w navGraph")
+            FakturaDetailsScreen(
+                faktura = fakturaViewedNow,
+                leaveDetailsScreen = { navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) }
+            )
+        }
+
         composable(PhotoAppDestinations.MAKE_PHOTO_ROUTE) {
             Log.i("Dolan", "Odpalam MAKE_PHOTO w navGraph")
             CameraView(
@@ -181,6 +189,14 @@ fun PhotoAppNavGraph(
             Log.i("Dolan", "Odpalam TESTING_BUTTONS w navGraph")
             TestingButtons(
                 backToHome = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)},
+            )
+        }
+
+        composable(PhotoAppDestinations.EDITING_SELECTOR) {
+            Log.i("Dolan", "Odpalam EDITING_SELECTOR w navGraph")
+            SelectorScreen(
+                navController = navController,
+                goBack = {navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)}
             )
         }
     }

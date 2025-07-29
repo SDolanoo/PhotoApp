@@ -22,7 +22,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
-import kotlinx.coroutines.delay
 
 /**
  * A reusable exposed dropdown menu component for selecting a string from a predefined list.

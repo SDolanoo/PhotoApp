@@ -13,4 +13,5 @@ object PhotoAppDestinations {
     const val FAKTURA_DETAILS_SCREEN_ROUTE = "fakturaDetailsScreen"
     const val FILTERS_SCREEN_ROUTE = "filtersScreen"
     const val EXCEL_PACKER_ROUTE = "excelPacker"
+    const val EDITING_SELECTOR = "editingSelector"
 }

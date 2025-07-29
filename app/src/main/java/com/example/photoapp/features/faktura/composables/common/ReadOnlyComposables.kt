@@ -1,7 +1,6 @@
 package com.example.photoapp.features.faktura.composables.common
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -27,8 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
-import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
+import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
 
 @Composable
 fun SectionCard(title: String, icon: ImageVector, content: @Composable ColumnScope.() -> Unit) {
@@ -52,12 +50,6 @@ fun SectionCard(title: String, icon: ImageVector, content: @Composable ColumnSco
             content()
         }
     }
-}
-
-fun Modifier.Companion.padding(
-    horizontal: Dp,
-    vertical: Dp
-) {
 }
 
 @Composable

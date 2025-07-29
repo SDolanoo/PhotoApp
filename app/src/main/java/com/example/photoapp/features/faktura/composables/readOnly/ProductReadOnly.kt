@@ -15,7 +15,7 @@ import com.example.photoapp.features.faktura.composables.common.DividerLine
 import com.example.photoapp.features.faktura.composables.common.PriceSummary
 import com.example.photoapp.features.faktura.composables.common.ProduktFakturaSection
 import com.example.photoapp.features.faktura.composables.common.SectionCard
-import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
+import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
 
 @Composable
 fun ProductReadOnly(

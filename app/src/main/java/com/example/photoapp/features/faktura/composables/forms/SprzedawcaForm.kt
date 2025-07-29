@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,7 +23,6 @@ import com.example.photoapp.features.faktura.composables.common.CustomOutlinedBu
 import com.example.photoapp.features.faktura.composables.common.CustomTextField
 import com.example.photoapp.features.faktura.composables.common.CustomTextFieldWithButton
 import com.example.photoapp.features.faktura.composables.common.KeyboardType
-import com.example.photoapp.features.faktura.validation.ValidationViewModel
 
 @Composable
 fun SprzedawcaForm(

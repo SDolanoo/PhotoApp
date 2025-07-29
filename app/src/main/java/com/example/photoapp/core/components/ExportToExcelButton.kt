@@ -17,7 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.photoapp.R
-import com.example.photoapp.ui.ExcelPacker.ExportRoomViewModel
+import com.example.photoapp.features.excelPacker.presentation.ExportRoomViewModel
 import kotlinx.coroutines.launch
 
 @Composable

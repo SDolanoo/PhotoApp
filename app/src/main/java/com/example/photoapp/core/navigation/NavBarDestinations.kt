@@ -14,5 +14,5 @@ enum class NavBarDestinations(
 ) {
     Faktury(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE, Icons.Default.Home, "Faktury", "Ekran faktur"),
     Excel(PhotoAppDestinations.EXCEL_PACKER_ROUTE, Icons.Default.Settings, "Export", "Ekran exportu"),
-    Edycja(PhotoAppDestinations.EXCEL_PACKER_ROUTE, Icons.Default.Person, "Profil", "Ekran profilu");
+    Edycja(PhotoAppDestinations.EDITING_SELECTOR, Icons.Default.Person, "Profil", "Ekran profilu");
 }

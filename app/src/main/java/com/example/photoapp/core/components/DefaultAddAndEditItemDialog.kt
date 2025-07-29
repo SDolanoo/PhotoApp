@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
  * @param title The title text for the dialog
  * @param fields A list of label-state pairs representing input fields
  * @param onBuildItem Lambda that constructs the item of type T using current input values
- * @param onAdd Callback invoked with the newly built item when "Add" is pressed
+ * @param onAction Callback invoked with the newly built item when "Add" is pressed
  * @param onDismiss Callback invoked when the dialog is dismissed without action
  */
 

@@ -11,8 +11,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.photoapp.features.faktura.data.odbiorca.OdbiorcaRepository
-import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepository
+import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
+import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
 import com.example.photoapp.core.database.data.repos.UzytkownikRepository
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository

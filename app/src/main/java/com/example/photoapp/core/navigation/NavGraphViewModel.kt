@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import coil3.Bitmap
 import android.net.Uri
 import com.example.photoapp.features.faktura.data.faktura.Faktura
-import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
-import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
-import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
+import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
+import com.example.photoapp.features.odbiorca.data.Odbiorca
+import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,8 +30,8 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
     val addingPhotoFor: LiveData<String> get() = _addingPhotoFor
 
     // State for the current faktura viewed
-    private val _fakturaViewedNow = MutableLiveData<Faktura?>(null)
-    val fakturaViewedNow: LiveData<Faktura?> get() = _fakturaViewedNow
+    private val _fakturaViewedNow = MutableStateFlow<Faktura>(Faktura.default())
+    val fakturaViewedNow: StateFlow<Faktura> = _fakturaViewedNow.asStateFlow()
 
     // State for filtered fakturys
     private val _showFilteredFakturys = MutableLiveData(false)
@@ -69,7 +69,7 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
     }
 
     fun setFakturaViewedNow(faktura: Faktura) {
-        _fakturaViewedNow.postValue(faktura)
+        _fakturaViewedNow.value = faktura
     }
 
     fun setFakturyFilters(showFilters: Boolean, filteredList: List<Faktura>) {

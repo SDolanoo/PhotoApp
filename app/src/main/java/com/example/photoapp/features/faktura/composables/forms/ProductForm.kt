@@ -40,8 +40,6 @@ fun ProductForm(
 
     var state by remember { mutableStateOf("less") } // or more
 
-    var justChangedPrice by remember { mutableStateOf( "" ) }
-
     Column(
         modifier = modifier.padding(4.dp)
     ) {

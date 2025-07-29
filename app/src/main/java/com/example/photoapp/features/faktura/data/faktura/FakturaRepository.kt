@@ -1,24 +1,21 @@
 package com.example.photoapp.features.faktura.data.faktura
 
-import android.provider.SyncStateContract.Helpers.update
 import android.util.Log
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.runtime.DisposableEffect
 import com.example.photoapp.core.database.data.FakturaDTO
-import com.example.photoapp.features.faktura.data.odbiorca.OdbiorcaRepository
-import com.example.photoapp.features.faktura.data.sprzedawca.SprzedawcaRepository
+import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
+import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
 import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.core.utils.jsonTransformer
-import com.example.photoapp.features.faktura.data.odbiorca.Odbiorca
-import com.example.photoapp.features.faktura.data.odbiorca.SaveMode
-import com.example.photoapp.features.faktura.data.sprzedawca.Sprzedawca
-import com.example.photoapp.features.faktura.ui.details.ProduktFakturaZProduktem
+import com.example.photoapp.features.odbiorca.data.SaveMode
+import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
+import com.example.photoapp.features.odbiorca.data.Odbiorca
+import com.example.photoapp.features.produkt.data.ProduktDao
+import com.example.photoapp.features.produkt.data.ProduktFakturaDao
+import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import org.apache.commons.math3.stat.StatUtils.product
-import org.apache.logging.log4j.ThreadContext.trim
 import java.util.Date
 import javax.inject.Inject
 
@@ -238,7 +235,6 @@ class FakturaRepository @Inject constructor(
                     produkt = produkt
                 )
                 resultList.add(pfzp)
-
             }
         }
         return resultList
