@@ -1,6 +1,7 @@
 package com.example.photoapp.features.selector.presentation.selector
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.odbiorca.data.Odbiorca
@@ -8,9 +9,11 @@ import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,8 +32,26 @@ class SelectorViewModel @Inject constructor(
     val allSprzedawcy: StateFlow<List<Sprzedawca>> = _allSprzedawcy.asStateFlow()
 
     fun updateLists() {
-        _allProdukty.value = fakturaRepository.getAllProdukty()
-        _allOdbiorcy.value = odbiorcaRepository.getAllOdbiorcy()
-        _allSprzedawcy.value = sprzedawcaRepository.getAll()
+        getProdukty()
+        getOdbiorcy()
+        getSprzedawcy()
+    }
+
+    fun getProdukty() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _allProdukty.value = fakturaRepository.getAllProdukty()
+        }
+    }
+
+    fun getOdbiorcy() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _allOdbiorcy.value = odbiorcaRepository.getAllOdbiorcy()
+        }
+    }
+
+    fun getSprzedawcy() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _allSprzedawcy.value = sprzedawcaRepository.getAll()
+        }
     }
 }

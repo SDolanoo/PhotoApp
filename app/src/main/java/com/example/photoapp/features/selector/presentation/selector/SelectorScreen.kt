@@ -93,10 +93,12 @@ fun SelectorScreen(
             )
         },
         bottomBar = {
-            MyNavigationBar(
-                navController = navController,
-                destinations = NavBarDestinations.entries
-            )
+            if (currentlyViewing == "main") {
+                MyNavigationBar(
+                    navController = navController,
+                    destinations = NavBarDestinations.entries
+                )
+            }
         }
     ) { innerPadding ->
         if (currentlyViewing == "main") {

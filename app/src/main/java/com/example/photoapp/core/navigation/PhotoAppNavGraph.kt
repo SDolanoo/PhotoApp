@@ -211,7 +211,7 @@ fun PhotoAppNavGraph(
                     navGraphViewModel.setProdukt(p)
                     navController.navigate(PhotoAppDestinations.PRODUKT_DETAILS_SCREEN_ROUTE)
                                      },
-                goBack = {navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)}
+                goBack = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)}
             )
         }
 

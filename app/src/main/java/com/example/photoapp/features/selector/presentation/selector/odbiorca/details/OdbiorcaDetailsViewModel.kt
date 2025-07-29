@@ -64,6 +64,7 @@ class OdbiorcaDetailsViewModel @Inject constructor(
 
                 // 🔁 Aktualizacja sprzedawcy i odbiorcy
                 val odbiorcaId = odbiorcaRepository.upsertOdbiorcaSmart(odbiorca)
+                callback(odbiorca.copy(id = odbiorcaId))
 
             } catch (e: Exception) {
                 Log.e("Dolan", "Błąd podczas zapisu do DB: ${e.message}")
@@ -74,7 +75,7 @@ class OdbiorcaDetailsViewModel @Inject constructor(
     fun getOdbiorca(odbiorca: Odbiorca, callback: (Odbiorca) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val odbiorca = odbiorcaRepository.getById(odbiorca.id)
-            callback
+            callback(odbiorca!!)
         }
     }
 

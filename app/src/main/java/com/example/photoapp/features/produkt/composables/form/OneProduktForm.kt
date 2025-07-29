@@ -73,13 +73,8 @@ fun OneProduktForm(
             CustomDropdownMenu(
                 options = listOf("23", "8", "7", "5", "0", "zw", "np", "więcej.."),
                 label = "Vat %",
-                field = fields[4].second,
+                field = fields[3].second,
                 selected = {
-                    val priceNetto = calculateNetto(fields[3].second.value, fields[4].second.value)
-                    val priceBrutto = calculateBrutto(fields[6].second.value, fields[4].second.value)
-                    fields[3].second.value = priceNetto
-                    fields[5].second.value = priceNetto
-                    fields[6].second.value = priceBrutto
                     onEdit()
                 },
                 modifier = Modifier.weight(0.5f)
@@ -87,26 +82,4 @@ fun OneProduktForm(
             )
         }
     }
-}
-
-@SuppressLint("DefaultLocale")
-private fun calculateNetto(price: String, vat: String): String {
-    val vatRate = vat.toIntOrNull()
-    val grossPrice = price.toDoubleOrNull()
-
-    if (vatRate == null || grossPrice == null) return "0"
-
-    val netPrice = grossPrice / (1 + vatRate / 100.0)
-    return String.format("%.2f", netPrice).replace('.', ',')
-}
-
-@SuppressLint("DefaultLocale")
-private fun calculateBrutto(price: String, vat: String): String {
-    val vatRate = vat.toIntOrNull()
-    val netPrice = price.toDoubleOrNull()
-
-    if (vatRate == null || netPrice == null) return "0"
-
-    val grossPrice = netPrice * (1 + vatRate / 100.0)
-    return String.format("%.2f", grossPrice).replace('.', ',')
 }
