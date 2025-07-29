@@ -31,11 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.photoapp.core.utils.convertDateToString
 import com.example.photoapp.features.faktura.composables.readOnly.InvoiceReadOnly
-import com.example.photoapp.features.odbiorca.composables.readOnly.NabywcaReadOnly
 import com.example.photoapp.features.produkt.composables.readOnly.ProductReadOnly
 import com.example.photoapp.features.sprzedawca.composables.readOnly.SprzedawcaReadOnly
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
+import com.example.photoapp.features.odbiorca.composables.readOnly.OdbiorcaReadOnly
 import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 
@@ -194,7 +194,7 @@ fun AcceptFakturaScreen(
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
 
-                NabywcaReadOnly(
+                OdbiorcaReadOnly(
                     modifier = Modifier,
                     fields = listOf(
                         odbiorca.nazwa,
