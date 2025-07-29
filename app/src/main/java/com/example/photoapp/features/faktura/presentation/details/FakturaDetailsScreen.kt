@@ -43,20 +43,20 @@ import com.example.photoapp.core.components.DatePickerModal
 import com.example.photoapp.core.utils.convertDateToString
 import com.example.photoapp.core.utils.convertMillisToString
 import com.example.photoapp.core.utils.convertStringToDate
-import com.example.photoapp.features.faktura.composables.common.CustomOutlinedButton
-import com.example.photoapp.features.faktura.composables.common.SearchableDropdownOverlay
+import com.example.photoapp.core.components.common.CustomOutlinedButton
+import com.example.photoapp.core.components.common.SearchableDropdownOverlay
 import com.example.photoapp.features.faktura.composables.forms.InvoiceForm
-import com.example.photoapp.features.faktura.composables.forms.NabywcaForm
-import com.example.photoapp.features.faktura.composables.forms.ProductForm
-import com.example.photoapp.features.faktura.composables.forms.SprzedawcaForm
+import com.example.photoapp.features.produkt.composables.form.ProductForm
+import com.example.photoapp.features.sprzedawca.composables.form.SprzedawcaForm
 import com.example.photoapp.features.faktura.composables.readOnly.InvoiceReadOnly
-import com.example.photoapp.features.faktura.composables.readOnly.NabywcaReadOnly
-import com.example.photoapp.features.faktura.composables.readOnly.ProductReadOnly
-import com.example.photoapp.features.faktura.composables.readOnly.SprzedawcaReadOnly
+import com.example.photoapp.features.produkt.composables.readOnly.ProductReadOnly
+import com.example.photoapp.features.sprzedawca.composables.readOnly.SprzedawcaReadOnly
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.validation.ValidationViewModel
+import com.example.photoapp.features.odbiorca.composables.form.OdbiorcaForm
+import com.example.photoapp.features.odbiorca.composables.readOnly.OdbiorcaReadOnly
 import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 
@@ -377,7 +377,7 @@ fun FakturaDetailsScreen(
                         val newOpis = remember { mutableStateOf(editedOdbiorca.opis) }
                         val newEmail = remember { mutableStateOf(editedOdbiorca.email) }
                         val newTelefon = remember { mutableStateOf(editedOdbiorca.telefon) }
-                        NabywcaForm(
+                        OdbiorcaForm(
                             modifier = Modifier,
                             fields = listOf(
                                 "Nazwa firmy" to newNazwa,
@@ -412,7 +412,7 @@ fun FakturaDetailsScreen(
                         )
                     }
                 } else {
-                    NabywcaReadOnly(
+                    OdbiorcaReadOnly(
                         modifier = Modifier,
                         fields = listOf(
                             actualOdbiorca.nazwa,

@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.example.photoapp.features.faktura.composables.common.CustomTextField
+import com.example.photoapp.core.components.common.CustomTextField
 
 @Composable
 fun InvoiceForm(

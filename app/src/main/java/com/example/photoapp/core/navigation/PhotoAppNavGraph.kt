@@ -19,7 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.photoapp.features.faktura.presentation.screen.FakturaScreen
 import com.example.photoapp.features.excelPacker.presentation.ExcelPacker
-import com.example.photoapp.features.selector.presentation.SelectorScreen
+import com.example.photoapp.features.selector.presentation.selector.SelectorScreen
 import com.example.photoapp.features.captureFlow.presentation.acceptFaktura.AcceptFakturaScreen
 import com.example.photoapp.features.captureFlow.presentation.acceptPhoto.AcceptPhoto
 import com.example.photoapp.features.captureFlow.presentation.cameraView.CameraView

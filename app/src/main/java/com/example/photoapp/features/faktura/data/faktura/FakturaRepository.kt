@@ -223,6 +223,10 @@ class FakturaRepository @Inject constructor(
         return produktDao.getAll()
     }
 
+    fun getProduktById(id: Long): Produkt {
+        return produktDao.getOneProduktById(id)
+    }
+
     fun getListProduktyFakturaZProduktemForListFaktura(faktury: List<Faktura>): List<ProduktFakturaZProduktem> {
         val resultList = mutableListOf<ProduktFakturaZProduktem>()
 
@@ -239,4 +243,6 @@ class FakturaRepository @Inject constructor(
         }
         return resultList
     }
+
+
 }

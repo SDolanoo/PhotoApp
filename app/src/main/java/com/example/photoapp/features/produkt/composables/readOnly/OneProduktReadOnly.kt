@@ -1,18 +1,17 @@
-package com.example.photoapp.features.faktura.composables.readOnly
+package com.example.photoapp.features.produkt.composables.readOnly
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.photoapp.core.components.common.InfoRow
 import com.example.photoapp.core.components.common.SectionCard
 import com.example.photoapp.core.components.common.TwoColumnRow
 
 @Composable
-fun InvoiceReadOnly(
+fun OneProduktReadOnly(
     modifier: Modifier,
     fields: List<String>
 ) {
@@ -20,12 +19,11 @@ fun InvoiceReadOnly(
         modifier = modifier.padding(4.dp)
     ) {
         SectionCard(
-            title = "Invoice Details",
-            icon = Icons.Default.AccountCircle
+            title = "Produkt",
+            icon = Icons.Filled.Person
         ) {
-            TwoColumnRow("Typ", fields[0], "Numer", fields[1])
-            TwoColumnRow("Data wystawienia", fields[2], "Data sprzedaży", fields[3])
-            InfoRow("Miejsce wystawienia", fields[4])
+            TwoColumnRow("Nazwa", fields[0], "Jednostka", fields[1])
+            TwoColumnRow("Cena netto", fields[2], "Vat %", fields[3])
         }
     }
 }
