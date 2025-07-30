@@ -42,6 +42,10 @@ class FakturaScreenViewModel @Inject constructor(
             .groupBy { raport -> raport.dataWystawienia?.normalizedDate() }
     }
 
+    fun setGroupedFaktura(fakturyList: Map<Date?, List<Faktura>>) {
+        _groupedFaktury.value = fakturyList
+    }
+
     fun toggleDeleteMode() {
         _isDeleteMode.value = !_isDeleteMode.value
         if (!_isDeleteMode.value) _selectedItems.clear() // Reset selection when exiting delete mode

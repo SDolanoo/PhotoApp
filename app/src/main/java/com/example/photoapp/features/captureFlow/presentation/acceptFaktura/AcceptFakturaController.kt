@@ -68,7 +68,7 @@ class AcceptFakturaController @Inject constructor(
 
             produkty.forEach { produkt ->
                 checkForExistingProducts(produkt.produkt) { produktId ->
-                    repository.insertProduktFaktura(produkt.produktFaktura.copy(produktId = produktId, fakturaId = fakturaId))
+                    repository.insertProduktFaktura(produkt.produktFaktura.copy(id = 0L, produktId = produktId, fakturaId = fakturaId))
                 }
             }
 

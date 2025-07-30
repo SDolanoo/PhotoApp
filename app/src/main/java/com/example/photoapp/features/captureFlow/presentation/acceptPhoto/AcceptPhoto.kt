@@ -2,6 +2,7 @@ package com.example.photoapp.features.captureFlow.presentation.acceptPhoto
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -67,11 +68,6 @@ fun AcceptPhoto(
     var dialogData by remember { mutableStateOf("") }
     var isPromptSuccess by remember { mutableStateOf(true) }
 
-    val faktura by acceptanceController.faktura.collectAsState()
-    val sprzedawca by acceptanceController.sprzedawca.collectAsState()
-    val odbiorca by acceptanceController.odbiorca.collectAsState()
-    val produkty by acceptanceController.produkty.collectAsState()
-
     val alphaAnimation by animateFloatAsState(
         targetValue = if (isLoading) 1f else 0f,
         animationSpec = tween(durationMillis = 300) // Animacja przejścia w 300 ms
@@ -121,7 +117,12 @@ fun AcceptPhoto(
                     isPromptSuccess = success
                     dialogData = result
                     if (isPromptSuccess) {
-                        goToAcceptFakturaScreen(faktura, sprzedawca, odbiorca, produkty)
+                        val f = acceptanceController.faktura.value
+                        val s = acceptanceController.sprzedawca.value
+                        val o = acceptanceController.odbiorca.value
+                        val p = acceptanceController.produkty.value
+                        Log.i("Dolan", "faktura in acceptPhoto going to faktura screen $f")
+                        goToAcceptFakturaScreen(f, s, o, p)
                     } else {
                         showDialog = true
                     }

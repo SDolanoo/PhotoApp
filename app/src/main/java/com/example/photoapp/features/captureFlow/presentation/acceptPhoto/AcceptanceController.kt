@@ -93,8 +93,6 @@ class AcceptanceController @Inject constructor(
                 waluta = fakturaDTO.waluta,
                 formaPlatnosci = fakturaDTO.formaPlatnosci
             )
-            setFaktura(faktura)
-            Log.i("Dolan", "setFaktura $faktura")
 
             // 👉 SPRZEDAWCA
             val sprzedawca = Sprzedawca(
@@ -109,8 +107,7 @@ class AcceptanceController @Inject constructor(
                 email = fakturaDTO.sprzedawca.email,
                 telefon = fakturaDTO.sprzedawca.telefon
             )
-            setSprzedawca(sprzedawca)
-            Log.i("Dolan", "setSprzedawca $sprzedawca")
+
 
             // 👉 ODBIORCA
             val odbiorca = Odbiorca(
@@ -125,8 +122,7 @@ class AcceptanceController @Inject constructor(
                 email = fakturaDTO.odbiorca.email,
                 telefon = fakturaDTO.odbiorca.telefon
             )
-            setOdbiorca(odbiorca)
-            Log.i("Dolan", "setOdbiorca $odbiorca")
+
 
             // 👉 PRODUKTY
             val produkty = fakturaDTO.produkty.mapIndexed { index, dto ->
@@ -149,11 +145,23 @@ class AcceptanceController @Inject constructor(
                 ProduktFakturaZProduktem(produktFaktura = produktFaktura, produkt = produkt)
             }
 
-            setProdukty(produkty)
-            Log.i("Dolan", "setProdukty $produkty")
+            setFaktura(faktura) {
+                Log.i("Dolan", "setFaktura $faktura")
+                setSprzedawca(sprzedawca) {
+                    Log.i("Dolan", "setSprzedawca $sprzedawca")
+                    setOdbiorca(odbiorca) {
+                        Log.i("Dolan", "setOdbiorca $odbiorca")
+                        setProdukty(produkty) {
+                            Log.i("Dolan", "setProdukty $produkty")
+                            "done ✅"
+                            callback()
+                        }
+                    }
+                }
+            }
 
-            "done ✅"
-            callback()
+
+
 
         } catch (e: Exception) {
             Log.e("formObjectsFromPrompt", "Błąd: ${e.message}")
@@ -163,20 +171,25 @@ class AcceptanceController @Inject constructor(
     }
 
 
-    fun setFaktura(faktura: Faktura) {
+    fun setFaktura(faktura: Faktura, callback: () -> Unit) {
         _faktura.value = faktura
+        Log.i("Dolan", "setFakturafunction  ${_faktura.value}")
+        callback()
     }
 
-    fun setSprzedawca(sprzedawca: Sprzedawca) {
+    fun setSprzedawca(sprzedawca: Sprzedawca, callback: () -> Unit) {
         _sprzedawca.value = sprzedawca
+        callback()
     }
 
-    fun setOdbiorca(odbiorca: Odbiorca) {
+    fun setOdbiorca(odbiorca: Odbiorca, callback: () -> Unit) {
         _odbiorca.value = odbiorca
+        callback()
     }
 
-    fun setProdukty(produkty: List<ProduktFakturaZProduktem>) {
+    fun setProdukty(produkty: List<ProduktFakturaZProduktem>, callback: () -> Unit) {
         _produkty.value = produkty
+        callback()
     }
 }
 

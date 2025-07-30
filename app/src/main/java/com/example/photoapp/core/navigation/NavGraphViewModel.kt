@@ -90,6 +90,8 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
 
     fun setFaktura(faktura: Faktura, callback: () -> Unit) {
         _faktura.value = faktura
+        Log.i("Dolan", "faktura in NGVM in argument $faktura")
+        Log.i("Dolan", "faktura in NGVM changed ${_faktura.value}")
         callback()
     }
 

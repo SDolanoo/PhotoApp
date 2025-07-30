@@ -165,11 +165,12 @@ fun PhotoAppNavGraph(
                 bitmapPhoto = photoBitmap,
                 contentDescription = null,
                 backToCameraView = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
-                goToAcceptFakturaScreen = { faktura, sprzedawca, odbiorca, produktFakturaZProduktem ->
-                    navGraphViewModel.setFaktura(faktura) {
-                        navGraphViewModel.setSprzedawca(sprzedawca) {
-                            navGraphViewModel.setOdbiorca(odbiorca) {
-                                navGraphViewModel.setProdukty(produkty) {
+                goToAcceptFakturaScreen = { f, s, o, p ->
+                    navGraphViewModel.setFaktura(f) {
+                        navGraphViewModel.setSprzedawca(s) {
+                            Log.i("Dolan", "faktura in ACCEPT_PHOTO_ROUTE just changed $faktura")
+                            navGraphViewModel.setOdbiorca(o) {
+                                navGraphViewModel.setProdukty(p) {
                                     navController.navigate(PhotoAppDestinations.ACCEPT_FAKTURA_ROUTE)
                                 }
                             }
@@ -184,6 +185,7 @@ fun PhotoAppNavGraph(
 
         composable (PhotoAppDestinations.ACCEPT_FAKTURA_ROUTE) {
             Log.i("Dolan", "Odpalam ACCEPT_FAKTURA w navGraph")
+            Log.i("Dolan", "ACCEPT_FAKTURA_ROUTE $faktura")
             if (
                 faktura != Faktura.default() &&
                 sprzedawca != Sprzedawca.empty() &&
@@ -195,7 +197,7 @@ fun PhotoAppNavGraph(
                     sprzedawca = sprzedawca,
                     odbiorca = odbiorca,
                     produkty = produkty,
-                    onConfirm = {},
+                    onConfirm = {navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)},
                     onCancel = {},
                 )
             } else {
