@@ -8,6 +8,7 @@ import com.google.ai.client.generativeai.type.generationConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 fun chatWithGemini(
     geminiKey: String,
@@ -18,11 +19,14 @@ fun chatWithGemini(
     if (bitmap != null) {
         CoroutineScope(Dispatchers.IO).launch {
             val systemInstructionText = when (documentType) {
-                DocumentType.FAKTURA -> "przeczytaj zdjęcie faktury i uzyskaj z niego nastepujące informacje. Całość napisz w podanym formacie json zmieniając tylko value, key muszą zostać nie zmienione. Napisz tylko json w podanym niżej formacie. Jeśli jest informacja w nawiasie, zastosuj się do tej informacji, nie wstawiając jej w odpowiedź. Jeśli nie udało się znaleźć informacji, napisz 'null'. Dane MUSZĄ mieć następujące nazwy:{ \"odbiorca\": { \"nazwa\":\"nazwa\", \"nip\":\"nip\", \"adres\":\"adres\"},  \"sprzedawca\":{ \"nazwa\":\"nazwa\", \"nip\":\"nip\", \"adres\":\"adres\"},\"numerFaktury\": \"numerFaktury\", \"dataWystawienia\": \"dataWystawienia\",  \"dataSprzedazy\": \"dataSprzedazy\", \"terminPlatnosci\": \"terminPlatnosci\", \"razemNetto\": \"razemNetto\",  \"razemVAT\": \"razemVAT\",  \"razemBrutto\": \"razemBrutto\", \"doZaplaty\": \"doZaplaty\", \"waluta\": \"waluta\",  \"formaPlatnosci\": \"formaPlatnosci\",   \"produkty\": [    {     \"nazwaProduktu\": \"nazwaProduktu\",    \"jednostkaMiary\": \"jednostkaMiary\" (zobacz czy nie istnieje skrót 'j. m.' zapisz wartość jako value jednostkiMiary. key jednostkaMiary bez zmian),      \"ilosc\":  \"ilosc\"(jeśli ilość nie jest integerem napisz tylko float np. 0.55, zawsze w String),  \"wartoscNetto\": \"wartoscNetto\",  \"stawkaVat\": \"stawkaVat\", \"wartoscBrutto\": \"wartoscBrutto\" }  ]}"
+                DocumentType.FAKTURA -> buildString {
+                    append(InvoicePrompts.extractInvoicePrompt)
+                }
+
             }
 
             val model = GenerativeModel(
-                "gemini-1.5-flash",
+                "gemini-2.5-flash-lite",
                 geminiKey,
                 generationConfig = generationConfig {
                     temperature = 1f
@@ -42,7 +46,9 @@ fun chatWithGemini(
                 )
                 val result = response.text ?: ""
                 Log.i("Dolan", result)
-                callback(1, result)
+                withContext(Dispatchers.Main) {
+                    callback(1, result)
+                }
             } catch (e: Exception) {
                 Log.e("GeminiAPI", "Service Unavailable (503): $e")
                 callback(2, "Error: Server is temporarily unavailable. Please try again later.")

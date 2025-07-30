@@ -46,8 +46,9 @@ class AcceptanceController @Inject constructor(
     ) {
         getPrompt(geminiKey, bitmapPhoto) { response, result ->
             if (response == 1) {
-                formObjectsFromPrompt(geminiPromptResult)
-                onResult(true, "text")
+                formObjectsFromPrompt(geminiPromptResult) {
+                    onResult(true, "text")
+                }
             } else {
                 onResult(false, result)
             }
@@ -69,10 +70,10 @@ class AcceptanceController @Inject constructor(
         }
     }
 
-    fun formObjectsFromPrompt(geminiPromptResult: String): String {
+    fun formObjectsFromPrompt(geminiPromptResult: String, callback: () -> Unit) {
         val coercingJson = Json { coerceInputValues = true }
 
-        return try {
+        try {
             val fakturaDTO = coercingJson.decodeFromString<FakturaDTO>(geminiPromptResult)
 
             // 👉 FAKTURA
@@ -93,6 +94,7 @@ class AcceptanceController @Inject constructor(
                 formaPlatnosci = fakturaDTO.formaPlatnosci
             )
             setFaktura(faktura)
+            Log.i("Dolan", "setFaktura $faktura")
 
             // 👉 SPRZEDAWCA
             val sprzedawca = Sprzedawca(
@@ -108,6 +110,7 @@ class AcceptanceController @Inject constructor(
                 telefon = fakturaDTO.sprzedawca.telefon
             )
             setSprzedawca(sprzedawca)
+            Log.i("Dolan", "setSprzedawca $sprzedawca")
 
             // 👉 ODBIORCA
             val odbiorca = Odbiorca(
@@ -123,6 +126,7 @@ class AcceptanceController @Inject constructor(
                 telefon = fakturaDTO.odbiorca.telefon
             )
             setOdbiorca(odbiorca)
+            Log.i("Dolan", "setOdbiorca $odbiorca")
 
             // 👉 PRODUKTY
             val produkty = fakturaDTO.produkty.mapIndexed { index, dto ->
@@ -146,12 +150,15 @@ class AcceptanceController @Inject constructor(
             }
 
             setProdukty(produkty)
+            Log.i("Dolan", "setProdukty $produkty")
 
             "done ✅"
+            callback()
 
         } catch (e: Exception) {
             Log.e("formObjectsFromPrompt", "Błąd: ${e.message}")
             "błąd ❌"
+            callback()
         }
     }
 

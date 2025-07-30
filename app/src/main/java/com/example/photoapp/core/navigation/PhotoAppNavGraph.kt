@@ -2,6 +2,9 @@ package com.example.photoapp.core.navigation
 
 
 import android.util.Log
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
@@ -11,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -23,14 +27,18 @@ import com.example.photoapp.features.selector.presentation.selector.SelectorScre
 import com.example.photoapp.features.captureFlow.presentation.acceptFaktura.AcceptFakturaScreen
 import com.example.photoapp.features.captureFlow.presentation.acceptPhoto.AcceptPhoto
 import com.example.photoapp.features.captureFlow.presentation.cameraView.CameraView
+import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.presentation.details.FakturaDetailsScreen
+import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.selector.presentation.selector.odbiorca.details.OdbiorcaDetailsScreen
 import com.example.photoapp.features.selector.presentation.selector.produkt.details.ProduktDetailsScreen
 import com.example.photoapp.features.selector.presentation.selector.sprzedawca.details.SprzedawcaDetailsScreen
+import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 //import com.example.photoapp.ui.FilterScreen.FilterScreen
 import com.example.photoapp.ui.home.HomeDrawer
 import com.example.photoapp.ui.home.HomeScreen
 import com.example.photoapp.ui.testingButtons.TestingButtons
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -158,12 +166,16 @@ fun PhotoAppNavGraph(
                 contentDescription = null,
                 backToCameraView = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
                 goToAcceptFakturaScreen = { faktura, sprzedawca, odbiorca, produktFakturaZProduktem ->
-                    navGraphViewModel.setFaktura(faktura)
-                    navGraphViewModel.setSprzedawca(sprzedawca)
-                    navGraphViewModel.setOdbiorca(odbiorca)
-                    navGraphViewModel.setProdukty(produkty)
-                    navController.navigate(PhotoAppDestinations.ACCEPT_FAKTURA_ROUTE)
-                                          },
+                    navGraphViewModel.setFaktura(faktura) {
+                        navGraphViewModel.setSprzedawca(sprzedawca) {
+                            navGraphViewModel.setOdbiorca(odbiorca) {
+                                navGraphViewModel.setProdukty(produkty) {
+                                    navController.navigate(PhotoAppDestinations.ACCEPT_FAKTURA_ROUTE)
+                                }
+                            }
+                        }
+                    }
+                },// I have to do this this way, cause the navigate is faster than setting objects
                 backToHome = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)},
                 geminiKey = geminiKey
             )
@@ -172,14 +184,27 @@ fun PhotoAppNavGraph(
 
         composable (PhotoAppDestinations.ACCEPT_FAKTURA_ROUTE) {
             Log.i("Dolan", "Odpalam ACCEPT_FAKTURA w navGraph")
-            AcceptFakturaScreen(
-                faktura = faktura,
-                sprzedawca = sprzedawca,
-                odbiorca = odbiorca,
-                produkty = produkty,
-                onConfirm = {},
-                onCancel = {},
-            )
+            if (
+                faktura != Faktura.default() &&
+                sprzedawca != Sprzedawca.empty() &&
+                odbiorca != Odbiorca.empty() &&
+                produkty.isNotEmpty()
+            ) {
+                AcceptFakturaScreen(
+                    faktura = faktura,
+                    sprzedawca = sprzedawca,
+                    odbiorca = odbiorca,
+                    produkty = produkty,
+                    onConfirm = {},
+                    onCancel = {},
+                )
+            } else {
+                // Placeholder na czas ładowania danych
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+
+            }
         }
 
         composable (PhotoAppDestinations.EXCEL_PACKER_ROUTE) {
@@ -201,16 +226,19 @@ fun PhotoAppNavGraph(
             SelectorScreen(
                 navController = navController,
                 goToOdbiorcaDetails = { o ->
-                    navGraphViewModel.setOdbiorca(o)
-                    navController.navigate(PhotoAppDestinations.ODBIORCA_DETAILS_SCREEN_ROUTE)},
+                    navGraphViewModel.setOdbiorca(o) {
+                        navController.navigate(PhotoAppDestinations.ODBIORCA_DETAILS_SCREEN_ROUTE)}
+                    },
                 goToSprzedawcaDetails = { s ->
-                    navGraphViewModel.setSprzedawca(s)
-                    navController.navigate(PhotoAppDestinations.SPRZEDAWCA_DETAILS_SCREEN_ROUTE)
-                                        },
+                    navGraphViewModel.setSprzedawca(s) {
+                        navController.navigate(PhotoAppDestinations.SPRZEDAWCA_DETAILS_SCREEN_ROUTE)
+                    }
+                },
                 goToProduktDetails = { p ->
-                    navGraphViewModel.setProdukt(p)
-                    navController.navigate(PhotoAppDestinations.PRODUKT_DETAILS_SCREEN_ROUTE)
-                                     },
+                    navGraphViewModel.setProdukt(p) {
+                        navController.navigate(PhotoAppDestinations.PRODUKT_DETAILS_SCREEN_ROUTE)
+                    }
+                },
                 goBack = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)}
             )
         }

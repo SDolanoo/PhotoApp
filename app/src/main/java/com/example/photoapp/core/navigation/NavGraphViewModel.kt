@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import coil3.Bitmap
 import android.net.Uri
+import android.util.Log
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
@@ -87,20 +88,25 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun setFaktura(faktura: Faktura) {
+    fun setFaktura(faktura: Faktura, callback: () -> Unit) {
         _faktura.value = faktura
+        callback()
     }
 
-    fun setSprzedawca(sprzedawca: Sprzedawca) {
+    fun setSprzedawca(sprzedawca: Sprzedawca, callback: () -> Unit) {
         _sprzedawca.value = sprzedawca
+        callback()
     }
 
-    fun setOdbiorca(odbiorca: Odbiorca) {
+    fun setOdbiorca(odbiorca: Odbiorca, callback: () -> Unit) {
         _odbiorca.value = odbiorca
+        Log.i("Dolan", "Odbiorca Set = $odbiorca")
+        callback()
     }
 
-    fun setProdukty(produkty: List<ProduktFakturaZProduktem>) {
+    fun setProdukty(produkty: List<ProduktFakturaZProduktem>, callback: () -> Unit) {
         _produkty.value = produkty
+        callback()
     }
 
     fun addProdukt(produkt: ProduktFakturaZProduktem) {
@@ -111,7 +117,8 @@ class NavGraphViewModel @Inject constructor() : ViewModel() {
         _produkty.update { currentList -> currentList - produkt }
     }
 
-    fun setProdukt(produkt: Produkt) {
+    fun setProdukt(produkt: Produkt, callback: () -> Unit) {
         _produkt.value = produkt
+        callback()
     }
 }
