@@ -11,17 +11,19 @@ plugins {
     id("org.jetbrains.kotlin.kapt") // using ksp instead of kapt
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization") version "2.1.0"
+
+    id("com.google.gms.google-services")
 }
 
 val geminiApikey = gradleLocalProperties(rootDir, providers)
     .getProperty("geminiKey", "")
 
 android {
-    namespace = "com.example.photoapp"
+    namespace = "com.dolan.photoapp"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.photoapp"
+        applicationId = "com.dolan.photoapp"
         minSdk = 27
         targetSdk = 35
         versionCode = 1
@@ -64,6 +66,22 @@ android {
 }
 
 dependencies {
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:34.0.0"))
+
+
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics")
+
+
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
+    // See https://firebase.google.com/docs/android/setup#available-libraries
+    // For example, add the dependencies for Firebase Authentication and Cloud Firestore
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
