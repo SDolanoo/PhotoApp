@@ -14,7 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
-import com.example.photoapp.R
+import com.dolan.photoapp.R
 import com.example.photoapp.core.navigation.PhotoAppNavGraph
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File

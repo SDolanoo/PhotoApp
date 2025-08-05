@@ -29,6 +29,7 @@ import com.example.photoapp.features.captureFlow.presentation.acceptPhoto.Accept
 import com.example.photoapp.features.captureFlow.presentation.cameraView.CameraView
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.presentation.details.FakturaDetailsScreen
+import com.example.photoapp.features.login.LoginScreen
 import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.selector.presentation.selector.odbiorca.details.OdbiorcaDetailsScreen
 import com.example.photoapp.features.selector.presentation.selector.produkt.details.ProduktDetailsScreen
@@ -266,6 +267,13 @@ fun PhotoAppNavGraph(
             ProduktDetailsScreen(
                 produkt = produkt,
                 leaveDetailsScreen = {navController.navigate(PhotoAppDestinations.EDITING_SELECTOR)},
+            )
+        }
+
+        composable(PhotoAppDestinations.LOGIN_SCREEN_ROUTE) {
+            Log.i("Dolan", "Odpalam PRODUKT_DETAILS_SCREEN_ROUTE w navGraph")
+            LoginScreen(
+                navController = navController
             )
         }
     }

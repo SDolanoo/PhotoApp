@@ -17,4 +17,5 @@ object PhotoAppDestinations {
     const val ODBIORCA_DETAILS_SCREEN_ROUTE = "odbiorcaDetailsScreen"
     const val SPRZEDAWCA_DETAILS_SCREEN_ROUTE = "sprzedawcaDetailsScreen"
     const val PRODUKT_DETAILS_SCREEN_ROUTE = "produktDetailsScreen"
+    const val LOGIN_SCREEN_ROUTE = "loginScreen"
 }
