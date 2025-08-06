@@ -6,6 +6,8 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.photoapp.core.navigation.NavBarDestinations
@@ -38,7 +40,7 @@ fun MyNavigationBar(
                 },
                 icon = {
                     Icon(
-                        imageVector = destination.icon,
+                        painter = painterResource(destination.icon),
                         contentDescription = destination.contentDescription
                     )
                 },
