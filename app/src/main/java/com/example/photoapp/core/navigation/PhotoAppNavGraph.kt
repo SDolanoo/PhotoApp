@@ -39,6 +39,7 @@ import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import com.example.photoapp.ui.home.HomeDrawer
 import com.example.photoapp.ui.home.HomeScreen
 import com.example.photoapp.ui.testingButtons.TestingButtons
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -50,7 +51,6 @@ const val POST_ID = "postId"
 fun PhotoAppNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = PhotoAppDestinations.HOME_ROUTE,
     /* CameraView Variables */
     outputDirectory: File,
     executor: ExecutorService,
@@ -87,7 +87,7 @@ fun PhotoAppNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = startDestination,
+        startDestination = if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) PhotoAppDestinations.LOGIN_SCREEN_ROUTE else PhotoAppDestinations.FAKTURA_SCREEN_ROUTE,
         modifier = modifier
     ) {
         composable(
