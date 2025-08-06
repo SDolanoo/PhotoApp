@@ -1,6 +1,7 @@
 package com.example.photoapp.core.navigation
 
 
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,12 +36,9 @@ import com.example.photoapp.features.selector.presentation.selector.odbiorca.det
 import com.example.photoapp.features.selector.presentation.selector.produkt.details.ProduktDetailsScreen
 import com.example.photoapp.features.selector.presentation.selector.sprzedawca.details.SprzedawcaDetailsScreen
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
-//import com.example.photoapp.ui.FilterScreen.FilterScreen
-import com.example.photoapp.ui.home.HomeDrawer
-import com.example.photoapp.ui.home.HomeScreen
+import com.example.photoapp.ui.home.MainDrawer
 import com.example.photoapp.ui.testingButtons.TestingButtons
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -90,50 +88,39 @@ fun PhotoAppNavGraph(
         startDestination = if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) PhotoAppDestinations.LOGIN_SCREEN_ROUTE else PhotoAppDestinations.FAKTURA_SCREEN_ROUTE,
         modifier = modifier
     ) {
-        composable(
-            route = PhotoAppDestinations.HOME_ROUTE,
-        ) { Log.i("Dolan", "Odpalam HOME w navGraph")
+        composable(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) {
+            Log.i("Dolan", "Odpalam FAKTURA_SCREEN w navGraph")
+
             ModalNavigationDrawer(
                 drawerState = drawerState,
                 drawerContent = {
-                    HomeDrawer(
+                    MainDrawer(
                         navigateToHome = { navController.navigate(PhotoAppDestinations.HOME_ROUTE) },
                         navigateToAcceptPhoto = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
                         navigateToTestingButtons = {navController.navigate(PhotoAppDestinations.TESTING_BUTTONS_ROUTE)},
                         closeDrawer = { coroutineScope.launch {drawerState = drawerState.apply { close() }}},
-
+                        onSignout = {
+                            coroutineScope.launch {drawerState = drawerState.apply { close() }}
+                            FirebaseAuth.getInstance().signOut().run {
+                                navController.navigate(PhotoAppDestinations.LOGIN_SCREEN_ROUTE)
+                            }
+                        }
                     )
                 },
                 gesturesEnabled = true
             ) {
-                HomeScreen (
-                    openDrawer = { coroutineScope.launch {drawerState = drawerState.apply { open() }}},
+                FakturaScreen(
+                    navController = navController,
                     navigateToCameraView = { addingPhotoFor ->
                         navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
                         navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
-                    navigateToFakturaScreen = {
-                        navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)
-
+                    navigateToFakturaDetailsScreen = { faktura ->
+                        navGraphViewModel.setFakturaViewedNow(faktura)
+                        navController.navigate(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE)
                     },
-                    navigateToExcelPacker = {
-                        navController.navigate(PhotoAppDestinations.EXCEL_PACKER_ROUTE)
-                    }
+                    openDrawer = { coroutineScope.launch {drawerState = drawerState.apply { open() }} }
                 )
             }
-        }
-
-        composable(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) {
-            Log.i("Dolan", "Odpalam FAKTURA_SCREEN w navGraph")
-            FakturaScreen(
-                navController = navController,
-                navigateToCameraView = { addingPhotoFor ->
-                    navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
-                    navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
-                navigateToFakturaDetailsScreen = { faktura ->
-                    navGraphViewModel.setFakturaViewedNow(faktura)
-                    navController.navigate(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE)
-                }
-            )
         }
 
         composable(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE) {
