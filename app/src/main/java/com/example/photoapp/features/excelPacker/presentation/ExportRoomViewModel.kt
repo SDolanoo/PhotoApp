@@ -5,7 +5,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
-import com.example.photoapp.BuildConfig
+import com.dolan.photoapp.BuildConfig
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem

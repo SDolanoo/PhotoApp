@@ -20,10 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.dolan.photoapp.R
 import com.example.photoapp.core.components.common.CustomOutlinedButton
 import com.example.photoapp.core.components.common.CustomTextField
 import com.example.photoapp.core.components.common.CustomTextFieldWithButton
-import com.example.photoapp.R
 import com.example.photoapp.core.components.common.CustomDropdownMenu
 import com.example.photoapp.core.components.common.KeyboardType
 

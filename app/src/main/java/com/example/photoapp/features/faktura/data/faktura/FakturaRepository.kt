@@ -6,13 +6,17 @@ import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
 import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
 import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.core.utils.jsonTransformer
-import com.example.photoapp.features.odbiorca.data.SaveMode
 import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
 import com.example.photoapp.features.odbiorca.data.Odbiorca
-import com.example.photoapp.features.produkt.data.ProduktDao
-import com.example.photoapp.features.produkt.data.ProduktFakturaDao
+import com.example.photoapp.features.odbiorca.data.SaveMode
+import com.example.photoapp.features.produkt.data.Produkt
+import com.example.photoapp.features.produkt.data.ProduktFaktura
+import com.example.photoapp.features.produkt.data.ProduktFakturaService
+import com.example.photoapp.features.produkt.data.ProduktService
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -20,75 +24,67 @@ import java.util.Date
 import javax.inject.Inject
 
 class FakturaRepository @Inject constructor(
-    private val fakturaDao: FakturaDao,
-    private val produktFakturaDao: ProduktFakturaDao,
-    private val produktDao: ProduktDao,
+    private val fakturaService: FakturaService,
+    private val produktFakturaService: ProduktFakturaService,
+    private val produktService: ProduktService,
     private val odbiorcaRepository: OdbiorcaRepository,
     private val sprzedawcaRepository: SprzedawcaRepository
 ) {
+    fun getAllLiveFaktury(): Flow<List<Faktura>> = fakturaService.getAllLive()
 
-    fun getAllLiveFaktury() = fakturaDao.getAllLive()
-
-    fun getAllFaktury(): List<Faktura> {
-        return runBlocking {
-            withContext(Dispatchers.IO) {
-                fakturaDao.getAllFaktury()
-            }
+    fun getAllFaktury(): List<Faktura> = runBlocking {
+        withContext(Dispatchers.IO) {
+            fakturaService.getAllFaktury()
         }
     }
 
-    fun getFakturaByID(id: Long): Faktura? = fakturaDao.getById(id)
-
-    fun getProduktyFakturaForFaktura(faktura: Faktura): List<ProduktFaktura> {
-        return runBlocking {
-            withContext(Dispatchers.IO) {
-                produktFakturaDao.getAllProduktFakturaForFakturaId(faktura.id)
-            }
+    fun getFakturaByID(id: String): Faktura? = runBlocking {
+        withContext(Dispatchers.IO) {
+            fakturaService.getById(id)
         }
     }
 
-    fun getProduktForProduktFaktura(produktFaktura: ProduktFaktura): Produkt {
-        return runBlocking {
-            withContext(Dispatchers.IO) {
-                produktFakturaDao.getProduktForProduktFaktura(produktFaktura.produktId)
-            }
+    fun getProduktyFakturaForFaktura(faktura: Faktura): List<ProduktFaktura> = runBlocking {
+        withContext(Dispatchers.IO) {
+            produktFakturaService.getAllProduktFakturaForFakturaId(faktura.id)
         }
     }
 
-    fun insertFaktura(faktura: Faktura): Long {
-        return runBlocking {
-            withContext(Dispatchers.IO) {
-                fakturaDao.insert(faktura)
-            }
+    fun getProduktForProduktFaktura(produktFaktura: ProduktFaktura): Produkt = runBlocking {
+        withContext(Dispatchers.IO) {
+            produktFakturaService.getProduktForProduktFaktura(produktFaktura.produktId)
         }
     }
 
-    fun insertProduktFaktura(produkt: ProduktFaktura): Long {
-        return produktFakturaDao.insert(produkt)
+    fun insertFaktura(faktura: Faktura): String = runBlocking {
+        withContext(Dispatchers.IO) {
+            fakturaService.insert(faktura)
+        }
     }
 
-    fun insertProdukt(produkt: Produkt): Long {
-        return produktDao.insert(produkt)
+    fun insertProduktFaktura(produkt: ProduktFaktura): String = runBlocking {
+        withContext(Dispatchers.IO) {
+            produktFakturaService.insert(produkt)
+        }
     }
 
-    fun upsertProduktSmart(produkt: Produkt): Long {
-        val existingList = produktDao.getAll()
-        when (val mode = determineSaveModeForProdukt(produkt, existingList)) {
+    fun insertProdukt(produkt: Produkt): String = runBlocking {
+        withContext(Dispatchers.IO) {
+            produktService.insert(produkt)
+        }
+    }
+
+    fun upsertProduktSmart(produkt: Produkt): String {
+        val existingList = getAllProdukty()
+        return when (val mode = determineSaveModeForProdukt(produkt, existingList)) {
             is SaveMode.Update -> {
                 val updated = produkt.copy(id = mode.existingId)
                 updateProdukt(updated)
-                updated
-                return mode.existingId
+                mode.existingId
             }
-            SaveMode.Insert -> {
-                val newId = insertProdukt(produkt)
-                return newId
-            }
-            SaveMode.Skip -> {
-                return 1L
-            }
+            SaveMode.Insert -> insertProdukt(produkt)
+            SaveMode.Skip -> TODO()
         }
-        return 1L
     }
 
     fun determineSaveModeForProdukt(
@@ -96,13 +92,9 @@ class FakturaRepository @Inject constructor(
         existingList: List<Produkt>
     ): SaveMode {
         val normalizedNewName = produkt.nazwaProduktu.trim().lowercase()
-        val normalizedNewPrice = produkt.cenaNetto.trim()
 
         for (existing in existingList) {
             val normalizedExistingName = existing.nazwaProduktu.trim().lowercase()
-            val normalizedExistingPrice = existing.cenaNetto.trim()
-
-            // 🔁 MATCH 2: Nazwa ta sama, różne inne dane
             if (normalizedNewName == normalizedExistingName) {
                 return SaveMode.Skip
             }
@@ -111,33 +103,52 @@ class FakturaRepository @Inject constructor(
         return SaveMode.Insert
     }
 
-    fun addProductToFaktura(fakturaId: Long, produktFaktura: ProduktFaktura) {
-        val faktura = fakturaDao.getById(fakturaId)
-        produktFakturaDao.insert(produktFaktura.copy(fakturaId = faktura!!.id))
+    fun addProductToFaktura(fakturaId: String, produktFaktura: ProduktFaktura) {
+        val faktura = getFakturaByID(fakturaId) ?: return
+        insertProduktFaktura(produktFaktura.copy(fakturaId = faktura.id))
     }
 
     fun updateFaktura(faktura: Faktura) {
-        fakturaDao.update(faktura)
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                fakturaService.update(faktura)
+            }
+        }
     }
 
     fun updateProduktFaktura(produkt: ProduktFaktura) {
-        produktFakturaDao.update(produkt)
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                produktFakturaService.update(produkt)
+            }
+        }
     }
 
     fun updateProdukt(produkt: Produkt) {
-        produktDao.update(produkt)
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                produktService.update(produkt)
+            }
+        }
     }
 
     fun deleteFaktura(faktura: Faktura) {
-        Log.i("RaportRepo", "Deleting Raport: ${faktura.id}")
-        fakturaDao.delete(faktura)
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                fakturaService.delete(faktura)
+            }
+        }
     }
 
     fun deleteProduktFakturaFromFaktura(produktFaktura: ProduktFaktura) {
-        produktFakturaDao.delete(produktFaktura)
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                produktFakturaService.delete(produktFaktura)
+            }
+        }
     }
 
-    fun addFakturaFromJson(jsonString: String) {
+    suspend fun addFakturaFromJson(jsonString: String) {
         val coercingJson = Json { coerceInputValues = true }
         val transformedJson = jsonTransformer(jsonString)
         val fakturaDTO = coercingJson.decodeFromString<FakturaDTO>(transformedJson)
@@ -154,7 +165,7 @@ class FakturaRepository @Inject constructor(
         )
 
         val faktura = Faktura(
-            uzytkownikId = 1,
+            uzytkownikId = FirebaseAuth.getInstance().currentUser?.uid.isNullOrEmpty().toString(),
             odbiorcaId = odbiorca.id,
             sprzedawcaId = sprzedawca.id,
             typFaktury = fakturaDTO.typFaktury,
@@ -170,7 +181,7 @@ class FakturaRepository @Inject constructor(
             miejsceWystawienia = ""
         )
 
-        val fakturaId = fakturaDao.insert(faktura)
+        val fakturaId = insertFaktura(faktura)
 
         fakturaDTO.produkty.forEach { dto ->
             val produkt = Produkt(
@@ -180,7 +191,7 @@ class FakturaRepository @Inject constructor(
                 stawkaVat = dto.stawkaVat
             )
 
-            val produktId = produktDao.insert(produkt)
+            val produktId = insertProdukt(produkt)
 
             val pozycja = ProduktFaktura(
                 fakturaId = fakturaId,
@@ -191,7 +202,7 @@ class FakturaRepository @Inject constructor(
                 wartoscBrutto = dto.wartoscBrutto
             )
 
-            produktFakturaDao.insert(pozycja)
+            insertProduktFaktura(pozycja)
         }
 
         Log.i("FakturaRepository", "Inserted Faktura and ${fakturaDTO.produkty.size} products")
@@ -204,27 +215,29 @@ class FakturaRepository @Inject constructor(
         maxPrice: Double?,
         filterDate: String,
         filterPrice: String
-    ): List<Faktura> {
-        return runBlocking {
-            withContext(Dispatchers.IO) {
-                fakturaDao.getFilteredFaktury(
-                    startDate,
-                    endDate,
-                    minPrice,
-                    maxPrice,
-                    filterDate,
-                    filterPrice
-                )
-            }
+    ): List<Faktura> = runBlocking {
+        withContext(Dispatchers.IO) {
+            fakturaService.getFilteredFaktury(
+                startDate,
+                endDate,
+                minPrice,
+                maxPrice,
+                filterDate,
+                filterPrice
+            )
         }
     }
 
-    fun getAllProdukty(): List<Produkt> {
-        return produktDao.getAll()
+    fun getAllProdukty(): List<Produkt> = runBlocking {
+        withContext(Dispatchers.IO) {
+            produktService.getAll()
+        }
     }
 
-    fun getProduktById(id: Long): Produkt {
-        return produktDao.getOneProduktById(id)
+    fun getProduktById(id: String): Produkt = runBlocking {
+        withContext(Dispatchers.IO) {
+            produktService.getOneProduktById(id)
+        }
     }
 
     fun getListProduktyFakturaZProduktemForListFaktura(faktury: List<Faktura>): List<ProduktFakturaZProduktem> {
@@ -234,7 +247,7 @@ class FakturaRepository @Inject constructor(
             val produktyFaktura = getProduktyFakturaForFaktura(faktura)
             for (produktFaktura in produktyFaktura) {
                 val produkt: Produkt = getProduktForProduktFaktura(produktFaktura)
-                val pfzp: ProduktFakturaZProduktem = ProduktFakturaZProduktem(
+                val pfzp = ProduktFakturaZProduktem(
                     produktFaktura = produktFaktura,
                     produkt = produkt
                 )
@@ -243,6 +256,4 @@ class FakturaRepository @Inject constructor(
         }
         return resultList
     }
-
-
 }

@@ -1,6 +1,5 @@
 package com.example.photoapp.features.produkt.composables.form
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

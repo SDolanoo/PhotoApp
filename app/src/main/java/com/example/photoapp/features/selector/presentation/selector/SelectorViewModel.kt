@@ -3,9 +3,9 @@ package com.example.photoapp.features.selector.presentation.selector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
-import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
+import com.example.photoapp.features.produkt.data.Produkt
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

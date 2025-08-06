@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.photoapp.core.database.data.entities.Uzytkownik
 import com.example.photoapp.core.utils.convertDateToString
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -72,7 +73,7 @@ class LoginScreenViewModel @Inject constructor (): ViewModel() {
         val now = Date()
         val userId = auth.currentUser?.uid
 
-        val user = MUser(
+        val user = Uzytkownik(
             id = null,
             userId = userId.toString(),
             displayName = displayName.orEmpty(),

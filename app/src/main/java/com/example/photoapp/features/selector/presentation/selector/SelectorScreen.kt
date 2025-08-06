@@ -38,11 +38,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.photoapp.R
+import com.dolan.photoapp.R
 import com.example.photoapp.core.components.MyNavigationBar
 import com.example.photoapp.core.navigation.NavBarDestinations
-import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.odbiorca.data.Odbiorca
+import com.example.photoapp.features.produkt.data.Produkt
 import com.example.photoapp.features.selector.presentation.selector.odbiorca.selector.OdbiorcaSelectorScreen
 import com.example.photoapp.features.selector.presentation.selector.produkt.selector.ProductsSelectorScreen
 import com.example.photoapp.features.selector.presentation.selector.sprzedawca.selector.SprzedawcaSelectorScreen
@@ -124,7 +124,7 @@ fun SelectorScreen(
         if (currentlyViewing == "Produkty") {
             ProductsSelectorScreen(
                 produkty = allProdukty.value,
-                onClick = {goToProduktDetails(it)}
+                onClick = { goToProduktDetails(it) }
             )
         }
     }

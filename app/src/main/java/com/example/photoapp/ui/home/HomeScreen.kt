@@ -47,7 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.photoapp.R
+import com.dolan.photoapp.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)

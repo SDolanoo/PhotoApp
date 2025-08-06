@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
-import com.example.photoapp.features.faktura.data.faktura.Produkt
+import com.example.photoapp.features.produkt.data.Produkt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

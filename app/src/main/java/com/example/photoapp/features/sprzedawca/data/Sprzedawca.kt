@@ -1,27 +1,18 @@
 package com.example.photoapp.features.sprzedawca.data
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity
 data class Sprzedawca(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(name = "nazwa") val nazwa: String,
-    @ColumnInfo(name = "nip") val nip: String,
-    @ColumnInfo(name = "adres") val adres: String,
-    @ColumnInfo(name = "kod_pocztowy") val kodPocztowy: String = "",
-    @ColumnInfo(name = "miejscowosc") val miejscowosc: String = "",
-    @ColumnInfo(name = "kraj") val kraj: String = "",
-    @ColumnInfo(name = "opis") val opis: String = "",
-    @ColumnInfo(name = "email") val email: String = "",
-    @ColumnInfo(name = "telefon") val telefon: String = ""
+    var id: String = "",
+    var nazwa: String = "",
+    var nip: String = "",
+    var adres: String = "",
+    var kodPocztowy: String = "",
+    var miejscowosc: String = "",
+    var kraj: String = "",
+    var opis: String = "",
+    var email: String = "",
+    var telefon: String = ""
 ) {
     companion object {
-        fun empty() = Sprzedawca( id = 0,
-            nazwa = "", nip = "", adres = "",
-            kodPocztowy = "", miejscowosc = "",
-            kraj = "", opis = "", email = "", telefon = ""
-        )
+        fun empty() = Sprzedawca()
     }
 }

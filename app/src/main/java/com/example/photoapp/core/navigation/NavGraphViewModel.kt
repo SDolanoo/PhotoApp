@@ -7,9 +7,9 @@ import coil3.Bitmap
 import android.net.Uri
 import android.util.Log
 import com.example.photoapp.features.faktura.data.faktura.Faktura
-import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
 import com.example.photoapp.features.odbiorca.data.Odbiorca
+import com.example.photoapp.features.produkt.data.Produkt
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

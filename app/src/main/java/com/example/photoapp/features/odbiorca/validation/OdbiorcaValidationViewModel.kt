@@ -1,7 +1,6 @@
 package com.example.photoapp.features.odbiorca.validation
 
 import androidx.lifecycle.ViewModel
-import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
 import com.example.photoapp.features.faktura.validation.ValidationResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

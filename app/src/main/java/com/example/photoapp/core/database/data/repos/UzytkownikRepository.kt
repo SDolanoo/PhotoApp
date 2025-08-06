@@ -1,25 +1,46 @@
 package com.example.photoapp.core.database.data.repos
 
-import android.util.Log
-import com.example.photoapp.core.database.data.dao.UzytkownikDao
+import androidx.lifecycle.LiveData
+import com.example.photoapp.core.database.data.dao.UzytkownikService
 import com.example.photoapp.core.database.data.entities.Uzytkownik
+import com.example.photoapp.core.utils.convertDateToString
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import java.util.Date
 import javax.inject.Inject
 
 class UzytkownikRepository @Inject constructor(
-    private val uzytkownikDao: UzytkownikDao
+    private val uzytkownikService: UzytkownikService
 ) {
-    fun getAll() = uzytkownikDao.getAll()
 
-    fun getById(id: Long) = uzytkownikDao.getById(id)
+    fun getAll(): LiveData<List<Uzytkownik>> = uzytkownikService.getAll()
 
-    fun insert(login: String, password: String, email: String): Long {
-        val newUser = Uzytkownik(login = login, password = password, email = email)
-        val id = uzytkownikDao.insert(newUser)
-        Log.i("UzytkownikRepo", "Inserted new user: $login with ID $id")
-        return id
+    fun getById(id: String): Uzytkownik? = runBlocking {
+        withContext(Dispatchers.IO) {
+            uzytkownikService.getById(id)
+        }
     }
 
-    fun update(uzytkownik: Uzytkownik) = uzytkownikDao.update(uzytkownik)
+    fun insert(user: Uzytkownik): String = runBlocking {
+        withContext(Dispatchers.IO) {
+            uzytkownikService.insert(user)
+        }
+    }
 
-    fun delete(uzytkownik: Uzytkownik) = uzytkownikDao.delete(uzytkownik)
+    fun update(mUser: Uzytkownik) {
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                uzytkownikService.update(mUser)
+            }
+        }
+    }
+
+    fun delete(mUser: Uzytkownik) {
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                uzytkownikService.delete(mUser)
+            }
+        }
+    }
 }

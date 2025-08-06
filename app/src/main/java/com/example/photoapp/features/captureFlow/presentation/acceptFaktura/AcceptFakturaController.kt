@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
-import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
 import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
 import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
 import com.example.photoapp.features.odbiorca.data.Odbiorca
+import com.example.photoapp.features.produkt.data.Produkt
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +33,7 @@ class AcceptFakturaController @Inject constructor(
         }
     }
 
-    fun checkForExistingProducts(produkt: Produkt, callback: (Long) -> Unit) {
+    fun checkForExistingProducts(produkt: Produkt, callback: (String) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val existingProducts = allProducts()
 
@@ -68,7 +68,7 @@ class AcceptFakturaController @Inject constructor(
 
             produkty.forEach { produkt ->
                 checkForExistingProducts(produkt.produkt) { produktId ->
-                    repository.insertProduktFaktura(produkt.produktFaktura.copy(id = 0L, produktId = produktId, fakturaId = fakturaId))
+                    repository.insertProduktFaktura(produkt.produktFaktura.copy(id = "0L", produktId = produktId, fakturaId = fakturaId))
                 }
             }
 

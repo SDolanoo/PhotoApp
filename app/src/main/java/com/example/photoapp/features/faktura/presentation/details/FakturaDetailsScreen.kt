@@ -38,7 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.photoapp.R
+import com.dolan.photoapp.R
 import com.example.photoapp.core.components.DatePickerModal
 import com.example.photoapp.core.utils.convertDateToString
 import com.example.photoapp.core.utils.convertMillisToString
@@ -52,12 +52,12 @@ import com.example.photoapp.features.faktura.composables.readOnly.InvoiceReadOnl
 import com.example.photoapp.features.produkt.composables.readOnly.ProductReadOnly
 import com.example.photoapp.features.sprzedawca.composables.readOnly.SprzedawcaReadOnly
 import com.example.photoapp.features.faktura.data.faktura.Faktura
-import com.example.photoapp.features.faktura.data.faktura.Produkt
-import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.validation.ValidationViewModel
 import com.example.photoapp.features.odbiorca.composables.form.OdbiorcaForm
 import com.example.photoapp.features.odbiorca.composables.readOnly.OdbiorcaReadOnly
 import com.example.photoapp.features.odbiorca.data.Odbiorca
+import com.example.photoapp.features.produkt.data.Produkt
+import com.example.photoapp.features.produkt.data.ProduktFaktura
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 
 @OptIn(ExperimentalMaterial3Api::class)

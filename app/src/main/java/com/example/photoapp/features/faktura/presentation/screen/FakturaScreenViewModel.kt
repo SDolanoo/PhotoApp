@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import com.example.photoapp.core.utils.normalizedDate
@@ -25,7 +26,7 @@ class FakturaScreenViewModel @Inject constructor(
 
 
 
-    val allFakturyLive: LiveData<List<Faktura>> = repository.getAllLiveFaktury()
+    val allFakturyLive: LiveData<List<Faktura>> = repository.getAllLiveFaktury().asLiveData()
 
     private val _isDeleteMode = mutableStateOf(false)
     val isDeleteMode: State<Boolean> = _isDeleteMode

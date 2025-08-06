@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.photoapp.features.faktura.data.faktura.Produkt
 import com.example.photoapp.features.produkt.validation.ProduktValidationViewModel
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -33,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.photoapp.features.produkt.composables.form.OneProduktForm
 import com.example.photoapp.features.produkt.composables.readOnly.OneProduktReadOnly
+import com.example.photoapp.features.produkt.data.Produkt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

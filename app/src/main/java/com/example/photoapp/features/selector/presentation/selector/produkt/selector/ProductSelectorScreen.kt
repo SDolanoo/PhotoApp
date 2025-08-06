@@ -25,9 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.photoapp.features.faktura.data.faktura.Produkt
-import com.example.photoapp.features.odbiorca.data.Odbiorca
-import com.example.photoapp.features.sprzedawca.data.Sprzedawca
+import com.example.photoapp.features.produkt.data.Produkt
 
 @Composable
 fun ProductsSelectorScreen(

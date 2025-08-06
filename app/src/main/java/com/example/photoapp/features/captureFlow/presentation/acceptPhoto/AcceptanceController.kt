@@ -10,11 +10,12 @@ import com.example.photoapp.core.database.data.FakturaDTO
 import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
-import com.example.photoapp.features.faktura.data.faktura.Produkt
-import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
 import com.example.photoapp.features.odbiorca.data.Odbiorca
+import com.example.photoapp.features.produkt.data.Produkt
+import com.example.photoapp.features.produkt.data.ProduktFaktura
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -78,9 +79,9 @@ class AcceptanceController @Inject constructor(
 
             // 👉 FAKTURA
             val faktura = Faktura(
-                uzytkownikId = 1L, // zakładamy, że masz domyślnego użytkownika
-                odbiorcaId = 0L,   // tymczasowo — ustawiasz gdzieś później z bazy
-                sprzedawcaId = 0L, // tymczasowo
+                uzytkownikId = FirebaseAuth.getInstance().currentUser?.uid.toString(), // zakładamy, że masz domyślnego użytkownika
+                odbiorcaId = "0L",   // tymczasowo — ustawiasz gdzieś później z bazy
+                sprzedawcaId = "0L", // tymczasowo
                 typFaktury = fakturaDTO.typFaktury,
                 numerFaktury = fakturaDTO.numerFaktury,
                 dataWystawienia = convertStringToDate(fakturaDTO.dataWystawienia),
@@ -96,7 +97,7 @@ class AcceptanceController @Inject constructor(
 
             // 👉 SPRZEDAWCA
             val sprzedawca = Sprzedawca(
-                id = 0L,
+                id = "0L",
                 nazwa = fakturaDTO.sprzedawca.nazwa,
                 nip = fakturaDTO.sprzedawca.nip,
                 adres = fakturaDTO.sprzedawca.adres,
@@ -111,7 +112,7 @@ class AcceptanceController @Inject constructor(
 
             // 👉 ODBIORCA
             val odbiorca = Odbiorca(
-                id = 0L,
+                id = "0L",
                 nazwa = fakturaDTO.odbiorca.nazwa,
                 nip = fakturaDTO.odbiorca.nip,
                 adres = fakturaDTO.odbiorca.adres,
@@ -127,16 +128,16 @@ class AcceptanceController @Inject constructor(
             // 👉 PRODUKTY
             val produkty = fakturaDTO.produkty.mapIndexed { index, dto ->
                 val produkt = Produkt(
-                    id = 0L,
+                    id = "0L",
                     nazwaProduktu = dto.nazwaProduktu,
                     jednostkaMiary = dto.jednostkaMiary,
                     cenaNetto = dto.cenaNetto,
                     stawkaVat = dto.stawkaVat
                 )
                 val produktFaktura = ProduktFaktura(
-                    id = -1L - index, // tymczasowy ID do odróżnienia
-                    fakturaId = 0L,   // ustawisz po zapisaniu faktury
-                    produktId = 0L,   // ustawisz po zapisaniu produktu
+                    id = (-1L - index).toString(), // tymczasowy ID do odróżnienia
+                    fakturaId = "0L",   // ustawisz po zapisaniu faktury
+                    produktId = "0L",   // ustawisz po zapisaniu produktu
                     ilosc = dto.ilosc,
                     rabat = dto.rabat,
                     wartoscNetto = dto.wartoscNetto,

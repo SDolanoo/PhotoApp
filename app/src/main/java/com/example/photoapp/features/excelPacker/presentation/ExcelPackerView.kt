@@ -66,7 +66,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.photoapp.R
+import com.dolan.photoapp.R
 import com.example.photoapp.core.components.MyNavigationBar
 import com.example.photoapp.core.navigation.NavBarDestinations
 import com.example.photoapp.core.navigation.PhotoAppDestinations

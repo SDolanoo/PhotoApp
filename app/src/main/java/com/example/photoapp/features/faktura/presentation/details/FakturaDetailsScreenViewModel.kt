@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
-import com.example.photoapp.features.faktura.data.faktura.Produkt
-import com.example.photoapp.features.faktura.data.faktura.ProduktFaktura
 import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
+import com.example.photoapp.features.produkt.data.Produkt
+import com.example.photoapp.features.produkt.data.ProduktFaktura
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -62,8 +62,8 @@ class FakturaDetailsViewModel @Inject constructor(
     fun loadProducts(faktura: Faktura) {
         viewModelScope.launch(Dispatchers.IO) {
             val produktyFaktury = repository.getProduktyFakturaForFaktura(faktura)
-            val sprzedawca = sprzedawcaRepository.getById(faktura.sprzedawcaId.toLong())
-            val odbiorca = odbiorcaRepository.getById(faktura.odbiorcaId.toLong())
+            val sprzedawca = sprzedawcaRepository.getById(faktura.sprzedawcaId)
+            val odbiorca = odbiorcaRepository.getById(faktura.odbiorcaId)
             // Ustawienie actual i edited jednocześnie
             _actualFaktura.value = faktura
             _editedFaktura.value = faktura
@@ -91,7 +91,7 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun getFakturaByID(id: Long, callback: (Faktura) -> Unit) {
+    fun getFakturaByID(id: String, callback: (Faktura) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val faktura = repository.getFakturaByID(id)
             callback(faktura!!)
@@ -150,14 +150,14 @@ class FakturaDetailsViewModel @Inject constructor(
 
                 // 🧠 OBSŁUGA KAŻDEGO PRODUKTU INDYWIDUALNIE
                 produktyEdited.forEachIndexed { index, produkt ->
-                    val produktId = when (produkt.produktFaktura.id) {
+                    val produktId = when (produkt.produktFaktura.id.toLong()) {
                         in Long.MIN_VALUE until 1L -> repository.insertProduktFaktura(produkt.produktFaktura) // Zwraca nowe ID
                         else -> {
                             repository.updateProduktFaktura(produkt.produktFaktura)
                             produkt.produktFaktura.id
                         }
                     }
-                    nowaListaId.add(produktId)
+                    nowaListaId.add(produktId.toLong())
                     // Jeżeli był nowy, nadpisujemy id w pamięci
                     val produktFakturaZProduktem = produkt.copy(produktFaktura = produkt.produktFaktura.copy(id = produktId))
                     updateEditedProductTemp(index, produktFakturaZProduktem, callback = {})
@@ -194,7 +194,7 @@ class FakturaDetailsViewModel @Inject constructor(
 
     fun addOneProductToEdited(callback: () -> Unit = {}) {
         viewModelScope.launch(Dispatchers.IO) {
-            val newProduct = ProduktFakturaZProduktem(produktFaktura = ProduktFaktura.default().copy(id = nextTempProductId--), produkt = Produkt.default())
+            val newProduct = ProduktFakturaZProduktem(produktFaktura = ProduktFaktura.default().copy(id = (nextTempProductId--).toString()), produkt = Produkt.default())
 
 
             _editedProdukty.update { currentList ->
@@ -285,7 +285,7 @@ class FakturaDetailsViewModel @Inject constructor(
             _editedProdukty.update { currentList ->
                 currentList.toMutableList().apply {
                     this[index] = ProduktFakturaZProduktem(
-                        produktFaktura = ProduktFaktura.default().copy(id = nextTempProductId--,
+                        produktFaktura = ProduktFaktura.default().copy(id = (nextTempProductId--).toString(),
                             produktId = product.id), produkt = product
                     )
                 }

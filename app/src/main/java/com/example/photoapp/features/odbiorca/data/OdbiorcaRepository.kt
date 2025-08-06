@@ -1,67 +1,53 @@
 package com.example.photoapp.features.odbiorca.data
 
-import android.util.Log
 import javax.inject.Inject
 
 class OdbiorcaRepository @Inject constructor(
-    private val odbiorcaDao: OdbiorcaDao
+    private val service: OdbiorcaService
 ) {
-    fun getAllOdbiorcy(): List<Odbiorca> = odbiorcaDao.getAll()
 
-    fun getByNip(nip: String): Odbiorca? = odbiorcaDao.getByNip(nip)
+    suspend fun getAllOdbiorcy(): List<Odbiorca> = service.getAll()
 
-    fun getById(id: Long): Odbiorca? = odbiorcaDao.getById(id)
+    suspend fun getByNip(nip: String): Odbiorca? = service.getByNip(nip)
 
-    fun addOrGetOdbiorca(nazwa: String, nip: String, adres: String): Odbiorca {
-        return getByNip(nip)?.also {
-            Log.i("Dolan", "Existing Odbiorca ID: ${it.id}, NIP: ${it.nip}")
-        } ?: run {
-            val odbiorca = Odbiorca(
-                nazwa = nazwa, nip = nip, adres = adres,
-                kodPocztowy = "",
-                miejscowosc = "",
-                kraj = "",
-                opis = "",
-                email = "",
-                telefon = ""
+    suspend fun getById(id: String): Odbiorca? = service.getById(id)
+
+    suspend fun insert(odbiorca: Odbiorca): String = service.insert(odbiorca)
+
+    suspend fun update(odbiorca: Odbiorca) = service.update(odbiorca)
+
+    suspend fun delete(odbiorca: Odbiorca) = service.delete(odbiorca)
+
+    suspend fun addOrGetOdbiorca(nazwa: String, nip: String, adres: String): Odbiorca {
+        val existing = getByNip(nip)
+        return existing ?: run {
+            val newOdbiorca = Odbiorca(
+                nazwa = nazwa, nip = nip, adres = adres
             )
-            val id = insert(odbiorca)
-            val newOdbiorca = odbiorca.copy(id = id)
-            Log.i("Dolan", "Inserted new Odbiorca ID: ${newOdbiorca.id}, NIP: ${newOdbiorca.nip}")
-            newOdbiorca
+            val id = insert(newOdbiorca)
+            newOdbiorca.copy(id = id)
         }
     }
 
-    fun insert(odbiorca: Odbiorca): Long = odbiorcaDao.insert(odbiorca)
-
-    fun update(odbiorca: Odbiorca) = odbiorcaDao.update(odbiorca)
-
-    fun delete(odbiorca: Odbiorca) = odbiorcaDao.delete(odbiorca)
-
-    fun upsertOdbiorcaSmart(new: Odbiorca): Long {
+    suspend fun upsertOdbiorcaSmart(new: Odbiorca): String {
         val existingList = getAllOdbiorcy()
 
-        when (val mode = determineSaveModeForOdbiorca(new, existingList)) {
+        return when (val mode = determineSaveModeForOdbiorca(new, existingList)) {
             is SaveMode.Update -> {
                 val updated = new.copy(id = mode.existingId)
                 update(updated)
-                updated
-                return mode.existingId
+                mode.existingId
             }
+
             SaveMode.Insert -> {
-                val newId = insert(new)
-                new.copy(id = newId)
-                return newId
+                insert(new.copy(id = ""))
             }
 
             SaveMode.Skip -> {
-                val newId = insert(new)
-                new.copy(id = newId)
-                return newId
+                insert(new.copy(id = ""))
             }
-        }
+        }.toString()
     }
-
 
     fun determineSaveModeForOdbiorca(
         new: Odbiorca,
@@ -74,21 +60,14 @@ class OdbiorcaRepository @Inject constructor(
             val normalizedExistingName = existing.nazwa.trim().lowercase()
             val normalizedExistingNip = existing.nip.trim()
 
-            // 🔁 MATCH 1: Ten sam NIP (priorytetowo)
-            if (normalizedNewNip.isNotEmpty() &&
-                normalizedNewNip == normalizedExistingNip
-            ) {
+            if (normalizedNewNip.isNotEmpty() && normalizedNewNip == normalizedExistingNip) {
                 return SaveMode.Update(existing.id)
             }
 
-            // 🔁 MATCH 2: Brak NIPU, ale ta sama nazwa
-            if (normalizedNewNip.isEmpty() &&
-                normalizedNewName == normalizedExistingName
-            ) {
+            if (normalizedNewNip.isEmpty() && normalizedNewName == normalizedExistingName) {
                 return SaveMode.Update(existing.id)
             }
 
-            // 🔁 MATCH 3: Nazwa ta sama, różne inne dane
             if (normalizedNewName == normalizedExistingName) {
                 return SaveMode.Update(existing.id)
             }
@@ -96,11 +75,10 @@ class OdbiorcaRepository @Inject constructor(
 
         return SaveMode.Insert
     }
-
 }
 
 sealed class SaveMode {
-    data class Update(val existingId: Long) : SaveMode()
+    data class Update(val existingId: String) : SaveMode()
     object Insert : SaveMode()
     object Skip : SaveMode()
 }
