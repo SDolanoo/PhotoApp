@@ -1,5 +1,6 @@
 package com.example.photoapp.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -14,17 +15,19 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dolan.photoapp.R
 
 @Composable
-fun HomeDrawer(
+fun MainDrawer(
     navigateToHome: () -> Unit,
     navigateToAcceptPhoto: () -> Unit,
     navigateToTestingButtons: () -> Unit,
     closeDrawer: () -> Unit,
+    onSignout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ModalDrawerSheet(
@@ -53,6 +56,16 @@ fun HomeDrawer(
             selected = false,
             onClick = { navigateToTestingButtons(); closeDrawer() },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+
+        // ➖ Spacer to push bottom item down
+        Spacer(modifier = Modifier.weight(1f))
+
+        NavigationDrawerItem(
+            label = { Text("Wyloguj") },
+            icon = { Icon(painter = painterResource(id = R.drawable.baseline_logout_24), null) },
+            selected = false,
+            onClick = { onSignout() },
         )
     }
 }

@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -77,6 +78,7 @@ fun FakturaScreen(
     navController: NavHostController,
     navigateToCameraView: (String) -> Unit,
     navigateToFakturaDetailsScreen: (Faktura) -> Unit,
+    openDrawer: () -> Unit,
     viewModel: FakturaScreenViewModel = hiltViewModel(),
     filterController: FilterController = hiltViewModel()
 ) {
@@ -120,8 +122,8 @@ fun FakturaScreen(
                             Icon(Icons.Default.Close, contentDescription = "Exit Filters")
                         }
                     } else {
-                        IconButton(onClick = { navController.navigate(PhotoAppDestinations.HOME_ROUTE) }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        IconButton(onClick = { openDrawer() }) {
+                            Icon(Icons.Filled.Menu, contentDescription = "Open Menu")
                         }
                     }
 

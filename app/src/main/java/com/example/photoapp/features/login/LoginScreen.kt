@@ -48,6 +48,7 @@ fun LoginScreen(
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top) {
+            Spacer(modifier = Modifier.height(48.dp))
             ReaderLogo()
             if (showLoginForm.value) UserForm(loading = false, isCreateAccount = false){ email, password ->
                 viewModel.signInWithEmailAndPassword(email, password){
@@ -70,8 +71,8 @@ fun LoginScreen(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val text = if (showLoginForm.value) "Sign up" else "Login"
-            Text(text = "New User?")
+            val text = if (showLoginForm.value) "Zarejestuj się" else "Zaloguj"
+            Text(text = if (showLoginForm.value) "Nie posiadasz konta?" else "Masz już konto?")
             Text(text,
                 modifier = Modifier
                     .clickable {
@@ -113,7 +114,7 @@ fun UserForm(
 
     Column(modifier,
         horizontalAlignment = Alignment.CenterHorizontally) {
-        if (isCreateAccount) Text(text = "Please enter a valid email and password that is at least 6 characters",
+        if (isCreateAccount) Text(text = "Proszę wprowadzić email oraz hasło z conajmniej 6-cioma znakami",
             modifier = Modifier.padding(4.dp)) else Text("")
         EmailInput(
             emailState = email, enabled = !loading,
@@ -124,7 +125,7 @@ fun UserForm(
         PasswordInput(
             modifier = Modifier.focusRequester(passwordFocusRequest),
             passwordState = password,
-            labelId = "Password",
+            labelId = "Hasło",
             enabled = !loading, //Todo change this
             passwordVisibility = passwordVisibility,
             onAction = KeyboardActions {
@@ -133,7 +134,7 @@ fun UserForm(
             })
 
         SubmitButton(
-            textId = if (isCreateAccount) "Create Account" else "Login",
+            textId = if (isCreateAccount) "Załóż konto" else "Zaloguj",
             loading = loading,
             validInputs = valid
         ){

@@ -24,7 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
 fun ReaderLogo(modifier: Modifier = Modifier) {
-    Text(text = "A. Reader",
+    Text(text = "Czytnik Faktur",
         modifier = modifier.padding(bottom = 16.dp),
         style = MaterialTheme.typography.headlineMedium,
         color = Color.Red.copy(alpha = 0.5f))
