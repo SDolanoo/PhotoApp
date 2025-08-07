@@ -20,7 +20,7 @@ fun SprzedawcaReadOnly(
         modifier = modifier.padding(4.dp)
     ) {
         SectionCard(
-            title = "Nabywca",
+            title = "Sprzedawca",
             icon = Icons.Filled.Person
         ) {
             InfoRow("Nazwa firmy", fields[0])

@@ -20,7 +20,7 @@ fun InvoiceReadOnly(
         modifier = modifier.padding(4.dp)
     ) {
         SectionCard(
-            title = "Invoice Details",
+            title = "Faktura",
             icon = Icons.Default.AccountCircle
         ) {
             TwoColumnRow("Typ", fields[0], "Numer", fields[1])

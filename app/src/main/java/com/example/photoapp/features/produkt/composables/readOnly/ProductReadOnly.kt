@@ -8,6 +8,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -22,6 +27,10 @@ fun ProductReadOnly(
     modifier: Modifier,
     produkty: List<ProduktFakturaZProduktem>
 ) {
+    var subTotal by remember { mutableDoubleStateOf(0.0) }
+    var tax by remember { mutableDoubleStateOf(0.0) }
+    var total by remember { mutableDoubleStateOf(0.0) }
+
     Column(
         modifier = modifier.padding(4.dp)
     ) {
@@ -31,6 +40,9 @@ fun ProductReadOnly(
         ) {
 
             produkty.forEach { produkt ->
+                subTotal = subTotal + (produkt.produktFaktura.wartoscNetto.toDoubleOrNull() ?: 0.0)
+                total = total + (produkt.produktFaktura.wartoscBrutto.toDoubleOrNull() ?: 0.0)
+                tax = total - subTotal
                 ProduktFakturaSection(produkt)
                 DividerLine()
             }
@@ -40,10 +52,14 @@ fun ProductReadOnly(
             HorizontalDivider(thickness = 1.dp, color = Color(0xFFDDDDDD))
 
             PriceSummary(
-                subtotal = "$1,345.50",
-                tax = "$114.37",
-                total = "$1,459.87"
+                subtotal = subTotal.toString(),
+                tax = tax.toString(),
+                total = total.toString()
             )
         }
     }
+}
+
+private fun calculateTotal() {
+
 }
