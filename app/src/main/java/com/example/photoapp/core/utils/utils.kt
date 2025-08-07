@@ -1,5 +1,6 @@
 package com.example.photoapp.core.utils
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.serialization.json.*
@@ -74,4 +75,68 @@ fun convertDateToString(date: Date): String {
 
 fun currentUserId(): String {
     return FirebaseAuth.getInstance().currentUser?.uid ?: "unauthenticated"
+}
+
+@SuppressLint("DefaultLocale")
+fun convertDoubleToString(double: Double): String {
+    return String.format("%.2f", double).replace('.', ',')
+}
+
+@SuppressLint("DefaultLocale")
+fun calculateNetPrice(netvalue: String, q: String): String {
+    val quantity = q.replace(',', '.').toDoubleOrNull()
+    val netValue = netvalue.replace(',', '.').toDoubleOrNull()
+
+    if (quantity == null || netValue == null || quantity == 0.0 || netValue == 0.0) return "0"
+
+    val netPrice = netValue / quantity
+    return convertDoubleToString(netPrice)
+}
+
+@SuppressLint("DefaultLocale")
+fun calculateGrossValue(netvalue: String, vat: String): String? {
+    val vatRate = vat.replace(',', '.').toIntOrNull()
+    val netPrice = netvalue.replace(',', '.').toDoubleOrNull()
+
+    if (vatRate == null || vatRate == 0) return null
+
+    if (netPrice == null || netPrice == 0.0) return "0"
+
+    val grossPrice = netPrice * (1 + vatRate / 100.0)
+    return convertDoubleToString(grossPrice)
+}
+
+@SuppressLint("DefaultLocale")
+fun calculateNetValue(grprice: String, vat: String): String? {
+    val vatRate = vat.replace(',', '.').toIntOrNull()
+    val grossPrice = grprice.replace(',', '.').toDoubleOrNull()
+
+    if (grossPrice == null || grossPrice == 0.0) return "0"
+
+    if (vatRate == null || vatRate == 0) return null
+
+    val netValue = grossPrice / (1 + vatRate / 100.0)
+    return convertDoubleToString(netValue)
+}
+
+@SuppressLint("DefaultLocale")
+fun calculateNetValueQuantity(q: String, price: String): String {
+    val quantity = q.replace(',', '.').toDoubleOrNull()
+    val netPrice = price.replace(',', '.').toDoubleOrNull()
+
+    if (quantity == null || netPrice == null || quantity == 0.0 || netPrice == 0.0) return "0"
+
+    val netValue = quantity * netPrice
+    return convertDoubleToString(netValue)
+}
+
+@SuppressLint("DefaultLocale")
+fun calculateGrossValueQuantity(q: String, price: String): String {
+    val quantity = q.replace(',', '.').toDoubleOrNull()
+    val netPrice = price.replace(',', '.').toDoubleOrNull()
+
+    if (quantity == null || netPrice == null || quantity == 0.0 || netPrice == 0.0) return "0"
+
+    val netValue = quantity * netPrice
+    return convertDoubleToString(netValue)
 }

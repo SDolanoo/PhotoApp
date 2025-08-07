@@ -26,6 +26,10 @@ import com.example.photoapp.core.components.common.CustomTextField
 import com.example.photoapp.core.components.common.CustomTextFieldWithButton
 import com.example.photoapp.core.components.common.CustomDropdownMenu
 import com.example.photoapp.core.components.common.KeyboardType
+import com.example.photoapp.core.utils.calculateGrossValue
+import com.example.photoapp.core.utils.calculateNetPrice
+import com.example.photoapp.core.utils.calculateNetValue
+import com.example.photoapp.core.utils.calculateNetValueQuantity
 import com.google.android.play.integrity.internal.q
 
 @Composable
@@ -214,61 +218,3 @@ fun ProductForm(
     }
 }
 
-@SuppressLint("DefaultLocale")
-private fun calculateNetPrice(netvalue: String, q: String): String {
-    val quantity = q.replace(',', '.').toDoubleOrNull()
-    val netValue = netvalue.replace(',', '.').toDoubleOrNull()
-
-    if (quantity == null || netValue == null || quantity == 0.0 || netValue == 0.0) return "0"
-
-    val netPrice = netValue / quantity
-    return String.format("%.2f", netPrice).replace('.', ',')
-}
-
-@SuppressLint("DefaultLocale")
-private fun calculateGrossValue(netvalue: String, vat: String): String? {
-    val vatRate = vat.replace(',', '.').toIntOrNull()
-    val netPrice = netvalue.replace(',', '.').toDoubleOrNull()
-
-    if (vatRate == null || vatRate == 0) return null
-
-    if (netPrice == null || netPrice == 0.0) return "0"
-
-    val grossPrice = netPrice * (1 + vatRate / 100.0)
-    return String.format("%.2f", grossPrice).replace('.', ',')
-}
-
-@SuppressLint("DefaultLocale")
-private fun calculateNetValue(grprice: String, vat: String): String? {
-    val vatRate = vat.replace(',', '.').toIntOrNull()
-    val grossPrice = grprice.replace(',', '.').toDoubleOrNull()
-
-    if (grossPrice == null || grossPrice == 0.0) return "0"
-
-    if (vatRate == null || vatRate == 0) return null
-
-    val netValue = grossPrice / (1 + vatRate / 100.0)
-    return String.format("%.2f", netValue).replace('.', ',')
-}
-
-@SuppressLint("DefaultLocale")
-private fun calculateNetValueQuantity(q: String, price: String): String {
-    val quantity = q.replace(',', '.').toDoubleOrNull()
-    val netPrice = price.replace(',', '.').toDoubleOrNull()
-
-    if (quantity == null || netPrice == null || quantity == 0.0 || netPrice == 0.0) return "0"
-
-    val netValue = quantity * netPrice
-    return String.format("%.2f", netValue).replace('.', ',')
-}
-
-@SuppressLint("DefaultLocale")
-private fun calculateGrossValueQuantity(q: String, price: String): String {
-    val quantity = q.replace(',', '.').toDoubleOrNull()
-    val netPrice = price.replace(',', '.').toDoubleOrNull()
-
-    if (quantity == null || netPrice == null || quantity == 0.0 || netPrice == 0.0) return "0"
-
-    val netValue = quantity * netPrice
-    return String.format("%.2f", netValue).replace('.', ',')
-}
