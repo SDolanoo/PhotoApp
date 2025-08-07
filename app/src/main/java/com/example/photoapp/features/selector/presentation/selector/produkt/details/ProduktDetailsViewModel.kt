@@ -60,7 +60,11 @@ class ProduktDetailsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val produkt = editedProdukt.value
-                produktRepository.updateProdukt(produkt)
+                if (produkt.cenaNetto != actualProdukt.value.cenaNetto || produkt.stawkaVat != actualProdukt.value.stawkaVat) {
+                    produktRepository.updateProduktAndRelativeData(produkt)
+                } else {
+                    produktRepository.updateProdukt(produkt)
+                }
                 callback(produkt.copy(id = produkt.id))
             } catch (e: Exception) {
                 Log.e("ProductDetails", "Błąd zapisu: ${e.message}")

@@ -1,8 +1,10 @@
 package com.example.photoapp.features.faktura.presentation.details
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.photoapp.core.utils.convertDoubleToString
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import com.example.photoapp.features.odbiorca.data.Odbiorca
@@ -149,7 +151,8 @@ class FakturaDetailsViewModel @Inject constructor(
                 val nowaListaId = mutableListOf<String>()
 
 
-
+                var razemNetto = 0.0
+                var razemBrutto = 0.0
                 // 🧠 OBSŁUGA KAŻDEGO PRODUKTU INDYWIDUALNIE
                 produktyEdited.forEachIndexed { index, produkt ->
                     val isNowyProdukt = produkt.produktFaktura.id.length <= 4
@@ -167,6 +170,8 @@ class FakturaDetailsViewModel @Inject constructor(
                     val produktFakturaZProduktem = produkt.copy(
                         produktFaktura = produkt.produktFaktura.copy(id = produktId)
                     )
+                    razemNetto += produkt.produktFaktura.wartoscNetto.replace(",", ".").toDoubleOrNull() ?: 0.0
+                    razemBrutto += produkt.produktFaktura.wartoscBrutto.replace(",", ".").toDoubleOrNull() ?: 0.0
                     updateEditedProductTemp(index, produktFakturaZProduktem, callback = {})
                 }
 
@@ -188,7 +193,13 @@ class FakturaDetailsViewModel @Inject constructor(
                 val sprzedawcaId = sprzedawcaRepository.upsertSprzedawcaSmart(sprzedawca)
                 val odbiorcaId = odbiorcaRepository.upsertOdbiorcaSmart(odbiorca)
 
-                val updatedFaktura = faktura.copy(sprzedawcaId = sprzedawcaId, odbiorcaId = odbiorcaId)
+                val updatedFaktura = faktura.copy(
+                    sprzedawcaId = sprzedawcaId,
+                    odbiorcaId = odbiorcaId,
+                    razemNetto = convertDoubleToString(razemNetto),
+                    razemVAT = convertDoubleToString(razemBrutto-razemNetto),
+                    razemBrutto = convertDoubleToString(razemBrutto),
+                    doZaplaty = convertDoubleToString(razemBrutto))
                 repository.updateFaktura(updatedFaktura)
                 callback(updatedFaktura)
 

@@ -1,7 +1,9 @@
 package com.example.photoapp.features.captureFlow.presentation.acceptFaktura
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.photoapp.core.utils.convertDoubleToString
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
@@ -53,6 +55,7 @@ class AcceptFakturaController @Inject constructor(
         }
     }
 
+    @SuppressLint("DefaultLocale")
     fun addToDatabase(
         faktura: Faktura,
         sprzedawca: Sprzedawca,
@@ -60,21 +63,31 @@ class AcceptFakturaController @Inject constructor(
         produkty: List<ProduktFakturaZProduktem>
         ) {
         viewModelScope.launch(Dispatchers.IO) {
+            var razemNetto = 0.0
+            var razemBrutto = 0.0
+
+            produkty.forEach { produkt ->
+                razemNetto += produkt.produktFaktura.wartoscNetto.replace(",", ".").toDoubleOrNull() ?: 0.0
+                razemBrutto += produkt.produktFaktura.wartoscBrutto.replace(",", ".").toDoubleOrNull() ?: 0.0
+            }
 
             val sprzedawcaId = sprzedawcaRepository.upsertSprzedawcaSmart(sprzedawca)
             val odbiorcaId = odbiorcaRepository.upsertOdbiorcaSmart(odbiorca)
 
-            val fakturaId = repository.insertFaktura(faktura.copy(sprzedawcaId = sprzedawcaId, odbiorcaId = odbiorcaId))
+            val fakturaId = repository.insertFaktura(faktura.copy(
+                sprzedawcaId = sprzedawcaId,
+                odbiorcaId = odbiorcaId,
+                razemNetto = convertDoubleToString(razemNetto),
+                razemVAT = convertDoubleToString(razemBrutto-razemNetto),
+                razemBrutto = convertDoubleToString(razemBrutto),
+                doZaplaty = convertDoubleToString(razemBrutto))
+            )
 
             produkty.forEach { produkt ->
                 checkForExistingProducts(produkt.produkt) { produktId ->
                     repository.insertProduktFaktura(produkt.produktFaktura.copy(id = "0L", produktId = produktId, fakturaId = fakturaId))
                 }
             }
-
-
-
-
         }
     }
 }

@@ -2,6 +2,11 @@ package com.example.photoapp.features.faktura.data.faktura
 
 import android.util.Log
 import com.example.photoapp.core.database.data.FakturaDTO
+import com.example.photoapp.core.utils.calculateGrossValue
+import com.example.photoapp.core.utils.calculateNetValueQuantity
+import com.example.photoapp.core.utils.calculateSubstraction
+import com.example.photoapp.core.utils.calculateSum
+import com.example.photoapp.core.utils.convertDoubleToString
 import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
 import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
 import com.example.photoapp.core.utils.convertStringToDate
@@ -255,5 +260,30 @@ class FakturaRepository @Inject constructor(
             }
         }
         return resultList
+    }
+
+    suspend fun updateProduktAndRelativeData(produkt: Produkt) {
+        updateProdukt(produkt)
+
+        val produktyFaktura = produktFakturaService.getAllProduktFakturaForProduktId(produkt.id)
+        produktyFaktura.forEach { pf ->
+            val faktura = fakturaService.getById(pf.id)!!
+
+
+            val wartoscNetto = calculateNetValueQuantity(pf.ilosc, produkt.cenaNetto)
+            val wartoscBrutto = calculateGrossValue(wartoscNetto, produkt.stawkaVat) ?: wartoscNetto
+
+            val newRazemNetto = calculateSum(calculateSubstraction(faktura.razemNetto, pf.wartoscNetto), wartoscNetto)
+            val newRazemBrutto = calculateSum(calculateSubstraction(faktura.razemBrutto, pf.wartoscBrutto), wartoscBrutto)
+            // WIEM TO JEST OKROPNE, ALE MUSI WYSTARCZYĆ
+            // obliczamy tutaj nowe wartości dla faktury i produktFaktury po zmianie Produktu
+
+            produktFakturaService.update(pf.copy(wartoscNetto = wartoscNetto, wartoscBrutto = wartoscBrutto))
+            fakturaService.update(faktura.copy(
+                razemNetto = newRazemNetto,
+                razemVAT = calculateSubstraction(newRazemBrutto, newRazemNetto),
+                razemBrutto = newRazemBrutto,
+                doZaplaty = newRazemBrutto))
+        }
     }
 }

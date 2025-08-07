@@ -42,6 +42,16 @@ class ProduktFakturaService {
         }
     }
 
+    suspend fun getAllProduktFakturaForProduktId(produktId: String): List<ProduktFaktura> {
+        val snapshot = produktFakturaCol
+            .whereEqualTo("produktId", produktId)
+            .get()
+            .await()
+        return snapshot.documents.mapNotNull { doc ->
+            doc.toObject<ProduktFaktura>()?.copy(id = doc.id)
+        }
+    }
+
     suspend fun insert(produktFaktura: ProduktFaktura): String {
         val newDoc = produktFakturaCol.document()
         val newId = newDoc.id

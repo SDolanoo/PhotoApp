@@ -1,5 +1,6 @@
 package com.example.photoapp.features.captureFlow.presentation.acceptPhoto
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import com.example.photoapp.core.AI.chatWithGemini
 import kotlinx.serialization.json.Json
@@ -7,6 +8,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.photoapp.core.AI.DocumentType
 import com.example.photoapp.core.database.data.FakturaDTO
+import com.example.photoapp.core.utils.convertDoubleToString
 import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
@@ -71,6 +73,7 @@ class AcceptanceController @Inject constructor(
         }
     }
 
+    @SuppressLint("DefaultLocale")
     fun formObjectsFromPrompt(geminiPromptResult: String, callback: () -> Unit) {
         val coercingJson = Json { coerceInputValues = true }
 
@@ -98,24 +101,6 @@ class AcceptanceController @Inject constructor(
 
             val dataWystawienia = if (fakturaDTO.dataWystawienia == "null" && fakturaDTO.dataSprzedazy != "null") fakturaDTO.dataSprzedazy else fakturaDTO.dataWystawienia
             val dataSprzedazy = if (fakturaDTO.dataSprzedazy == "null" && fakturaDTO.dataWystawienia != "null") fakturaDTO.dataWystawienia else fakturaDTO.dataSprzedazy
-
-            // 👉 FAKTURA
-            val faktura = Faktura(
-                uzytkownikId = FirebaseAuth.getInstance().currentUser?.uid.toString(), // zakładamy, że masz domyślnego użytkownika
-                odbiorcaId = "0L",   // tymczasowo — ustawiasz gdzieś później z bazy
-                sprzedawcaId = "0L", // tymczasowo
-                typFaktury = fakturaDTO.typFaktury,
-                numerFaktury = fakturaDTO.numerFaktury,
-                dataWystawienia = convertStringToDate(dataWystawienia),
-                dataSprzedazy = convertStringToDate(dataSprzedazy),
-                miejsceWystawienia = fakturaDTO.miejsceWystawienia,
-                razemNetto = fakturaDTO.razemNetto,
-                razemVAT = fakturaDTO.razemVAT ?: "0",
-                razemBrutto = fakturaDTO.razemBrutto,
-                doZaplaty = fakturaDTO.doZaplaty,
-                waluta = fakturaDTO.waluta,
-                formaPlatnosci = fakturaDTO.formaPlatnosci
-            )
 
             // 👉 SPRZEDAWCA
             val sprzedawca = Sprzedawca(
@@ -145,7 +130,8 @@ class AcceptanceController @Inject constructor(
                 email = fakturaDTO.odbiorca.email,
                 telefon = fakturaDTO.odbiorca.telefon
             )
-
+            var razemNetto = 0.0
+            var razemBrutto = 0.0
 
             // 👉 PRODUKTY
             val produkty = fakturaDTO.produkty.mapIndexed { index, dto ->
@@ -165,8 +151,28 @@ class AcceptanceController @Inject constructor(
                     wartoscNetto = dto.wartoscNetto,
                     wartoscBrutto = dto.wartoscBrutto
                 )
+                razemNetto += produktFaktura.wartoscNetto.replace(",", ".").toDoubleOrNull() ?: 0.0
+                razemBrutto += produktFaktura.wartoscBrutto.replace(",", ".").toDoubleOrNull() ?: 0.0
                 ProduktFakturaZProduktem(produktFaktura = produktFaktura, produkt = produkt)
             }
+
+            // 👉 FAKTURA
+            val faktura = Faktura(
+                uzytkownikId = FirebaseAuth.getInstance().currentUser?.uid.toString(), // zakładamy, że masz domyślnego użytkownika
+                odbiorcaId = "0L",   // tymczasowo — ustawiasz gdzieś później z bazy
+                sprzedawcaId = "0L", // tymczasowo
+                typFaktury = fakturaDTO.typFaktury,
+                numerFaktury = fakturaDTO.numerFaktury,
+                dataWystawienia = convertStringToDate(dataWystawienia),
+                dataSprzedazy = convertStringToDate(dataSprzedazy),
+                miejsceWystawienia = fakturaDTO.miejsceWystawienia,
+                razemNetto = convertDoubleToString(razemNetto),
+                razemVAT = convertDoubleToString(razemBrutto-razemNetto),
+                razemBrutto = convertDoubleToString(razemBrutto),
+                doZaplaty = convertDoubleToString(razemBrutto),
+                waluta = fakturaDTO.waluta,
+                formaPlatnosci = fakturaDTO.formaPlatnosci
+            )
 
             setFaktura(faktura) {
                 Log.i("Dolan", "setFaktura $faktura")
