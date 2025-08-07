@@ -140,3 +140,23 @@ fun calculateGrossValueQuantity(q: String, price: String): String {
     val netValue = quantity * netPrice
     return convertDoubleToString(netValue)
 }
+
+fun calculateSubstraction(a: String, b: String): String {
+    val aa = a.replace(',', '.').toDoubleOrNull()
+    val bb = b.replace(',', '.').toDoubleOrNull()
+
+    if (aa == null || bb == null ) return "0"
+
+    val result = aa - bb
+    return convertDoubleToString(result)
+}
+
+fun calculateSum(a: String, b: String): String {
+    val aa = a.replace(',', '.').toDoubleOrNull()
+    val bb = b.replace(',', '.').toDoubleOrNull()
+
+    if (aa == null || bb == null ) return "0"
+
+    val result = aa + bb
+    return convertDoubleToString(result)
+}
