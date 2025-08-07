@@ -1,7 +1,6 @@
 package com.example.photoapp.core.navigation
 
 
-import android.provider.ContactsContract
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +35,7 @@ import com.example.photoapp.features.selector.presentation.selector.odbiorca.det
 import com.example.photoapp.features.selector.presentation.selector.produkt.details.ProduktDetailsScreen
 import com.example.photoapp.features.selector.presentation.selector.sprzedawca.details.SprzedawcaDetailsScreen
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
-import com.example.photoapp.ui.home.MainDrawer
+import com.example.photoapp.features.MainDrawer
 import com.example.photoapp.ui.testingButtons.TestingButtons
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -95,7 +94,7 @@ fun PhotoAppNavGraph(
                 drawerState = drawerState,
                 drawerContent = {
                     MainDrawer(
-                        navigateToHome = { navController.navigate(PhotoAppDestinations.HOME_ROUTE) },
+                        navigateToHome = { navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) },
                         navigateToAcceptPhoto = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
                         navigateToTestingButtons = {navController.navigate(PhotoAppDestinations.TESTING_BUTTONS_ROUTE)},
                         closeDrawer = { coroutineScope.launch {drawerState = drawerState.apply { close() }}},
@@ -142,7 +141,7 @@ fun PhotoAppNavGraph(
                     navGraphViewModel.setPhotoUri(uri)
                 },
                 onError = { Log.e("Dolan", "View error:", it) },
-                backToHomeScreen = { navController.navigate(PhotoAppDestinations.HOME_ROUTE) },
+                backToHomeScreen = { navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) },
             )
         }
 
@@ -165,7 +164,7 @@ fun PhotoAppNavGraph(
                         }
                     }
                 },// I have to do this this way, cause the navigate is faster than setting objects
-                backToHome = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)},
+                backToHome = {navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)},
                 geminiKey = geminiKey
             )
         }
@@ -207,7 +206,7 @@ fun PhotoAppNavGraph(
         composable (PhotoAppDestinations.TESTING_BUTTONS_ROUTE) {
             Log.i("Dolan", "Odpalam TESTING_BUTTONS w navGraph")
             TestingButtons(
-                backToHome = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)},
+                backToHome = {navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)},
             )
         }
 
@@ -229,7 +228,7 @@ fun PhotoAppNavGraph(
                         navController.navigate(PhotoAppDestinations.PRODUKT_DETAILS_SCREEN_ROUTE)
                     }
                 },
-                goBack = {navController.navigate(PhotoAppDestinations.HOME_ROUTE)}
+                goBack = {navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)}
             )
         }
 

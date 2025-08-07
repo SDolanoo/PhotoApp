@@ -142,7 +142,7 @@ fun ExcelPacker(
                             Icon(Icons.Default.Close, contentDescription = "Exit Filters")
                         }
                     } else {
-                        IconButton(onClick = { navController.navigate(PhotoAppDestinations.HOME_ROUTE) }) {
+                        IconButton(onClick = { navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     }
