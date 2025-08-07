@@ -1,6 +1,8 @@
 package com.example.photoapp.features.faktura.data.faktura
 
+import com.example.photoapp.core.utils.currentUserId
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -13,21 +15,26 @@ class FakturaService {
     private val db = FirebaseFirestore.getInstance()
     private val fakturaCol = db.collection("faktury")
 
-    // Zastępuje LiveData
+    // Live update tylko dla użytkownika
     fun getAllLive(): Flow<List<Faktura>> = callbackFlow {
         val listener = fakturaCol
+            .whereEqualTo("uzytkownikId", currentUserId())
             .orderBy("dataSprzedazy")
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
                     val list = snapshot.documents.mapNotNull { it.toObject<Faktura>() }
-                    trySend(list.reversed())
+                    trySend(list.reversed()) // najnowsze na górze
                 }
             }
         awaitClose { listener.remove() }
     }
 
+    // Jednorazowe pobranie faktur użytkownika
     suspend fun getAllFaktury(): List<Faktura> {
-        val snapshot = fakturaCol.get().await()
+        val snapshot = fakturaCol
+            .whereEqualTo("uzytkownikId", currentUserId())
+            .get().await()
+
         return snapshot.documents.mapNotNull { doc ->
             doc.toObject<Faktura>()?.copy(id = doc.id)
         }
@@ -35,8 +42,12 @@ class FakturaService {
 
     suspend fun getById(id: String): Faktura? {
         val doc = fakturaCol.document(id).get().await()
-        return doc.toObject<Faktura>()?.copy(id = id)
+        val faktura = doc.toObject<Faktura>()?.copy(id = id)
+
+        // Filtrujemy dodatkowo po userId
+        return if (faktura?.uzytkownikId == currentUserId()) faktura else null
     }
+
 
     suspend fun insert(faktura: Faktura): String {
         val newDoc = fakturaCol.document()
@@ -61,11 +72,14 @@ class FakturaService {
         filterDate: String,
         filterPrice: String
     ): List<Faktura> {
-        val snapshot = fakturaCol.get().await()
-        return snapshot.documents.mapNotNull { doc ->
-            val faktura = doc.toObject<Faktura>() ?: return@mapNotNull null
+        val allFaktury = getAllFaktury() // 🧠 pobieramy tylko raz i z cache jeśli się da
 
-            val dateField = if (filterDate == "dataWystawienia") faktura.dataWystawienia else faktura.dataSprzedazy
+        return allFaktury.filter { faktura ->
+            val dateField = when (filterDate) {
+                "dataWystawienia" -> faktura.dataWystawienia
+                else -> faktura.dataSprzedazy
+            }
+
             val priceField = when (filterPrice) {
                 "brutto" -> faktura.razemBrutto.toDoubleOrNull()
                 "netto" -> faktura.razemNetto.toDoubleOrNull()
@@ -78,9 +92,14 @@ class FakturaService {
             val inPriceRange = (minPrice == null || (priceField != null && priceField >= minPrice)) &&
                     (maxPrice == null || (priceField != null && priceField <= maxPrice))
 
-            if (inDateRange && inPriceRange) faktura else null
-        }.sortedByDescending {
-            if (filterDate == "dataWystawienia") it.dataWystawienia else it.dataSprzedazy
+            inDateRange && inPriceRange
+        }.sortedByDescending { faktura ->
+            when (filterDate) {
+                "dataWystawienia" -> faktura.dataWystawienia
+                else -> faktura.dataSprzedazy
+            }
         }
     }
+
+
 }

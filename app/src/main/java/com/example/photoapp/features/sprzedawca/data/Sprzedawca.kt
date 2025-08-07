@@ -1,7 +1,10 @@
 package com.example.photoapp.features.sprzedawca.data
 
+import com.example.photoapp.core.utils.currentUserId
+
 data class Sprzedawca(
     var id: String = "",
+    var uzytkownikId: String = currentUserId(),
     var nazwa: String = "",
     var nip: String = "",
     var adres: String = "",

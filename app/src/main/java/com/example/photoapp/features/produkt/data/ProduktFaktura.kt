@@ -1,7 +1,10 @@
 package com.example.photoapp.features.produkt.data
 
+import com.example.photoapp.core.utils.currentUserId
+
 data class ProduktFaktura(
     var id: String = "",
+    var uzytkownikId: String = currentUserId(),
     var produktId: String = "",
     var fakturaId: String = "",
     var ilosc: String = "",

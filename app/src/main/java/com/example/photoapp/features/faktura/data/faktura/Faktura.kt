@@ -1,10 +1,11 @@
 package com.example.photoapp.features.faktura.data.faktura
 
+import com.example.photoapp.core.utils.currentUserId
 import java.util.*
 
 data class Faktura(
     var id: String = "",
-    var uzytkownikId: String = "",
+    var uzytkownikId: String = currentUserId(),
     var odbiorcaId: String = "",
     var sprzedawcaId: String = "",
     var typFaktury: String = "",

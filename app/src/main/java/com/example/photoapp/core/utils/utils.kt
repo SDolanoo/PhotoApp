@@ -1,6 +1,7 @@
 package com.example.photoapp.core.utils
 
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.serialization.json.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -69,4 +70,8 @@ fun convertStringToDate(dateStr: String): Date? {
 
 fun convertDateToString(date: Date): String {
     return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)
+}
+
+fun currentUserId(): String {
+    return FirebaseAuth.getInstance().currentUser?.uid ?: "unauthenticated"
 }

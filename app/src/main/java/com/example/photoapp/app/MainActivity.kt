@@ -16,6 +16,8 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import com.dolan.photoapp.R
 import com.example.photoapp.core.navigation.PhotoAppNavGraph
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -46,6 +48,16 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ✅ Firestore cache ON
+        // The default cache size threshold is 100 MB. Configure "setCacheSizeBytes"
+        // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"
+        // to disable clean-up.
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+            .build()
+        FirebaseFirestore.getInstance().firestoreSettings = settings
+
         val geminiKey: String = resources.getString(R.string.geminiKey)
         enableEdgeToEdge()
 
@@ -54,14 +66,11 @@ class MainActivity : ComponentActivity() {
         outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-
-
         setContent {
             val navController = rememberNavController()
 
             PhotoAppNavGraph(
                 navController = navController,
-                /* CameraView variables */
                 outputDirectory = outputDirectory,
                 executor = cameraExecutor,
                 geminiKey = geminiKey,

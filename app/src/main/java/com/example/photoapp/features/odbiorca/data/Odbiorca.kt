@@ -1,8 +1,11 @@
 package com.example.photoapp.features.odbiorca.data
 
+import com.example.photoapp.core.utils.currentUserId
+
 
 data class Odbiorca(
     var id: String = "",
+    var uzytkownikId: String = currentUserId(),
     var nazwa: String = "",
     var nip: String = "",
     var adres: String = "",

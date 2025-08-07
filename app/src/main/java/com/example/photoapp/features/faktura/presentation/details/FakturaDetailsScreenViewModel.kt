@@ -146,27 +146,35 @@ class FakturaDetailsViewModel @Inject constructor(
                 val sprzedawca = editedSprzedawca.value
                 val odbiorca = editedOdbiorca.value
 
-                val nowaListaId = mutableListOf<Long>()
+                val nowaListaId = mutableListOf<String>()
+
+
 
                 // 🧠 OBSŁUGA KAŻDEGO PRODUKTU INDYWIDUALNIE
                 produktyEdited.forEachIndexed { index, produkt ->
-                    val produktId = when (produkt.produktFaktura.id.toLong()) {
-                        in Long.MIN_VALUE until 1L -> repository.insertProduktFaktura(produkt.produktFaktura) // Zwraca nowe ID
-                        else -> {
-                            repository.updateProduktFaktura(produkt.produktFaktura)
-                            produkt.produktFaktura.id
-                        }
+                    val isNowyProdukt = produkt.produktFaktura.id.length <= 4
+
+                    val produktId = if (isNowyProdukt) {
+                        repository.insertProduktFaktura(produkt.produktFaktura.copy(id = "")) // Zwraca nowe ID
+                    } else {
+                        repository.updateProduktFaktura(produkt.produktFaktura)
+                        produkt.produktFaktura.id
                     }
-                    nowaListaId.add(produktId.toLong())
+
+                    nowaListaId.add(produktId)
+
                     // Jeżeli był nowy, nadpisujemy id w pamięci
-                    val produktFakturaZProduktem = produkt.copy(produktFaktura = produkt.produktFaktura.copy(id = produktId))
+                    val produktFakturaZProduktem = produkt.copy(
+                        produktFaktura = produkt.produktFaktura.copy(id = produktId)
+                    )
                     updateEditedProductTemp(index, produktFakturaZProduktem, callback = {})
                 }
 
                 // 🔥 DETEKCJA USUNIĘTYCH PRODUKTÓW
                 val aktualnePozycjeZBazy = repository.getProduktyFakturaForFaktura(faktura)
-                val aktualneIdsZBazy = aktualnePozycjeZBazy.map { it.id }.toSet()
+                val aktualneIdsZBazy = aktualnePozycjeZBazy.map { it.id }.toSet() // Set<String>
                 val aktualneIdsPoEdycji = nowaListaId.toSet()
+
 
                 val usunieteIds = aktualneIdsZBazy - aktualneIdsPoEdycji
 
@@ -185,7 +193,7 @@ class FakturaDetailsViewModel @Inject constructor(
                 callback(updatedFaktura)
 
             } catch (e: Exception) {
-                Log.e("Dolan", "Błąd podczas zapisu do DB: ${e.message}")
+                Log.e("Dolan", "Błąd podczas zapisu do DB: ${e}")
             }
         }
     }

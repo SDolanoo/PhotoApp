@@ -74,8 +74,30 @@ class AcceptanceController @Inject constructor(
     fun formObjectsFromPrompt(geminiPromptResult: String, callback: () -> Unit) {
         val coercingJson = Json { coerceInputValues = true }
 
+        fun extractJson(raw: String): String? {
+            val cleaned = raw
+                .replace("```json", "", ignoreCase = true)
+                .replace("```", "")
+                .trim()
+
+            val startIndex = cleaned.indexOfFirst { it == '{' || it == '[' }
+            if (startIndex == -1) return null
+
+            return cleaned.substring(startIndex)
+        }
+
         try {
-            val fakturaDTO = coercingJson.decodeFromString<FakturaDTO>(geminiPromptResult)
+            val jsonText = extractJson(geminiPromptResult)
+            if (jsonText == null) {
+                Log.e("formObjectsFromPrompt", "Nie znaleziono poprawnego JSON-a.")
+                callback()
+                return
+            }
+
+            val fakturaDTO = coercingJson.decodeFromString<FakturaDTO>(jsonText)
+
+            val dataWystawienia = if (fakturaDTO.dataWystawienia == "null" && fakturaDTO.dataSprzedazy != "null") fakturaDTO.dataSprzedazy else fakturaDTO.dataWystawienia
+            val dataSprzedazy = if (fakturaDTO.dataSprzedazy == "null" && fakturaDTO.dataWystawienia != "null") fakturaDTO.dataWystawienia else fakturaDTO.dataSprzedazy
 
             // 👉 FAKTURA
             val faktura = Faktura(
@@ -84,8 +106,8 @@ class AcceptanceController @Inject constructor(
                 sprzedawcaId = "0L", // tymczasowo
                 typFaktury = fakturaDTO.typFaktury,
                 numerFaktury = fakturaDTO.numerFaktury,
-                dataWystawienia = convertStringToDate(fakturaDTO.dataWystawienia),
-                dataSprzedazy = convertStringToDate(fakturaDTO.dataSprzedazy),
+                dataWystawienia = convertStringToDate(dataWystawienia),
+                dataSprzedazy = convertStringToDate(dataSprzedazy),
                 miejsceWystawienia = fakturaDTO.miejsceWystawienia,
                 razemNetto = fakturaDTO.razemNetto,
                 razemVAT = fakturaDTO.razemVAT ?: "0",

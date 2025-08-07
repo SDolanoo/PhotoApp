@@ -1,7 +1,10 @@
 package com.example.photoapp.features.produkt.data
 
+import com.example.photoapp.core.utils.currentUserId
+
 data class Produkt(
     var id: String = "",
+    var uzytkownikId: String = currentUserId(),
     var nazwaProduktu: String = "",
     var jednostkaMiary: String = "",
     var cenaNetto: String = "",
