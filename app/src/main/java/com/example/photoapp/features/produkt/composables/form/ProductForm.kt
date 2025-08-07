@@ -26,6 +26,7 @@ import com.example.photoapp.core.components.common.CustomTextField
 import com.example.photoapp.core.components.common.CustomTextFieldWithButton
 import com.example.photoapp.core.components.common.CustomDropdownMenu
 import com.example.photoapp.core.components.common.KeyboardType
+import com.google.android.play.integrity.internal.q
 
 @Composable
 fun ProductForm(
@@ -40,13 +41,22 @@ fun ProductForm(
 
     var state by remember { mutableStateOf("less") } // or more
 
+    val name = fields[0].second
+    val quantity = fields[1].second
+    val unit = fields[2].second
+    val netPrice = fields[3].second
+    val vat = fields[4].second
+    val netValue = fields[5].second
+    val grossValue = fields[6].second
+    val discount = fields[7].second
+
     Column(
         modifier = modifier.padding(4.dp)
     ) {
 
         CustomTextFieldWithButton(
             title = "Nazwa",
-            field = fields[0].second,
+            field = name,
             onEdit = { onEdit() },
             onButtonClick = { onButtonClick() }
         )
@@ -59,19 +69,25 @@ fun ProductForm(
         ) {
             CustomTextField(
                 title = "Ilość",
-                field = fields[1].second,
-                modifier = Modifier.weight(1f)
+                field = quantity,
+                modifier = Modifier
+                    .weight(1f)
                     .fillMaxHeight(),
-                onEdit = { onEdit() },
+                onEdit = {
+                    netValue.value = calculateNetValueQuantity(quantity.value, netPrice.value)
+                    grossValue.value = calculateGrossValue(netValue.value, vat.value) ?: netValue.value
+                    onEdit()
+                },
                 keyboardType = KeyboardType.NUMERIC
             )
 
             CustomDropdownMenu(
                 options = listOf("szt", "godz", "dni", "mc", "kg", "m2", "więcej.."),
                 label = "Jednostka",
-                field = fields[2].second,
+                field = unit,
                 selected = { onEdit() },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
                     .fillMaxHeight()
             )
         }
@@ -84,13 +100,13 @@ fun ProductForm(
         ) {
             CustomTextField(
                 title = "Cena netto",
-                field = fields[3].second,
-                modifier = Modifier.weight(1f)
+                field = netPrice,
+                modifier = Modifier
+                    .weight(1f)
                     .fillMaxHeight(),
                 onEdit = {
-                    val calculatedPrice = calculateBrutto(fields[3].second.value, fields[4].second.value)
-                    fields[5].second.value = fields[3].second.value
-                    fields[6].second.value = calculatedPrice
+                    netValue.value = calculateNetValueQuantity(quantity.value, netPrice.value)
+                    grossValue.value = calculateGrossValue(netValue.value, vat.value) ?: netValue.value
                     onEdit()
                 },
                 keyboardType = KeyboardType.NUMERIC
@@ -99,16 +115,14 @@ fun ProductForm(
             CustomDropdownMenu(
                 options = listOf("23", "8", "7", "5", "0", "zw", "np", "więcej.."),
                 label = "Vat %",
-                field = fields[4].second,
+                field = vat,
                 selected = {
-                    val priceNetto = calculateNetto(fields[3].second.value, fields[4].second.value)
-                    val priceBrutto = calculateBrutto(fields[6].second.value, fields[4].second.value)
-                    fields[3].second.value = priceNetto
-                    fields[5].second.value = priceNetto
-                    fields[6].second.value = priceBrutto
+                    netValue.value = calculateNetValueQuantity(quantity.value, netPrice.value)
+                    grossValue.value = calculateGrossValue(netValue.value, vat.value) ?: netValue.value
                     onEdit()
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
                     .fillMaxHeight()
             )
         }
@@ -122,13 +136,13 @@ fun ProductForm(
         ) {
             CustomTextField(
                 title = "Wartość netto",
-                field = fields[5].second,
-                modifier = Modifier.weight(1f)
+                field = netValue,
+                modifier = Modifier
+                    .weight(1f)
                     .fillMaxHeight(),
                 onEdit = {
-                    val calculatedPrice = calculateBrutto(fields[5].second.value, fields[4].second.value)
-                    fields[3].second.value = fields[5].second.value
-                    fields[6].second.value = calculatedPrice
+                    grossValue.value = calculateGrossValue(netValue.value, vat.value) ?: netValue.value
+                    netPrice.value = calculateNetPrice(netValue.value, quantity.value)
                     onEdit()
                 },
                 keyboardType = KeyboardType.NUMERIC
@@ -136,13 +150,13 @@ fun ProductForm(
 
             CustomTextField(
                 title = "Wartość brutto",
-                field = fields[6].second,
-                modifier = Modifier.weight(1f)
+                field = grossValue,
+                modifier = Modifier
+                    .weight(1f)
                     .fillMaxHeight(),
                 onEdit = {
-                    val calculatedPrice = calculateNetto(fields[6].second.value, fields[4].second.value)
-                    fields[3].second.value = calculatedPrice
-                    fields[5].second.value = calculatedPrice
+                    netValue.value = calculateNetValue(grossValue.value, vat.value) ?: calculateNetValueQuantity(netPrice.value, quantity.value)
+                    netPrice.value = calculateNetPrice(netValue.value, quantity.value)
                     onEdit()
                 },
                 keyboardType = KeyboardType.NUMERIC
@@ -158,8 +172,9 @@ fun ProductForm(
             ) {
                 CustomTextField(
                     title = "Rabat %",
-                    field = fields[7].second,
-                    modifier = Modifier.weight(1f)
+                    field = discount,
+                    modifier = Modifier
+                        .weight(1f)
                         .fillMaxHeight(),
                     onEdit = { onEdit() },
                     keyboardType = KeyboardType.NUMERIC
@@ -180,7 +195,10 @@ fun ProductForm(
                 height = 28,
                 modifier = Modifier.weight(1f)
             )
-            HorizontalDivider(thickness = 1.dp, modifier=Modifier.width(120.dp ).padding(horizontal = 4.dp).padding(top = 14.dp))
+            HorizontalDivider(thickness = 1.dp, modifier=Modifier
+                .width(120.dp)
+                .padding(horizontal = 4.dp)
+                .padding(top = 14.dp))
 
             CustomOutlinedButton(
                 title = "usuń pozycję",
@@ -197,23 +215,60 @@ fun ProductForm(
 }
 
 @SuppressLint("DefaultLocale")
-private fun calculateNetto(price: String, vat: String): String {
-    val vatRate = vat.toIntOrNull()
-    val grossPrice = price.toDoubleOrNull()
+private fun calculateNetPrice(netvalue: String, q: String): String {
+    val quantity = q.replace(',', '.').toDoubleOrNull()
+    val netValue = netvalue.replace(',', '.').toDoubleOrNull()
 
-    if (vatRate == null || grossPrice == null) return "0"
+    if (quantity == null || netValue == null || quantity == 0.0 || netValue == 0.0) return "0"
 
-    val netPrice = grossPrice / (1 + vatRate / 100.0)
+    val netPrice = netValue / quantity
     return String.format("%.2f", netPrice).replace('.', ',')
 }
 
 @SuppressLint("DefaultLocale")
-private fun calculateBrutto(price: String, vat: String): String {
-    val vatRate = vat.toIntOrNull()
-    val netPrice = price.toDoubleOrNull()
+private fun calculateGrossValue(netvalue: String, vat: String): String? {
+    val vatRate = vat.replace(',', '.').toIntOrNull()
+    val netPrice = netvalue.replace(',', '.').toDoubleOrNull()
 
-    if (vatRate == null || netPrice == null) return "0"
+    if (vatRate == null || vatRate == 0) return null
+
+    if (netPrice == null || netPrice == 0.0) return "0"
 
     val grossPrice = netPrice * (1 + vatRate / 100.0)
     return String.format("%.2f", grossPrice).replace('.', ',')
+}
+
+@SuppressLint("DefaultLocale")
+private fun calculateNetValue(grprice: String, vat: String): String? {
+    val vatRate = vat.replace(',', '.').toIntOrNull()
+    val grossPrice = grprice.replace(',', '.').toDoubleOrNull()
+
+    if (grossPrice == null || grossPrice == 0.0) return "0"
+
+    if (vatRate == null || vatRate == 0) return null
+
+    val netValue = grossPrice / (1 + vatRate / 100.0)
+    return String.format("%.2f", netValue).replace('.', ',')
+}
+
+@SuppressLint("DefaultLocale")
+private fun calculateNetValueQuantity(q: String, price: String): String {
+    val quantity = q.replace(',', '.').toDoubleOrNull()
+    val netPrice = price.replace(',', '.').toDoubleOrNull()
+
+    if (quantity == null || netPrice == null || quantity == 0.0 || netPrice == 0.0) return "0"
+
+    val netValue = quantity * netPrice
+    return String.format("%.2f", netValue).replace('.', ',')
+}
+
+@SuppressLint("DefaultLocale")
+private fun calculateGrossValueQuantity(q: String, price: String): String {
+    val quantity = q.replace(',', '.').toDoubleOrNull()
+    val netPrice = price.replace(',', '.').toDoubleOrNull()
+
+    if (quantity == null || netPrice == null || quantity == 0.0 || netPrice == 0.0) return "0"
+
+    val netValue = quantity * netPrice
+    return String.format("%.2f", netValue).replace('.', ',')
 }
