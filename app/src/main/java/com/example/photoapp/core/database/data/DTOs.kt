@@ -78,3 +78,14 @@ data class SprzedawcaDTO(
     @SerialName("email") val email: String = "",
     @SerialName("telefon") val telefon: String = ""
 )
+
+@Serializable
+data class OdbiorcaxSprzedawcaDTO(
+    @SerialName("odbiorca") val odbiorca: OdbiorcaDTO,
+    @SerialName("sprzedawca") val sprzedawca: SprzedawcaDTO
+)
+
+@Serializable
+data class ProduktyDTO(
+    val produkty: List<ProduktFakturaDTO>
+)

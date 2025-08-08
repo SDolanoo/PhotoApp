@@ -8,6 +8,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.photoapp.core.AI.DocumentType
 import com.example.photoapp.core.database.data.FakturaDTO
+import com.example.photoapp.core.database.data.OdbiorcaxSprzedawcaDTO
+import com.example.photoapp.core.database.data.ProduktyDTO
 import com.example.photoapp.core.utils.convertDoubleToString
 import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.features.faktura.data.faktura.Faktura
@@ -28,7 +30,7 @@ import javax.inject.Inject
 class AcceptanceController @Inject constructor(
     private val fakturaRepository: FakturaRepository,
 ) : ViewModel() {
-    private var geminiPromptResult: String = ""
+    private var geminiPromptResult: List<String> = listOf()
 
     private val _faktura = MutableStateFlow<Faktura>(Faktura.default())
     val faktura: StateFlow<Faktura> = _faktura.asStateFlow()
@@ -45,12 +47,12 @@ class AcceptanceController @Inject constructor(
     fun processPhoto(
         geminiKey: String,
         bitmapPhoto: Bitmap?,
-        onResult: (Boolean, String) -> Unit
+        onResult: (Boolean, List<String>) -> Unit
     ) {
         getPrompt(geminiKey, bitmapPhoto) { response, result ->
             if (response == 1) {
-                formObjectsFromPrompt(geminiPromptResult) {
-                    onResult(true, "text")
+                formObjectsFrom3Prompt(geminiPromptResult) {
+                    onResult(true, listOf("text"))
                 }
             } else {
                 onResult(false, result)
@@ -58,7 +60,7 @@ class AcceptanceController @Inject constructor(
         }
     }
 
-    fun getPrompt(geminiKey: String, bitmapPhoto: Bitmap?, callback: (Int, String) -> Unit) {
+    fun getPrompt(geminiKey: String, bitmapPhoto: Bitmap?, callback: (Int, List<String>) -> Unit) {
         // Symulacja asynchronicznego pobierania danych
         bitmapPhoto?.let {
             Log.i("Dolan", "getting Prompt for faktura")
@@ -69,8 +71,32 @@ class AcceptanceController @Inject constructor(
             }
 
         } ?: run {
-            callback(2, "No valid image provided")
+            callback(2, listOf("No valid image provided"))
         }
+    }
+
+
+
+
+    fun setFaktura(faktura: Faktura, callback: () -> Unit) {
+        _faktura.value = faktura
+        Log.i("Dolan", "setFakturafunction  ${_faktura.value}")
+        callback()
+    }
+
+    fun setSprzedawca(sprzedawca: Sprzedawca, callback: () -> Unit) {
+        _sprzedawca.value = sprzedawca
+        callback()
+    }
+
+    fun setOdbiorca(odbiorca: Odbiorca, callback: () -> Unit) {
+        _odbiorca.value = odbiorca
+        callback()
+    }
+
+    fun setProdukty(produkty: List<ProduktFakturaZProduktem>, callback: () -> Unit) {
+        _produkty.value = produkty
+        callback()
     }
 
     @SuppressLint("DefaultLocale")
@@ -199,26 +225,146 @@ class AcceptanceController @Inject constructor(
         }
     }
 
+    @SuppressLint("DefaultLocale")
+    fun formObjectsFrom3Prompt(geminiPromptResult: List<String>, callback: () -> Unit) {
+        val coercingJson = Json { coerceInputValues = true }
 
-    fun setFaktura(faktura: Faktura, callback: () -> Unit) {
-        _faktura.value = faktura
-        Log.i("Dolan", "setFakturafunction  ${_faktura.value}")
-        callback()
-    }
+        fun extractJson(raw: String): String? {
+            val cleaned = raw
+                .replace("```json", "", ignoreCase = true)
+                .replace("```", "")
+                .trim()
 
-    fun setSprzedawca(sprzedawca: Sprzedawca, callback: () -> Unit) {
-        _sprzedawca.value = sprzedawca
-        callback()
-    }
+            val startIndex = cleaned.indexOfFirst { it == '{' || it == '[' }
+            if (startIndex == -1) return null
 
-    fun setOdbiorca(odbiorca: Odbiorca, callback: () -> Unit) {
-        _odbiorca.value = odbiorca
-        callback()
-    }
+            return cleaned.substring(startIndex)
+        }
 
-    fun setProdukty(produkty: List<ProduktFakturaZProduktem>, callback: () -> Unit) {
-        _produkty.value = produkty
-        callback()
+        try {
+            val jsonText0 = extractJson(geminiPromptResult[0])
+            if (jsonText0 == null) {
+                Log.e("formObjectsFromPrompt", "Nie znaleziono poprawnego JSON-a.")
+                callback()
+                return
+            }
+            val jsonText1 = extractJson(geminiPromptResult[1])
+            if (jsonText1 == null) {
+                Log.e("formObjectsFromPrompt", "Nie znaleziono poprawnego JSON-a.")
+                callback()
+                return
+            }
+            val jsonText2 = extractJson(geminiPromptResult[2])
+            if (jsonText2 == null) {
+                Log.e("formObjectsFromPrompt", "Nie znaleziono poprawnego JSON-a.")
+                callback()
+                return
+            }
+
+            val fakturaDTO = coercingJson.decodeFromString<FakturaDTO>(jsonText0)
+            val odbiorca = Json.decodeFromString<OdbiorcaxSprzedawcaDTO>(jsonText1).odbiorca
+            val sprzedawca = Json.decodeFromString<OdbiorcaxSprzedawcaDTO>(jsonText1).sprzedawca
+            val produktyDTO = coercingJson.decodeFromString<ProduktyDTO>(jsonText2)
+
+            val dataWystawienia = if (fakturaDTO.dataWystawienia == "null" && fakturaDTO.dataSprzedazy != "null") fakturaDTO.dataSprzedazy else fakturaDTO.dataWystawienia
+            val dataSprzedazy = if (fakturaDTO.dataSprzedazy == "null" && fakturaDTO.dataWystawienia != "null") fakturaDTO.dataWystawienia else fakturaDTO.dataSprzedazy
+
+            // 👉 SPRZEDAWCA
+            val sprzedawcaObj = Sprzedawca(
+                id = "0L",
+                nazwa = sprzedawca.nazwa,
+                nip = sprzedawca.nip,
+                adres = sprzedawca.adres,
+                kodPocztowy = sprzedawca.kodPocztowy,
+                miejscowosc = sprzedawca.miejscowosc,
+                kraj = sprzedawca.kraj,
+                opis = sprzedawca.opis,
+                email = sprzedawca.email,
+                telefon = sprzedawca.telefon
+            )
+
+
+            // 👉 ODBIORCA
+            val odbiorcaObj = Odbiorca(
+                id = "0L",
+                nazwa = odbiorca.nazwa,
+                nip = odbiorca.nip,
+                adres = odbiorca.adres,
+                kodPocztowy = odbiorca.kodPocztowy,
+                miejscowosc = odbiorca.miejscowosc,
+                kraj = odbiorca.kraj,
+                opis = odbiorca.opis,
+                email = odbiorca.email,
+                telefon = odbiorca.telefon
+            )
+
+            var razemNetto = 0.0
+            var razemBrutto = 0.0
+
+            // 👉 PRODUKTY
+            val produkty = produktyDTO.produkty.mapIndexed { index, dto ->
+                val produkt = Produkt(
+                    id = "0L",
+                    nazwaProduktu = dto.nazwaProduktu,
+                    jednostkaMiary = dto.jednostkaMiary,
+                    cenaNetto = dto.cenaNetto,
+                    stawkaVat = dto.stawkaVat
+                )
+                val produktFaktura = ProduktFaktura(
+                    id = (-1L - index).toString(), // tymczasowy ID do odróżnienia
+                    fakturaId = "0L",   // ustawisz po zapisaniu faktury
+                    produktId = "0L",   // ustawisz po zapisaniu produktu
+                    ilosc = dto.ilosc,
+                    rabat = dto.rabat,
+                    wartoscNetto = dto.wartoscNetto,
+                    wartoscBrutto = dto.wartoscBrutto
+                )
+                razemNetto += produktFaktura.wartoscNetto.replace(",", ".").toDoubleOrNull() ?: 0.0
+                razemBrutto += produktFaktura.wartoscBrutto.replace(",", ".").toDoubleOrNull() ?: 0.0
+                ProduktFakturaZProduktem(produktFaktura = produktFaktura, produkt = produkt)
+            }
+
+            // 👉 FAKTURA
+            val faktura = Faktura(
+                uzytkownikId = FirebaseAuth.getInstance().currentUser?.uid.toString(), // zakładamy, że masz domyślnego użytkownika
+                odbiorcaId = "0L",   // tymczasowo — ustawiasz gdzieś później z bazy
+                sprzedawcaId = "0L", // tymczasowo
+                typFaktury = fakturaDTO.typFaktury,
+                numerFaktury = fakturaDTO.numerFaktury,
+                dataWystawienia = convertStringToDate(dataWystawienia),
+                dataSprzedazy = convertStringToDate(dataSprzedazy),
+                miejsceWystawienia = fakturaDTO.miejsceWystawienia,
+                razemNetto = convertDoubleToString(razemNetto),
+                razemVAT = convertDoubleToString(razemBrutto-razemNetto),
+                razemBrutto = convertDoubleToString(razemBrutto),
+                doZaplaty = convertDoubleToString(razemBrutto),
+                waluta = fakturaDTO.waluta,
+                formaPlatnosci = fakturaDTO.formaPlatnosci
+            )
+
+            setFaktura(faktura) {
+                Log.i("Dolan", "setFaktura $faktura")
+                setSprzedawca(sprzedawcaObj) {
+                    Log.i("Dolan", "setSprzedawca $sprzedawca")
+                    setOdbiorca(odbiorcaObj) {
+                        Log.i("Dolan", "setOdbiorca $odbiorca")
+                        setProdukty(produkty) {
+                            Log.i("Dolan", "setProdukty $produkty")
+                            "done ✅"
+                            callback()
+                        }
+                    }
+                }
+            }
+
+
+
+
+        } catch (e: Exception) {
+            Log.e("formObjectsFromPrompt", "Błąd: ${e.message}")
+            "błąd ❌"
+            callback()
+        }
     }
 }
 
