@@ -1,5 +1,7 @@
 package com.example.photoapp.features.sprzedawca.data
 
+import com.example.photoapp.features.produkt.data.Produkt
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class SprzedawcaRepository @Inject constructor(
@@ -17,6 +19,8 @@ class SprzedawcaRepository @Inject constructor(
     suspend fun update(sprzedawca: Sprzedawca) = service.update(sprzedawca)
 
     suspend fun delete(sprzedawca: Sprzedawca) = service.delete(sprzedawca)
+
+    fun getAllLiveSprzedawca(): Flow<List<Sprzedawca>> = service.getAllLive()
 
     suspend fun addOrGetSprzedawca(nazwa: String, nip: String, adres: String): Sprzedawca {
         val existing = getByNip(nip)

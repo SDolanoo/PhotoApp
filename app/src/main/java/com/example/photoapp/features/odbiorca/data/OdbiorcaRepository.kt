@@ -1,10 +1,14 @@
 package com.example.photoapp.features.odbiorca.data
 
+import com.example.photoapp.features.faktura.data.faktura.Faktura
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class OdbiorcaRepository @Inject constructor(
     private val service: OdbiorcaService
 ) {
+
+    fun getAllLiveOdbiorca(): Flow<List<Odbiorca>> = service.getAllLive()
 
     suspend fun getAllOdbiorcy(): List<Odbiorca> = service.getAll()
 

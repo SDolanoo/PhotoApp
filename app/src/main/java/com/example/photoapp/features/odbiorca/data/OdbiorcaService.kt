@@ -1,13 +1,32 @@
 package com.example.photoapp.features.odbiorca.data
 
 import android.util.Log
+import com.example.photoapp.core.utils.currentUserId
+import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class OdbiorcaService {
 
     private val db = FirebaseFirestore.getInstance()
     private val collection = db.collection("odbiorcy")
+
+    // Live update tylko dla użytkownika
+    fun getAllLive(): Flow<List<Odbiorca>> = callbackFlow {
+        val listener = collection
+            .whereEqualTo("uzytkownikId", currentUserId())
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    val list = snapshot.documents.mapNotNull { it.toObject<Odbiorca>() }
+                    trySend(list) // najnowsze na górze
+                }
+            }
+        awaitClose { listener.remove() }
+    }
 
     suspend fun getAll(): List<Odbiorca> {
         return try {

@@ -36,6 +36,8 @@ class FakturaRepository @Inject constructor(
     private val sprzedawcaRepository: SprzedawcaRepository
 ) {
     fun getAllLiveFaktury(): Flow<List<Faktura>> = fakturaService.getAllLive()
+    fun getAllLiveProduktFaktura(): Flow<List<ProduktFaktura>> = produktFakturaService.getAllLive()
+    fun getAllLiveProdukt(): Flow<List<Produkt>> = produktService.getAllLive()
 
     fun getAllFaktury(): List<Faktura> = runBlocking {
         withContext(Dispatchers.IO) {

@@ -24,8 +24,6 @@ class FakturaScreenViewModel @Inject constructor(
     private val repository: FakturaRepository
 ) : ViewModel() {
 
-
-
     val allFakturyLive: LiveData<List<Faktura>> = repository.getAllLiveFaktury().asLiveData()
 
     private val _isDeleteMode = mutableStateOf(false)

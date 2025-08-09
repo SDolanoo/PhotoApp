@@ -82,16 +82,16 @@ fun FakturaScreen(
     viewModel: FakturaScreenViewModel = hiltViewModel(),
     filterController: FilterController = hiltViewModel()
 ) {
+    val allFaktury by viewModel.allFakturyLive.observeAsState(emptyList())
+
+    LaunchedEffect(allFaktury.size) {
+        viewModel.setGroupedFaktura(viewModel.getGroupedFakturaList(allFaktury))
+    }
+
     var isFilterExpanded by remember { mutableStateOf(false) }
     var filterState = remember { mutableStateOf(FilterState.default()) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-
-    val allFaktury by viewModel.allFakturyLive.observeAsState(emptyList())
-
-    LaunchedEffect(allFaktury) {
-        viewModel.setGroupedFaktura(viewModel.getGroupedFakturaList(allFaktury))
-    }
 
     val groupedFaktury by viewModel.groupedFaktury.collectAsState()
 
