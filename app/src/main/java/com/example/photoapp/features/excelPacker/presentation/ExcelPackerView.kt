@@ -195,7 +195,7 @@ fun ExcelPacker(
                     }
                     Log.i("Dolan", "NOTHING HAPPENED")
                 }) {
-                    Icon(Icons.Default.Add, contentDescription = "ExportToExcel")
+                    Icon(painterResource(R.drawable.upload_file), contentDescription = "ExportToExcel")
                 }
             }
         },
