@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -20,29 +21,24 @@ import com.example.photoapp.core.components.common.DividerLine
 import com.example.photoapp.core.components.common.PriceSummary
 import com.example.photoapp.core.components.common.ProduktFakturaSection
 import com.example.photoapp.core.components.common.SectionCard
+import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
 
 @Composable
 fun ProductReadOnly(
     modifier: Modifier,
-    produkty: List<ProduktFakturaZProduktem>
+    produkty: List<ProduktFakturaZProduktem>,
+    faktura: Faktura
 ) {
-    var subTotal by remember { mutableDoubleStateOf(0.0) }
-    var tax by remember { mutableDoubleStateOf(0.0) }
-    var total by remember { mutableDoubleStateOf(0.0) }
-
     Column(
         modifier = modifier.padding(4.dp)
     ) {
         SectionCard(
-            title = "Products",
-            icon = Icons.Filled.ThumbUp
+            title = "Produkty",
+            icon = Icons.Default.ShoppingCart
         ) {
 
             produkty.forEach { produkt ->
-                subTotal = subTotal + (produkt.produktFaktura.wartoscNetto.toDoubleOrNull() ?: 0.0)
-                total = total + (produkt.produktFaktura.wartoscBrutto.toDoubleOrNull() ?: 0.0)
-                tax = total - subTotal
                 ProduktFakturaSection(produkt)
                 DividerLine()
             }
@@ -52,9 +48,9 @@ fun ProductReadOnly(
             HorizontalDivider(thickness = 1.dp, color = Color(0xFFDDDDDD))
 
             PriceSummary(
-                subtotal = subTotal.toString(),
-                tax = tax.toString(),
-                total = total.toString()
+                subtotal = faktura.razemNetto.toString(),
+                tax = faktura.razemVAT.toString(),
+                total = faktura.razemBrutto.toString()
             )
         }
     }

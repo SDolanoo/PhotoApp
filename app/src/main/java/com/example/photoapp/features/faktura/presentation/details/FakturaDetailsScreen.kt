@@ -164,12 +164,6 @@ fun FakturaDetailsScreen(
         LazyColumn (modifier = Modifier
             .padding(innerPadding)
             .padding(horizontal = 8.dp)) {
-            item {
-                Text(
-                    text = "Faktura",
-                    fontWeight = FontWeight.Bold
-                )
-            }
 
             item {
                 HorizontalDivider(
@@ -178,6 +172,15 @@ fun FakturaDetailsScreen(
                         .fillMaxWidth()
                         .padding(vertical = 16.dp)
                 )
+            }
+
+            item {
+                if (isEditing) {
+                    Text(
+                        text = "Faktura",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             item {
@@ -261,11 +264,13 @@ fun FakturaDetailsScreen(
             }
 
             item {
-                Text(
-                    text = "Sprzedawca",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+                if (isEditing) {
+                    Text(
+                        text = "Sprzedawca",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
 
                 validationResult.fieldErrors["SELLER_NAME"]?.let { error ->
                     Text(
@@ -351,11 +356,13 @@ fun FakturaDetailsScreen(
             }
 
             item {
-                Text(
-                    text = "Nabywca",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+                if (isEditing) {
+                    Text(
+                        text = "Nabywca",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
 
                 validationResult.fieldErrors["BUYER_NAME"]?.let { error ->
                     Text(
@@ -439,11 +446,13 @@ fun FakturaDetailsScreen(
             }
 
             item {
-                Text(
-                    text = "Produkty",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+                if (isEditing) {
+                    Text(
+                        text = "Produkty",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
             } // Products
 
             if (isEditing) {
@@ -541,7 +550,7 @@ fun FakturaDetailsScreen(
                     }
                 }
             } else { // Products
-                item {ProductReadOnly(modifier = Modifier, produkty = actualProdukty)}
+                item {ProductReadOnly(modifier = Modifier, produkty = actualProdukty, faktura = faktura)}
             }
         }
 

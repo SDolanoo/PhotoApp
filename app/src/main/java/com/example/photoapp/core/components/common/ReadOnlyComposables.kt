@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -98,7 +99,7 @@ fun DividerLine() {
 fun ProduktFakturaSection(produkt: ProduktFakturaZProduktem) {
     SectionCard(
         title = "Produkt",
-        icon = Icons.Filled.ThumbUp
+        icon = Icons.Default.ShoppingCart
     ) {
         InfoRow("Nazwa Produktu", produkt.produkt.nazwaProduktu)
         TwoColumnRow("Ilość", produkt.produktFaktura.ilosc, "Jednostka Miary", produkt.produkt.jednostkaMiary)
@@ -112,15 +113,15 @@ fun ProduktFakturaSection(produkt: ProduktFakturaZProduktem) {
 fun PriceSummary(subtotal: String, tax: String, total: String) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Subtotal:", fontSize = 14.sp, color = Color(0xFF666666))
+            Text("Razem netto:", fontSize = 14.sp, color = Color(0xFF666666))
             Text(subtotal, fontSize = 14.sp, color = Color(0xFF111111))
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Tax:", fontSize = 14.sp, color = Color(0xFF666666))
+            Text("Vat:", fontSize = 14.sp, color = Color(0xFF666666))
             Text(tax, fontSize = 14.sp, color = Color(0xFF111111))
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Total:", fontSize = 16.sp, color = Color(0xFF111111), fontWeight = FontWeight.SemiBold)
+            Text("Razem Brutto:", fontSize = 16.sp, color = Color(0xFF111111), fontWeight = FontWeight.SemiBold)
             Text(total, fontSize = 16.sp, color = Color(0xFF111111), fontWeight = FontWeight.SemiBold)
         }
     }

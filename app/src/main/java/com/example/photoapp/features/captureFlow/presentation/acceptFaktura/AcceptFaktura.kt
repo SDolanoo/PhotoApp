@@ -24,6 +24,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,6 +55,8 @@ fun AcceptFakturaScreen(
     viewModel: AcceptFakturaController = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+
+    var isEditing by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -117,12 +123,6 @@ fun AcceptFakturaScreen(
         LazyColumn (modifier = Modifier
             .padding(innerPadding)
             .padding(horizontal = 8.dp)) {
-            item {
-                Text(
-                    text = "Faktura",
-                    fontWeight = FontWeight.Bold
-                )
-            }
 
             item {
                 HorizontalDivider(
@@ -131,6 +131,15 @@ fun AcceptFakturaScreen(
                         .fillMaxWidth()
                         .padding(vertical = 16.dp)
                 )
+            }
+
+            item {
+                if (isEditing) {
+                    Text(
+                        text = "Faktura",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             item {
@@ -156,11 +165,13 @@ fun AcceptFakturaScreen(
             }
 
             item {
-                Text(
-                    text = "Sprzedawca",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+                if (isEditing) {
+                    Text(
+                        text = "Sprzedawca",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
 
                 SprzedawcaReadOnly(
                     modifier = Modifier,
@@ -188,11 +199,13 @@ fun AcceptFakturaScreen(
             }
 
             item {
-                Text(
-                    text = "Nabywca",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+                if (isEditing) {
+                    Text(
+                        text = "Nabywca",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
 
                 OdbiorcaReadOnly(
                     modifier = Modifier,
@@ -220,15 +233,17 @@ fun AcceptFakturaScreen(
             }
 
             item {
-                Text(
-                    text = "Produkty",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+                if (isEditing) {
+                    Text(
+                        text = "Produkty",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
             } // Products
 
             item {
-                ProductReadOnly(modifier = Modifier, produkty = produkty)
+                ProductReadOnly(modifier = Modifier, produkty = produkty, faktura = faktura)
             }
         }
     }
