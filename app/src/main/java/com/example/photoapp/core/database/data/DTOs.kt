@@ -89,3 +89,18 @@ data class OdbiorcaxSprzedawcaDTO(
 data class ProduktyDTO(
     val produkty: List<ProduktFakturaDTO>
 )
+
+@Serializable
+data class FakturkaDTO(
+    @SerialName("typFaktury") val typFaktury: String = "none",
+    @SerialName("numerFaktury") val numerFaktury: String = "none",
+    @SerialName("dataWystawienia") val dataWystawienia: String = "1999-01-01",
+    @SerialName("dataSprzedazy") val dataSprzedazy: String = "1999-01-01",
+    @SerialName("miejsceWystawienia") val miejsceWystawienia: String = "none",
+    @SerialName("razemNetto") val razemNetto: String = "999",
+    @SerialName("razemVAT") val razemVAT: String? = "999",
+    @SerialName("razemBrutto") val razemBrutto: String = "999",
+    @SerialName("doZaplaty") val doZaplaty: String = "999",
+    @SerialName("waluta") val waluta: String = "PLN",
+    @SerialName("formaPlatnosci") val formaPlatnosci: String = "Przelew",
+)

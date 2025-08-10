@@ -52,6 +52,7 @@ fun chatWithGemini(
                                 text(" ")
                             }
                         )
+                        Log.i("Dolan", response.text.toString())
                         response.text ?: ""
                     }
                 }

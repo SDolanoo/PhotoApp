@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.photoapp.core.AI.DocumentType
 import com.example.photoapp.core.database.data.FakturaDTO
+import com.example.photoapp.core.database.data.FakturkaDTO
 import com.example.photoapp.core.database.data.OdbiorcaxSprzedawcaDTO
 import com.example.photoapp.core.database.data.ProduktyDTO
 import com.example.photoapp.core.utils.convertDoubleToString
@@ -261,7 +262,7 @@ class AcceptanceController @Inject constructor(
                 return
             }
 
-            val fakturaDTO = coercingJson.decodeFromString<FakturaDTO>(jsonText0)
+            val fakturaDTO = coercingJson.decodeFromString<FakturkaDTO>(jsonText0)
             val odbiorca = Json.decodeFromString<OdbiorcaxSprzedawcaDTO>(jsonText1).odbiorca
             val sprzedawca = Json.decodeFromString<OdbiorcaxSprzedawcaDTO>(jsonText1).sprzedawca
             val produktyDTO = coercingJson.decodeFromString<ProduktyDTO>(jsonText2)

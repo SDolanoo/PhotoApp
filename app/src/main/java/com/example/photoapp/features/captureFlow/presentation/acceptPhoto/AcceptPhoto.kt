@@ -115,7 +115,7 @@ fun AcceptPhoto(
                 acceptanceController.processPhoto(geminiKey, bitmapPhoto) { success, result ->
                     isLoading = false
                     isPromptSuccess = success
-                    dialogData = result
+                    dialogData = result[0]
                     if (isPromptSuccess) {
                         val f = acceptanceController.faktura.value
                         val s = acceptanceController.sprzedawca.value
