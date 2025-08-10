@@ -84,11 +84,6 @@ fun SelectorScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                actions = {
-                    IconButton(onClick = {  }) {
-                        Icon(painter = painterResource(R.drawable.baseline_filter_list_alt_24), contentDescription = "Exit Filters")
-                    }
-                },
                 scrollBehavior = scrollBehavior,
             )
         },
