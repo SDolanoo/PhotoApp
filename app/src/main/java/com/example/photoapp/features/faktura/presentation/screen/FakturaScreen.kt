@@ -332,9 +332,9 @@ fun FakturaItem(
         ListItem(
             modifier = Modifier
                 .clickable { if (!isDeleteMode) navigateToFakturaDetailsScreen(faktura) },
-            headlineContent = { Text("Data Wystawienia: $formattedDate") },
-            supportingContent = { Text("Netto ${faktura.razemNetto}") },
-            trailingContent = { Text(faktura.razemBrutto) }
+            headlineContent = { Text("Numer: ${faktura.numerFaktury}") },
+            supportingContent = { Text("") },
+            trailingContent = { Text("Brutto ${faktura.razemBrutto}") }
         )
     }
 }
