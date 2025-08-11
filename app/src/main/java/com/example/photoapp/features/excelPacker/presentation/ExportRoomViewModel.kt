@@ -5,12 +5,18 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.dolan.photoapp.BuildConfig
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
+import com.example.photoapp.features.odbiorca.data.Odbiorca
+import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
+import com.example.photoapp.features.sprzedawca.data.Sprzedawca
+import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.HorizontalAlignment
@@ -26,6 +32,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ExportRoomViewModel @Inject constructor(
     private val fakturaRepository: FakturaRepository,
+    private val odbiorcaRepository: OdbiorcaRepository,
+    private val sprzedawcaRepository: SprzedawcaRepository,
     val context: Context,
 ): ViewModel() {
 
@@ -107,10 +115,10 @@ class ExportRoomViewModel @Inject constructor(
         }
     }
 
-    fun exportFaktura(
+    suspend fun exportFaktura(
         workbook: XSSFWorkbook,
         faktury: List<Faktura>
-    ) {
+    ) = withContext(Dispatchers.IO) {
         val produktyFaktury: List<ProduktFakturaZProduktem> = fakturaRepository.getListProduktyFakturaZProduktemForListFaktura(faktury)
 
         val sheetFaktura = workbook.createSheet("Faktury")
@@ -120,7 +128,7 @@ class ExportRoomViewModel @Inject constructor(
 
         // Nagłówki arkusza Faktura
         val fakturaHeaders = listOf(
-            "ID Faktury", "Typ", "Nazwa", "Numer", "Data Wystawienia", "Data Sprzedaży", "Miejsce Wystawienia",
+            "ID Faktury", "Typ", "Nazwa Sprzedawcy", "NIP Sprzedawcy", "Nazwa Odbiorcy", "NIP Odbiorcy", "Numer", "Data Wystawienia", "Data Sprzedaży", "Miejsce Wystawienia",
             "Razem Netto", "Razem VAT", "Razem Brutto", "Do Zapłaty", "Waluta", "Forma Płatności"
         )
 
@@ -134,11 +142,17 @@ class ExportRoomViewModel @Inject constructor(
 
         // Dane faktur
         faktury.forEachIndexed { rowIndex, faktura ->
+            val odbiorca: Odbiorca = odbiorcaRepository.getById(faktura.odbiorcaId)!!
+            val sprzedawca: Sprzedawca = sprzedawcaRepository.getById(faktura.sprzedawcaId)!!
+
             val row = sheetFaktura.createRow(rowIndex + 1)
             val cellValues = listOf(
                 faktura.id.toString(),
                 faktura.typFaktury,
-                "Nazwa klienta", // <- zamień na dane z Odbiorcy lub innej relacji
+                sprzedawca.nazwa,
+                sprzedawca.nip,
+                odbiorca.nazwa,
+                odbiorca.nip,
                 faktura.numerFaktury,
                 faktura.dataWystawienia?.toString() ?: "",
                 faktura.dataSprzedazy?.toString() ?: "",
@@ -188,4 +202,6 @@ class ExportRoomViewModel @Inject constructor(
             }
         }
     }
+
+
 }

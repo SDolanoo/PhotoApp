@@ -309,7 +309,7 @@ class AcceptanceController @Inject constructor(
                     nazwaProduktu = dto.nazwaProduktu,
                     jednostkaMiary = dto.jednostkaMiary,
                     cenaNetto = dto.cenaNetto,
-                    stawkaVat = dto.stawkaVat
+                    stawkaVat = dto.stawkaVat.replace("%", "")
                 )
                 val produktFaktura = ProduktFaktura(
                     id = (-1L - index).toString(), // tymczasowy ID do odróżnienia
@@ -330,7 +330,7 @@ class AcceptanceController @Inject constructor(
                 uzytkownikId = FirebaseAuth.getInstance().currentUser?.uid.toString(), // zakładamy, że masz domyślnego użytkownika
                 odbiorcaId = "0L",   // tymczasowo — ustawiasz gdzieś później z bazy
                 sprzedawcaId = "0L", // tymczasowo
-                typFaktury = fakturaDTO.typFaktury,
+                typFaktury = "Faktura",
                 numerFaktury = fakturaDTO.numerFaktury,
                 dataWystawienia = convertStringToDate(dataWystawienia),
                 dataSprzedazy = convertStringToDate(dataSprzedazy),
