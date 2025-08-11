@@ -1,5 +1,6 @@
 package com.example.photoapp.features.selector.presentation.selector.produkt.details
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -59,6 +60,15 @@ fun ProduktDetailsScreen(
         }
     }
 
+    BackHandler {
+        if (isEditing) {
+            isEditing = false
+            viewModel.editingFailed()
+        } else {
+            leaveDetailsScreen()
+        }
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -115,11 +125,13 @@ fun ProduktDetailsScreen(
                 .padding(horizontal = 8.dp)
         ) {
             item {
-                Text(
-                    text = "Produkt",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+                if (isEditing) {
+                    Text(
+                        text = "Produkt",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
 
                 validationResult.fieldErrors["PRODUCT_NAME"]?.let { error ->
                     Text(

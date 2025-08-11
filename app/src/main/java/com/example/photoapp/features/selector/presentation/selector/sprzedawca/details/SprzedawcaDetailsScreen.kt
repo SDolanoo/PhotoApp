@@ -1,5 +1,6 @@
 package com.example.photoapp.features.selector.presentation.selector.sprzedawca.details
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -54,6 +55,15 @@ fun SprzedawcaDetailsScreen(
                 viewModel.setSprzedawca(it)
                 viewModel.loadSprzedawca(it)
             }
+        }
+    }
+
+    BackHandler {
+        if (isEditing) {
+            isEditing = false
+            viewModel.editingFailed()
+        } else {
+            leaveDetailsScreen()
         }
     }
 
@@ -114,12 +124,13 @@ fun SprzedawcaDetailsScreen(
                 .padding(horizontal = 8.dp)
         ) {
             item {
-                Text(
-                    text = "Sprzedawca",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-
+                if (isEditing) {
+                    Text(
+                        text = "Sprzedawca",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
                 validationResult.fieldErrors["BUYER_NAME"]?.let { error ->
                     Text(
                         text = error,

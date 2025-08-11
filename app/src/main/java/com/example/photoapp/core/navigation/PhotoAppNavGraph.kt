@@ -13,7 +13,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,7 +45,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ExecutorService
 
-const val POST_ID = "postId"
 
 @Composable
 fun PhotoAppNavGraph(
@@ -68,6 +70,8 @@ fun PhotoAppNavGraph(
     val sprzedawca by navGraphViewModel.sprzedawca.collectAsState()
     val odbiorca by navGraphViewModel.odbiorca.collectAsState()
     val produkty by navGraphViewModel.produkty.collectAsState()
+
+    var lastSeenSelector by remember { mutableStateOf("main") }
 
     // Example function called when photoUri changes
     fun onPhotoUriChanged() {
@@ -216,19 +220,26 @@ fun PhotoAppNavGraph(
                 navController = navController,
                 goToOdbiorcaDetails = { o ->
                     navGraphViewModel.setOdbiorca(o) {
+                        lastSeenSelector = "Odbiorcy"
                         navController.navigate(PhotoAppDestinations.ODBIORCA_DETAILS_SCREEN_ROUTE)}
                     },
                 goToSprzedawcaDetails = { s ->
                     navGraphViewModel.setSprzedawca(s) {
+                        lastSeenSelector = "Sprzedawcy"
                         navController.navigate(PhotoAppDestinations.SPRZEDAWCA_DETAILS_SCREEN_ROUTE)
                     }
                 },
                 goToProduktDetails = { p ->
                     navGraphViewModel.setProdukt(p) {
+                        lastSeenSelector = "Produkty"
                         navController.navigate(PhotoAppDestinations.PRODUKT_DETAILS_SCREEN_ROUTE)
                     }
                 },
-                goBack = {navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)}
+                goBack = {
+                    lastSeenSelector = "main"
+                    navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)
+                },
+                lastScreen = lastSeenSelector
             )
         }
 

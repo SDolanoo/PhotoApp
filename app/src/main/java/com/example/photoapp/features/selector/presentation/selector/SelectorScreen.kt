@@ -1,5 +1,6 @@
 package com.example.photoapp.features.selector.presentation.selector
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.dolan.photoapp.R
 import com.example.photoapp.core.components.MyNavigationBar
@@ -57,6 +59,7 @@ fun SelectorScreen(
     goToSprzedawcaDetails: (Sprzedawca) -> Unit,
     goToProduktDetails: (Produkt) -> Unit,
     goBack: () -> Unit,
+    lastScreen: String = "main",
     viewModel: SelectorViewModel = hiltViewModel()
 ) {
     viewModel.updateLists()
@@ -65,9 +68,13 @@ fun SelectorScreen(
     val allOdbiorcy = viewModel.allOdbiorcy.collectAsState()
     val allSprzedawcy = viewModel.allSprzedawcy.collectAsState()
 
-    var currentlyViewing by remember { mutableStateOf("main") }
+    var currentlyViewing by remember { mutableStateOf(lastScreen) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+
+    BackHandler(enabled = true) {
+        if (currentlyViewing == "main") goBack() else currentlyViewing = "main"
+    }
 
     Scaffold(
         topBar = {
@@ -80,7 +87,7 @@ fun SelectorScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { if (currentlyViewing != "main") goBack() else currentlyViewing = "main" }) {
+                    IconButton(onClick = { if (currentlyViewing == "main") goBack() else currentlyViewing = "main" }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },

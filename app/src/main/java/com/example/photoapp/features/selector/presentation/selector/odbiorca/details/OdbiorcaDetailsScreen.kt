@@ -1,6 +1,7 @@
 package com.example.photoapp.features.selector.presentation.selector.odbiorca.details
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -58,6 +59,15 @@ fun OdbiorcaDetailsScreen(
             Log.i("Dolan", "loading products")
             viewModel.loadProducts(o)
             Log.i("Dolan", "loading products succesfuly")
+        }
+    }
+
+    BackHandler {
+        if (isEditing) {
+            isEditing = false
+            viewModel.editingFailed()
+        } else {
+            leaveDetailsScreen()
         }
     }
 
@@ -121,11 +131,15 @@ fun OdbiorcaDetailsScreen(
             .padding(horizontal = 8.dp)) {
 
             item {
-                Text(
-                    text = "Odbiorca",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+
+                if (isEditing) {
+                    Text(
+                        text = "Odbiorca",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
+
 
                 validationResult.fieldErrors["BUYER_NAME"]?.let { error ->
                     Text(
