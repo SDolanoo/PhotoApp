@@ -8,27 +8,27 @@ object InvoicePrompts {
         Twoim zadaniem jest wyodrębnienie ogólnych danych z faktury na podstawie tekstu OCR i uzupełnienie gotowego JSON-a w podanej strukturze Kotlin DTO.
         
         Zasady:
-        1. Nie zmyślaj danych – jeżeli nie ma jakiejś informacji, wstaw "null" (jako string).
-        2. W polach liczbowych również wpisz "null" jeśli nie jesteś w stanie znaleźć danej liczby.
+        1. Nie zmyślaj danych – jeżeli nie ma jakiejś informacji, wstaw "-" (jako string).
+        2. W polach liczbowych również wpisz "-" jeśli nie jesteś w stanie znaleźć danej liczby.
         3. Zachowuj dokładnie nazwy pól – jak w strukturze poniżej.
-        4. Data musi mieć format YYYY-MM-DD lub "null" jeśli nie istnieje.
+        4. Data musi mieć format YYYY-MM-DD lub "-" jeśli nie istnieje.
         5. Jeżeli nie możesz określić waluty – wpisz "PLN".
         6. Wszystkie wartości mają być typu string – również liczby (np. "123.45").
         7. Odpowiedź daj tylko w JSON, nic więcej.
         
         Struktura JSON do uzupełnienia:
         {
-          "typFaktury": "null",
-          "numerFaktury": "null",
-          "dataWystawienia": "null",
-          "dataSprzedazy": "null",
-          "miejsceWystawienia": "null",
-          "razemNetto": "null",
-          "razemVAT": "null",
-          "razemBrutto": "null",
-          "doZaplaty": "null",
+          "typFaktury": "-",
+          "numerFaktury": "-",
+          "dataWystawienia": "-",
+          "dataSprzedazy": "-",
+          "miejsceWystawienia": "-",
+          "razemNetto": "-",
+          "razemVAT": "-",
+          "razemBrutto": "-",
+          "doZaplaty": "-",
           "waluta": "PLN",
-          "formaPlatnosci": "null"
+          "formaPlatnosci": "-"
         }
         """.trimIndent()
 
@@ -36,7 +36,7 @@ object InvoicePrompts {
         Twoim zadaniem jest wyodrębnienie danych o odbiorcy i sprzedawcy z faktury na podstawie tekstu OCR i uzupełnienie gotowego JSON-a w podanej strukturze Kotlin DTO.
         
         Zasady:
-        1. Nie zmyślaj danych – jeżeli nie ma jakiejś informacji, wstaw "null" (jako string).
+        1. Nie zmyślaj danych – jeżeli nie ma jakiejś informacji, wstaw "-" (jako string).
         2. Zachowuj dokładnie nazwy pól – jak w strukturze poniżej.
         3. Wszystkie wartości mają być typu string.
         4. Odpowiedź daj tylko w JSON, nic więcej.
@@ -44,26 +44,26 @@ object InvoicePrompts {
         Struktura JSON do uzupełnienia:
         {
           "odbiorca": {
-            "nazwa": "null",
-            "nip": "null",
-            "adres": "null",
-            "kodPocztowy": "null",
-            "miejscowosc": "null",
-            "kraj": "null",
-            "opis": "null",
-            "email": "null",
-            "telefon": "null"
+            "nazwa": "-",
+            "nip": "-",
+            "adres": "-",
+            "kodPocztowy": "-",
+            "miejscowosc": "-",
+            "kraj": "-",
+            "opis": "-",
+            "email": "-",
+            "telefon": "-"
           },
           "sprzedawca": {
-            "nazwa": "null",
-            "nip": "null",
-            "adres": "null",
-            "kodPocztowy": "null",
-            "miejscowosc": "null",
-            "kraj": "null",
-            "opis": "null",
-            "email": "null",
-            "telefon": "null"
+            "nazwa": "-",
+            "nip": "-",
+            "adres": "-",
+            "kodPocztowy": "-",
+            "miejscowosc": "-",
+            "kraj": "-",
+            "opis": "-",
+            "email": "-",
+            "telefon": "-"
           }
         }
         """.trimIndent()
@@ -74,22 +74,22 @@ object InvoicePrompts {
         Zasady:
         1. Lista produktów musi zawierać tyle obiektów, ile jest pozycji na fakturze. Jeśli nie rozpoznajesz którejś pozycji – pomiń ją.
         2. Wszystkie wartości mają być typu string – również liczby (np. "123.45").
-        3. Jeżeli nie możesz znaleźć danej informacji, wstaw "null".
+        3. Jeżeli nie możesz znaleźć danej informacji, wstaw "-".
         4. Odpowiedź daj tylko w JSON, nic więcej.
         
         Struktura JSON do uzupełnienia:
         {
           "produkty": [
             {
-              "nazwaProduktu": "null",
-              "jednostkaMiary": "null",
-              "cenaNetto": "null",
-              "stawkaVat": "null",
-              "ilosc": "null",
-              "rabat": "null",
-              "wartoscNetto": "null",
-              "wartoscBrutto": "null",
-              "pkwiu": "null"
+              "nazwaProduktu": "-",
+              "jednostkaMiary": "-",
+              "cenaNetto": "-",
+              "stawkaVat": "-",
+              "ilosc": "-",
+              "rabat": "-",
+              "wartoscNetto": "-",
+              "wartoscBrutto": "-",
+              "pkwiu": "-"
             }
           ]
         }
