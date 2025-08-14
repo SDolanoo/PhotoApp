@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "633458576459",
+    "project_id": "photoapp-4c71b",
+    "storage_bucket": "photoapp-4c71b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:633458576459:android:2172a70a5720ac88d7d1ce",
+        "android_client_info": {
+          "package_name": "com.dolan.photoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPGcRcZeBUxHHxxKuLsi3uoyIJSB3Af1I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
