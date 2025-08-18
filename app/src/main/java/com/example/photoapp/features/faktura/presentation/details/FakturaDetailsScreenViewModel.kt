@@ -2,6 +2,7 @@ package com.example.photoapp.features.faktura.presentation.details
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.core.utils.convertDoubleToString
@@ -110,7 +111,7 @@ class FakturaDetailsViewModel @Inject constructor(
 
     fun editingFailed() {
         viewModelScope.launch(Dispatchers.IO) {
-            loadProducts(_actualFaktura.value!!)
+            loadProducts(_actualFaktura.value)
         }
     }
 
@@ -223,9 +224,8 @@ class FakturaDetailsViewModel @Inject constructor(
                     val existing = currentList[index]
                     val newIlosc = (existing.produktFaktura.ilosc.toIntOrNull() ?: 1) + 1
 
-                    currentList.toMutableList().apply {
-                        set(index, existing.copy(produktFaktura = existing.produktFaktura.copy(ilosc = newIlosc.toString())))
-                    }
+                    currentList + newProduct.copy(produktFaktura = existing.produktFaktura.copy(ilosc = newIlosc.toString()))
+
                 } else {
                     currentList + newProduct
                 }
@@ -313,6 +313,30 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
+    @VisibleForTesting
+    fun setTestData(
+        actualFaktura: Faktura? = null,
+        editedFaktura: Faktura? = null,
+        actualProdukty: List<ProduktFakturaZProduktem>? = null,
+        editedProdukty: List<ProduktFakturaZProduktem>? = null,
+        actualSprzedawca: Sprzedawca? = null,
+        editedSprzedawca: Sprzedawca? = null,
+        actualOdbiorca: Odbiorca? = null,
+        editedOdbiorca: Odbiorca? = null
+    ) {
+        actualFaktura?.let { _actualFaktura.value = it }
+        editedFaktura?.let { _editedFaktura.value = it }
+
+        actualProdukty?.let { _actualProdukty.value = it }
+        editedProdukty?.let { _editedProdukty.value = it }
+
+        actualSprzedawca?.let { _actualSprzedawca.value = it }
+        editedSprzedawca?.let { _editedSprzedawca.value = it }
+
+        actualOdbiorca?.let { _actualOdbiorca.value = it }
+        editedOdbiorca?.let { _editedOdbiorca.value = it }
+
+    }
 }
 
 data class ProduktFakturaZProduktem(

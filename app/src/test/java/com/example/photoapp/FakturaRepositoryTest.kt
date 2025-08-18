@@ -36,7 +36,7 @@ import org.robolectric.annotation.Config
 import kotlin.intArrayOf
 import kotlinx.coroutines.test.runTest
 
-private object TestData {
+private object TestFRData {
 
     var faktura1 = Faktura.default().copy(id = "1")
     var faktura2 = Faktura.default().copy(id = "2")
@@ -219,19 +219,19 @@ class FakturaRepositoryTest {
     @Test
     fun `getAllFaktury returns list of Faktura`() = runTest {
         // Given
-        coEvery { fakturaService.getAllFaktury() } returns TestData.fakturyList
+        coEvery { fakturaService.getAllFaktury() } returns TestFRData.fakturyList
 
         // When
         val list = repository.getAllFaktury()
 
         // Then
-        Assert.assertEquals(TestData.fakturyList, list)
+        Assert.assertEquals(TestFRData.fakturyList, list)
     }
 
     @Test
     fun `getFakturaByID returns faktura when ID exists`() = runTest {
         // Given
-        val faktura = TestData.faktura1
+        val faktura = TestFRData.faktura1
         coEvery { fakturaService.getById("1") } returns faktura
 
         // When
@@ -342,7 +342,7 @@ class FakturaRepositoryTest {
     @Test
     fun `updateFaktura updates Faktura`() = runTest {
         // Given
-        val faktura = TestData.faktura1
+        val faktura = TestFRData.faktura1
 
         // When
         repository.updateFaktura(faktura)
@@ -354,7 +354,7 @@ class FakturaRepositoryTest {
     @Test
     fun `updateProduktFaktura updates ProduktFaktura`() = runTest {
         // Given
-        val pf = TestData.produktFaktura1
+        val pf = TestFRData.produktFaktura1
 
         // When
         repository.updateProduktFaktura(pf)
@@ -366,7 +366,7 @@ class FakturaRepositoryTest {
     @Test
     fun `updateProdukt updates Produkt`() = runTest {
         // Given
-        val produkt = TestData.produkt1
+        val produkt = TestFRData.produkt1
 
         // When
         repository.updateProdukt(produkt)
@@ -378,7 +378,7 @@ class FakturaRepositoryTest {
     @Test
     fun `deleteFaktura deletes Faktura`() = runTest {
         // Given
-        val faktura = TestData.faktura1
+        val faktura = TestFRData.faktura1
 
         // When
         repository.deleteFaktura(faktura)
@@ -390,7 +390,7 @@ class FakturaRepositoryTest {
     @Test
     fun `deleteProduktFakturaFromFaktura deletes ProduktFaktura from Faktura`() = runTest {
         // Given
-        val produktFaktura = TestData.produktFaktura1
+        val produktFaktura = TestFRData.produktFaktura1
 
         // When
         repository.deleteProduktFakturaFromFaktura(produktFaktura)
@@ -415,7 +415,7 @@ class FakturaRepositoryTest {
             maxPrice,
             filterDate,
             filterPrice
-        ) } returns listOf(TestData.faktury[0], TestData.faktury[2])
+        ) } returns listOf(TestFRData.faktury[0], TestFRData.faktury[2])
 
         // When
         val result = repository.fetchFilteredFaktury(
@@ -428,7 +428,7 @@ class FakturaRepositoryTest {
         )
 
         // Then
-        Assert.assertEquals(listOf(TestData.faktury[0], TestData.faktury[2]), result)
+        Assert.assertEquals(listOf(TestFRData.faktury[0], TestFRData.faktury[2]), result)
     }
 
     @Test
