@@ -3,6 +3,7 @@ package com.example.photoapp.features.faktura.presentation.screen
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -15,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 import java.util.Date
 import javax.inject.Inject
 import kotlin.collections.sortedByDescending
@@ -77,5 +79,21 @@ class FakturaScreenViewModel @Inject constructor(
     fun getCurrentlyShowingList(): List<Faktura> {
         val fakturaLists: List<Faktura> = groupedFaktury.value.values.flatten()
         return fakturaLists
+    }
+
+    @TestOnly
+    fun setTestData(
+        isdeleteMode: Boolean? = null,
+        selectedItems: List<Faktura>? = null,
+        groupedFaktury: List<Faktura>? = null
+    ){
+        isdeleteMode?.let { _isDeleteMode.value = isdeleteMode }
+        selectedItems?.let { selectedItems.forEach { _selectedItems.add(it) } }
+        groupedFaktury?.let {
+            _groupedFaktury.value =
+                groupedFaktury
+                    .sortedByDescending { it.dataWystawienia }
+                    .groupBy { raport -> raport.dataWystawienia?.normalizedDate() }
+        }
     }
 }
