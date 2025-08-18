@@ -72,6 +72,10 @@ class FakturaService {
         filterDate: String,
         filterPrice: String
     ): List<Faktura> {
+        /**
+         * filterDate = dataWystawienia or dataSprzedazy
+         * filterPrice = brutto or netto
+         */
         val allFaktury = getAllFaktury() // 🧠 pobieramy tylko raz i z cache jeśli się da
 
         return allFaktury.filter { faktura ->
