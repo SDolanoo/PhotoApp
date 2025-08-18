@@ -5,12 +5,10 @@ import com.example.photoapp.core.utils.convertStringToDate
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import com.example.photoapp.features.faktura.data.faktura.FakturaService
-import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.produkt.data.Produkt
 import com.example.photoapp.features.produkt.data.ProduktFaktura
 import com.example.photoapp.features.produkt.data.ProduktFakturaService
 import com.example.photoapp.features.produkt.data.ProduktService
-import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import io.mockk.coEvery
@@ -37,6 +35,47 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.intArrayOf
 import kotlinx.coroutines.test.runTest
+
+private object TestData {
+
+    var faktura1 = Faktura.default().copy(id = "1")
+    var faktura2 = Faktura.default().copy(id = "2")
+    var fakturyList = listOf(faktura1, faktura2)
+
+    var produkt1 = Produkt.default().copy(id = "1", nazwaProduktu = "Towar A")
+
+    var produktFaktura1 = ProduktFaktura.default().copy(id = "1")
+
+    var faktury = listOf(
+        Faktura.default().copy(
+            id = "1",
+            dataSprzedazy = convertStringToDate("2024-01-15"),
+            razemBrutto = "1500.00"
+        ),
+        Faktura.default().copy(
+            id = "2",
+            dataSprzedazy = convertStringToDate("2024-03-10"),
+            razemBrutto = "3500.00"
+        ),
+        Faktura.default().copy(
+            id = "3",
+            dataSprzedazy = convertStringToDate("2024-05-01"),
+            razemBrutto = "900.00"
+        ),
+        Faktura.default().copy(
+            id = "4",
+            dataSprzedazy = convertStringToDate("2024-06-20"),
+            razemBrutto = "2200.00"
+        ),
+        Faktura.default().copy(
+            id = "5",
+            dataSprzedazy = convertStringToDate("2024-08-05"),
+            razemBrutto = "4800.00"
+        )
+    )
+
+
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Config(sdk = [33])
@@ -499,45 +538,3 @@ class FakturaRepositoryTest {
 
 }
 
-object TestData {
-
-    var faktura1 = Faktura.default().copy(id = "1")
-    var faktura2 = Faktura.default().copy(id = "2")
-    var fakturyList = listOf(faktura1, faktura2)
-
-    var produkt1 = Produkt.default().copy(id = "1", nazwaProduktu = "Towar A")
-    var produkt2 = Produkt.default().copy(id = "2", nazwaProduktu = "Towar B")
-
-    var produktFaktura1 = ProduktFaktura.default().copy(id = "1")
-    var produktFaktura2 = ProduktFaktura.default().copy(id = "2")
-
-    var faktury = listOf(
-        Faktura.default().copy(
-            id = "1",
-            dataSprzedazy = convertStringToDate("2024-01-15"),
-            razemBrutto = "1500.00"
-        ),
-        Faktura.default().copy(
-            id = "2",
-            dataSprzedazy = convertStringToDate("2024-03-10"),
-            razemBrutto = "3500.00"
-        ),
-        Faktura.default().copy(
-            id = "3",
-            dataSprzedazy = convertStringToDate("2024-05-01"),
-            razemBrutto = "900.00"
-        ),
-        Faktura.default().copy(
-            id = "4",
-            dataSprzedazy = convertStringToDate("2024-06-20"),
-            razemBrutto = "2200.00"
-        ),
-        Faktura.default().copy(
-            id = "5",
-            dataSprzedazy = convertStringToDate("2024-08-05"),
-            razemBrutto = "4800.00"
-        )
-    )
-
-
-}
