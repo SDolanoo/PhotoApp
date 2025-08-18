@@ -104,6 +104,8 @@ class FakturaRepository @Inject constructor(
             val normalizedExistingName = existing.nazwaProduktu.trim().lowercase()
             if (normalizedNewName == normalizedExistingName) {
                 return SaveMode.Skip
+            } else {
+                return SaveMode.Update(existing.id)
             }
         }
 
