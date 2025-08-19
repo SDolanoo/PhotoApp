@@ -1,4 +1,4 @@
-package com.example.photoapp.features.login
+    package com.example.photoapp.features.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,7 +33,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.photoapp.core.navigation.PhotoAppDestinations
 
@@ -41,7 +40,7 @@ import com.example.photoapp.core.navigation.PhotoAppDestinations
 @Composable
 fun LoginScreen(
     navController: NavHostController,
-    viewModel: LoginScreenViewModel = hiltViewModel()
+    viewModel: LoginScreenViewModel = LoginScreenViewModel()
 ) {
     val showLoginForm = rememberSaveable { mutableStateOf(true) }
 

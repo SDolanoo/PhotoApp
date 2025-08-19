@@ -11,15 +11,13 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.Date
-import javax.inject.Inject
 
-@HiltViewModel
-class LoginScreenViewModel @Inject constructor (): ViewModel() {
-    // val loadingState = MutableStateFlow(LoadingState.IDLE)
-    private val auth: FirebaseAuth = Firebase.auth
+class LoginScreenViewModel(
+    private val auth: FirebaseAuth = Firebase.auth // val loadingState = MutableStateFlow(LoadingState.IDLE)
+): ViewModel() {
+
 
     private val _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> = _loading
