@@ -10,15 +10,16 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 
-class FakturaService {
-
-    private val db = FirebaseFirestore.getInstance()
-    private val fakturaCol = db.collection("faktury")
+class FakturaService(
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val currentUserIdProvider: () -> String = { currentUserId() } // testowalne źródło userId
+) {
+    private val fakturaCol = firestore.collection("faktury")
 
     // Live update tylko dla użytkownika
     fun getAllLive(): Flow<List<Faktura>> = callbackFlow {
         val listener = fakturaCol
-            .whereEqualTo("uzytkownikId", currentUserId())
+            .whereEqualTo("uzytkownikId", currentUserIdProvider())
             .orderBy("dataSprzedazy")
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
@@ -32,7 +33,7 @@ class FakturaService {
     // Jednorazowe pobranie faktur użytkownika
     suspend fun getAllFaktury(): List<Faktura> {
         val snapshot = fakturaCol
-            .whereEqualTo("uzytkownikId", currentUserId())
+            .whereEqualTo("uzytkownikId", currentUserIdProvider())
             .get().await()
 
         return snapshot.documents.mapNotNull { doc ->
@@ -45,7 +46,7 @@ class FakturaService {
         val faktura = doc.toObject<Faktura>()?.copy(id = id)
 
         // Filtrujemy dodatkowo po userId
-        return if (faktura?.uzytkownikId == currentUserId()) faktura else null
+        return if (faktura?.uzytkownikId == currentUserIdProvider()) faktura else null
     }
 
 
