@@ -2,7 +2,6 @@ package com.example.photoapp.features.sprzedawca.data
 
 import android.util.Log
 import com.example.photoapp.core.utils.currentUserId
-import com.example.photoapp.features.produkt.data.ProduktFaktura
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.channels.awaitClose
@@ -10,10 +9,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
-class SprzedawcaService {
+class SprzedawcaService(
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val currentUserIdProvider: () -> String = { currentUserId() }// testowalne źródło userId)
+) {
 
-    private val db = FirebaseFirestore.getInstance()
-    private val collection = db.collection("sprzedawcy")
+    private val collection = firestore.collection("sprzedawcy")
 
     // Live update tylko dla użytkownika
     fun getAllLive(): Flow<List<Sprzedawca>> = callbackFlow {
