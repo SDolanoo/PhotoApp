@@ -1,7 +1,6 @@
 package com.example.photoapp
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.compose.material3.TimeInput
 import app.cash.turbine.test
 import com.example.photoapp.TestSVMData.odbiorcy
 import com.example.photoapp.TestSVMData.produkty
@@ -11,7 +10,6 @@ import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
 import com.example.photoapp.features.produkt.data.Produkt
 import com.example.photoapp.features.selector.presentation.selector.SelectorViewModel
-import com.example.photoapp.features.selector.presentation.selector.sprzedawca.details.SprzedawcaDetailsViewModel
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -39,7 +37,6 @@ import org.robolectric.annotation.Config
 import kotlin.intArrayOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
-import java.util.concurrent.CountDownLatch
 
 
 private object TestSVMData {
