@@ -1,7 +1,6 @@
 package com.example.photoapp.features.produkt.data
 
 import com.example.photoapp.core.utils.currentUserId
-import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.channels.awaitClose
@@ -9,15 +8,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
-class ProduktService {
+class ProduktService(
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val currentUserIdProvider: () -> String = { currentUserId() }// testowalne źródło userId)
+) {
 
-    private val db = FirebaseFirestore.getInstance()
-    private val produktyCollection = db.collection("produkty")
+    private val produktyCollection = firestore.collection("produkty")
 
     // Live update tylko dla użytkownika
     fun getAllLive(): Flow<List<Produkt>> = callbackFlow {
         val listener = produktyCollection
-            .whereEqualTo("uzytkownikId", currentUserId())
+            .whereEqualTo("uzytkownikId", currentUserIdProvider())
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
                     val list = snapshot.documents.mapNotNull { it.toObject<Produkt>() }
