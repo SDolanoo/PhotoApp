@@ -5,7 +5,6 @@ import app.cash.turbine.test
 import com.example.photoapp.features.selector.presentation.selector.sprzedawca.details.SprzedawcaDetailsViewModel
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
-import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import io.mockk.coEvery
