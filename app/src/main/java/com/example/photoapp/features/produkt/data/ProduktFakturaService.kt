@@ -8,16 +8,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
-class ProduktFakturaService {
+class ProduktFakturaService(
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val currentUserIdProvider: () -> String = { currentUserId() }// testowalne źródło userId)
+) {
 
-    private val db = FirebaseFirestore.getInstance()
-    private val produktFakturaCol = db.collection("produktFaktury")
-    private val produktyCol = db.collection("produkty")
+    private val produktFakturaCol = firestore.collection("produktFaktury")
+    private val produktyCol = firestore.collection("produkty")
 
     // Live update tylko dla użytkownika
     fun getAllLive(): Flow<List<ProduktFaktura>> = callbackFlow {
         val listener = produktFakturaCol
-            .whereEqualTo("uzytkownikId", currentUserId())
+            .whereEqualTo("uzytkownikId", currentUserIdProvider())
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
                     val list = snapshot.documents.mapNotNull { it.toObject<ProduktFaktura>() }
