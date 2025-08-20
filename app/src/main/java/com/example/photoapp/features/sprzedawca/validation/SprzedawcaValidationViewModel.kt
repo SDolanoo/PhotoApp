@@ -20,7 +20,7 @@ class SprzedawcaValidationViewModel @Inject constructor() : ViewModel() {
         val errors = mutableMapOf<String, String>()
 
         if (sellerName.isBlank()) {
-            errors["SELLER_NAME"] = "Nazwa odbiorcy nie może być pusta"
+            errors["SELLER_NAME"] = "Nazwa sprzedawcy nie może być pusta"
         }
 
         val result = ValidationResult(isValid = errors.isEmpty(), fieldErrors = errors)
