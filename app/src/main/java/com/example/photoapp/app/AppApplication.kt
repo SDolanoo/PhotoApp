@@ -2,7 +2,6 @@ package com.example.photoapp.app
 
 import android.app.Application
 import android.content.Context
-import com.example.photoapp.core.database.data.dao.UzytkownikService
 import com.example.photoapp.features.faktura.data.faktura.FakturaService
 import com.example.photoapp.features.odbiorca.data.OdbiorcaService
 import com.example.photoapp.features.produkt.data.ProduktFakturaService
@@ -42,7 +41,4 @@ object DIAppModule {
 
     @Provides
     fun provideSprzedawcaDao(): SprzedawcaService = SprzedawcaService()
-
-    @Provides
-    fun provideUzytkownikDao(): UzytkownikService = UzytkownikService()
 }

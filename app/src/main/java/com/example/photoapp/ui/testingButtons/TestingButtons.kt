@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
 import com.example.photoapp.features.sprzedawca.data.SprzedawcaRepository
-import com.example.photoapp.core.database.data.repos.UzytkownikRepository
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
 import com.example.photoapp.features.produkt.data.Produkt
@@ -82,8 +81,7 @@ fun TestingButtons(
 class TestingButtonVM @Inject constructor(
     private val fakturaRepository: FakturaRepository,
     private val odbiorcaRepository: OdbiorcaRepository,
-    private val sprzedawcaRepository: SprzedawcaRepository,
-    private val uzytkownikRepository: UzytkownikRepository
+    private val sprzedawcaRepository: SprzedawcaRepository
 ) : ViewModel() {
 
     fun addTestUzytkownik() {
