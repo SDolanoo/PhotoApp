@@ -71,33 +71,51 @@ This project was created for people who receive a large number of invoices and n
 
 ---
 
-## ScreenShots
+## Screenshots
 
-Login Screen
-![Login](C:\Users\Dolan\AndroidStudioProjects\Photo App\assets\login.jpg)
+<table>
+  <tr>
+    <td align="center" width="25%">
+      <b>Login Screen</b><br/>
+      <img src="./assets/login.jpg" alt="Login" width="100%"/>
+    </td>
+    <td align="center" width="25%">
+      <b>Invoice Screen</b><br/>
+      <img src="./assets/faktura_screen.jpg" alt="Invoice" width="100%"/>
+    </td>
+    <td align="center" width="25%">
+      <b>Invoice Details 1</b><br/>
+      <img src="./assets/faktura_detail_1.jpg" alt="Invoice Details" width="100%"/>
+    </td>
+    <td align="center" width="25%">
+      <b>Invoice Details 2</b><br/>
+      <img src="./assets/faktura_details_2.jpg" alt="Invoice Details2" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">
+      <b>Export Excel</b><br/>
+      <img src="./assets/exportExcel.jpg" alt="Export Excel" width="100%"/>
+    </td>
+    <td align="center" width="25%">
+      <b>Filters</b><br/>
+      <img src="./assets/filtry.jpg" alt="Filters" width="100%"/>
+    </td>
+    <td align="center" width="25%">
+      <b>Selector Screen</b><br/>
+      <img src="./assets/selector.jpg" alt="Selector Screen" width="100%"/>
+    </td>
+    <td align="center" width="25%">
+      <b>Selector Products</b><br/>
+      <img src="./assets/selector_produkty.jpg" alt="Selector Screen Products" width="100%"/>
+    </td>
+  </tr>
+</table>
 
-Invoice Screen
-![Invoice](C:\Users\Dolan\AndroidStudioProjects\Photo App\assets\faktura_screen.jpg)
 
-Invoice Details (Everything is editable with validation)
-![Invoice Details](C:\Users\Dolan\AndroidStudioProjects\Photo App\assets\faktura_detail_1.jpg)
-
-![Invoice Details2](C:\Users\Dolan\AndroidStudioProjects\Photo App\assets\faktura_details_2.jpg)
-
-Export Excel
-![Export Excel](C:\Users\Dolan\AndroidStudioProjects\Photo App\assets\exportExcel.jpg)
-
-Filters
-![Export Excel](C:\Users\Dolan\AndroidStudioProjects\Photo App\assets\filtry.jpg)
-
-Selector Screen (Everything is editable with validation)
-![Selector Screen](C:\Users\Dolan\AndroidStudioProjects\Photo App\assets\selector.jpg)
-
-![Selector Screen Products](C:\Users\Dolan\AndroidStudioProjects\Photo App\assets\selector_produkty.jpg)
 
 ---
 
 ## Author
 👤 **Stanisław Dolaziński**  
 📧 [sdolazinski@gmail.com](mailto:sdolazinski@gmail.com)  
-🔗 [LinkedIn / GitHub links can go here]  
