@@ -103,7 +103,6 @@ class FakturaServiceTest {
         Assert.assertEquals("FV2", result[1].numerFaktury)
     }
 
-
     @Test
     fun `getAllFaktury should skip null objects from toObject`() = runTest {
         // Given
@@ -132,7 +131,6 @@ class FakturaServiceTest {
         Assert.assertEquals("1", result.first().id)
     }
 
-
     @Test
     fun `getById should return faktura if userId matches`() = runTest {
         // Given
@@ -152,7 +150,6 @@ class FakturaServiceTest {
         Assert.assertEquals("abc", result?.id) // id powinien być nadpisany
     }
 
-
     @Test
     fun `getById should return null if userId does not match`() = runTest {
         // Given
@@ -170,7 +167,6 @@ class FakturaServiceTest {
         Assert.assertNull(result)
     }
 
-
     @Test
     fun `getById should return null if document is missing or null`() = runTest {
         // Given
@@ -186,7 +182,6 @@ class FakturaServiceTest {
         // Then
         Assert.assertNull(result)
     }
-
 
     @Test
     fun `insert should set document with generated ID and return it`() = runTest {
@@ -236,7 +231,6 @@ class FakturaServiceTest {
         }
     }
 
-
     @Test
     fun `delete should call delete on document with given ID`() = runTest {
         // Given
@@ -254,7 +248,6 @@ class FakturaServiceTest {
             document.delete()
         }
     }
-
 
     @Test
     fun `getFilteredFaktury should return only faktury in date range`() = runTest {
@@ -290,7 +283,6 @@ class FakturaServiceTest {
         Assert.assertEquals("2", result.first().id)
     }
 
-
     @Test
     fun `getFilteredFaktury should return only faktury in price range`() = runTest {
         // Given
@@ -321,7 +313,6 @@ class FakturaServiceTest {
         Assert.assertEquals(1, result.size)
         Assert. assertEquals("2", result.first().id)
     }
-
 
     @Test
     fun `getFilteredFaktury should apply both date and price filters`() = runTest {
@@ -369,7 +360,6 @@ class FakturaServiceTest {
         Assert.assertEquals("2", result.first().id)
     }
 
-
     @Test
     fun `getFilteredFaktury should sort by dataWystawienia if selected`() = runTest {
         // Given
@@ -400,7 +390,6 @@ class FakturaServiceTest {
         val idsSorted = result.map { it.id }
         Assert.assertEquals(listOf("2", "1", "3"), idsSorted) // 2023 -> 2022 -> 2021
     }
-
 
     @Test
     fun `getFilteredFaktury should sort by dataSprzedazy by default`() = runTest {
@@ -439,8 +428,6 @@ class FakturaServiceTest {
             every { this@mockk.id } returns id
         }
     }
-
-
 }
 
 

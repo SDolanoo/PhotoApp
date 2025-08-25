@@ -1,5 +1,6 @@
     package com.example.photoapp.features.login
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,6 +45,8 @@ fun LoginScreen(
     navController: NavHostController,
     viewModel: LoginScreenViewModel = LoginScreenViewModel()
 ) {
+    val context = LocalContext.current
+
     val showLoginForm = rememberSaveable { mutableStateOf(true) }
 
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -49,18 +54,39 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Top) {
             Spacer(modifier = Modifier.height(48.dp))
             ReaderLogo()
-            if (showLoginForm.value) UserForm(loading = false, isCreateAccount = false){ email, password ->
-                viewModel.signInWithEmailAndPassword(email, password){
-                    navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)
+            if (showLoginForm.value) {
+                UserForm(
+                    loading = false,
+                    isCreateAccount = false
+                ) { email, password ->
+                    viewModel.signInWithEmailAndPassword(
+                        email = email,
+                        password = password,
+                        home = {
+                            navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)
+                        },
+                        onError = { error ->
+                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
+            } else {
+                UserForm(
+                    loading = false,
+                    isCreateAccount = true
+                ) { email, password ->
+                    viewModel.createUserWithEmailAndPassword(
+                        email,
+                        password,
+                        home = {
+                            navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)
+                        },
+                        onError = { errorMessage ->
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
 
-                }
-            }
-            else {
-                UserForm(loading = false, isCreateAccount = true){ email, password ->
-                    viewModel.createUserWithEmailAndPassword(email, password) {
-                        navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)
-                    }
-                }
             }
 
         }
