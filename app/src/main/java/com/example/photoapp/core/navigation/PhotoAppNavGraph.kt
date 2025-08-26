@@ -41,6 +41,7 @@ import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import com.example.photoapp.features.MainDrawer
 import com.example.photoapp.features.captureFlow.presentation.optionSelector.OptionSelector
 import com.example.photoapp.features.captureFlow.presentation.optionSelector.options.addByHandFaktura.AddByHandFaktura
+import com.example.photoapp.features.captureFlow.presentation.optionSelector.options.addByPDFFaktura.AddByPDFFaktura
 import com.example.photoapp.ui.testingButtons.TestingButtons
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -77,7 +78,8 @@ fun PhotoAppNavGraph(
 
     // Example function called when photoUri changes
     fun onPhotoUriChanged() {
-        Log.i("PhotoApp", "Photo URI changed:")
+        Log.i("PhotoApp", "Photo URI changed: $photoUri")
+        Log.i("PhotoApp", "Photo Bitmap changed: $photoBitmap")
         navController.navigate(PhotoAppDestinations.ACCEPT_PHOTO_ROUTE)
         // Add your logic here, e.g., save to database, perform navigation, etc.
     }
@@ -141,7 +143,11 @@ fun PhotoAppNavGraph(
             OptionSelector(
                 onOpenCamera = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
                 onAddByHand = {navController.navigate(PhotoAppDestinations.ADD_BY_HAND_ROUTE)},
-                onAddPDF = {},
+                onPdfPicked = { uri, photoBitmap ->
+                    Log.i("Dolan", "Image captured: $uri")
+                    navGraphViewModel.setPhotoBitmap(photoBitmap)
+                    navGraphViewModel.setPhotoUri(uri)
+                },
                 onImageCaptured = { uri, photoBitmap ->
                     Log.i("Dolan", "Image captured: $uri")
                     navGraphViewModel.setPhotoBitmap(photoBitmap)
@@ -179,7 +185,7 @@ fun PhotoAppNavGraph(
                 photoUri = photoUri,
                 bitmapPhoto = photoBitmap,
                 contentDescription = null,
-                backToCameraView = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
+                backToCameraView = {navController.navigate(PhotoAppDestinations.OPTION_SELECTOR_ROUTE)},
                 goToAcceptFakturaScreen = { f, s, o, p ->
                     navGraphViewModel.setFaktura(f) {
                         navGraphViewModel.setSprzedawca(s) {
@@ -213,7 +219,7 @@ fun PhotoAppNavGraph(
                     odbiorca = odbiorca,
                     produkty = produkty,
                     onConfirm = {navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE)},
-                    onCancel = {},
+                    onCancel = {navController.navigate(PhotoAppDestinations.ACCEPT_PHOTO_ROUTE)},
                 )
             } else {
                 // Placeholder na czas ładowania danych
