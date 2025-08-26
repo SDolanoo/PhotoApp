@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.photoapp.features.odbiorca.composables.form.OdbiorcaForm
 import com.example.photoapp.features.odbiorca.composables.readOnly.OdbiorcaReadOnly
 import com.example.photoapp.features.odbiorca.data.Odbiorca

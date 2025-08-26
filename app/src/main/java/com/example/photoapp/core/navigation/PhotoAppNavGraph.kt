@@ -29,7 +29,7 @@ import com.example.photoapp.features.excelPacker.presentation.ExcelPacker
 import com.example.photoapp.features.selector.presentation.selector.SelectorScreen
 import com.example.photoapp.features.captureFlow.presentation.acceptFaktura.AcceptFakturaScreen
 import com.example.photoapp.features.captureFlow.presentation.acceptPhoto.AcceptPhoto
-import com.example.photoapp.features.captureFlow.presentation.cameraView.CameraView
+import com.example.photoapp.features.captureFlow.presentation.optionSelector.options.cameraView.CameraView
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.presentation.details.FakturaDetailsScreen
 import com.example.photoapp.features.login.LoginScreen
@@ -39,6 +39,8 @@ import com.example.photoapp.features.selector.presentation.selector.produkt.deta
 import com.example.photoapp.features.selector.presentation.selector.sprzedawca.details.SprzedawcaDetailsScreen
 import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import com.example.photoapp.features.MainDrawer
+import com.example.photoapp.features.captureFlow.presentation.optionSelector.OptionSelector
+import com.example.photoapp.features.captureFlow.presentation.optionSelector.options.addByHandFaktura.AddByHandFaktura
 import com.example.photoapp.ui.testingButtons.TestingButtons
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -116,7 +118,7 @@ fun PhotoAppNavGraph(
                     navController = navController,
                     navigateToCameraView = { addingPhotoFor ->
                         navGraphViewModel.setAddingPhotoFor(addingPhotoFor)
-                        navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
+                        navController.navigate(PhotoAppDestinations.OPTION_SELECTOR_ROUTE)},
                     navigateToFakturaDetailsScreen = { faktura ->
                         navGraphViewModel.setFakturaViewedNow(faktura)
                         navController.navigate(PhotoAppDestinations.FAKTURA_DETAILS_SCREEN_ROUTE)
@@ -131,6 +133,28 @@ fun PhotoAppNavGraph(
             FakturaDetailsScreen(
                 faktura = fakturaViewedNow,
                 leaveDetailsScreen = { navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) }
+            )
+        }
+
+        composable(PhotoAppDestinations.OPTION_SELECTOR_ROUTE) {
+            Log.i("Dolan", "Odpalam OPTION_SELECTOR_ROUTE w navGraph")
+            OptionSelector(
+                onOpenCamera = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
+                onAddByHand = {navController.navigate(PhotoAppDestinations.ADD_BY_HAND_ROUTE)},
+                onAddPDF = {},
+                onImageCaptured = { uri, photoBitmap ->
+                    Log.i("Dolan", "Image captured: $uri")
+                    navGraphViewModel.setPhotoBitmap(photoBitmap)
+                    navGraphViewModel.setPhotoUri(uri)
+                },
+                backToHomeScreen = { navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) },
+            )
+        }
+
+        composable(PhotoAppDestinations.ADD_BY_HAND_ROUTE) {
+            Log.i("Dolan", "Odpalam ADD_BY_HAND_ROUTE w navGraph")
+            AddByHandFaktura(
+                backToHomeScreen = { navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) },
             )
         }
 
