@@ -25,9 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.photoapp.core.components.common.MenuButton
 
 @Composable
 fun OptionSelector(
@@ -46,11 +48,11 @@ fun OptionSelector(
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Button(onClick = {onOpenCamera()}) { Text("Otwórz aparat") }
-                Button(onClick = {openGallery = false}) { Text("Dodaj zdjęcie z Galerii") }
-                Button(onClick = {onAddPDF()}) { Text("Dodaj fakture z pliku PDF") }
-                Button(onClick = {onAddByHand()}) { Text("Dodaj fakture ręcznie") }
-                Button(onClick = {backToHomeScreen()}) { Text("Wyjdź") }
+                MenuButton(text = "Otwórz aparat", onClick = {onOpenCamera()}, color = Color(0xFFD0BCFF))
+                MenuButton(text = "Dodaj zdjęcie z Galerii", onClick = {openGallery = false}, color = Color(0xFFD0BCFF))
+                MenuButton(text = "Dodaj fakture z pliku PDF", onClick = {onAddPDF()}, color = Color(0xFFD0BCFF))
+                MenuButton(text = "Dodaj fakture ręcznie", onClick = {onAddByHand()}, color = Color(0xFFD0BCFF))
+                MenuButton(text = "Wyjdź", onClick = {backToHomeScreen()})
             }
         }
     }

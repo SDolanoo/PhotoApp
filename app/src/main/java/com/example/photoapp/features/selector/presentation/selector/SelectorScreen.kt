@@ -42,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.dolan.photoapp.R
 import com.example.photoapp.core.components.MyNavigationBar
+import com.example.photoapp.core.components.common.MenuButton
 import com.example.photoapp.core.navigation.NavBarDestinations
 import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.produkt.data.Produkt
@@ -164,23 +165,5 @@ fun SelectorScreenContent(
                 onClick = onProduktyClick
             )
         }
-    }
-}
-
-@Composable
-fun MenuButton(text: String, onClick: () -> Unit) {
-    OutlinedButton(
-        onClick = onClick,
-        shape = RoundedCornerShape(10.dp),
-        modifier = Modifier
-            .padding(horizontal = 40.dp)
-            .fillMaxWidth()
-            .height(50.dp),
-        colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = Color.Black
-        ),
-        border = ButtonDefaults.outlinedButtonBorder
-    ) {
-        Text(text = text, fontSize = 16.sp, fontWeight = FontWeight.Medium)
     }
 }
