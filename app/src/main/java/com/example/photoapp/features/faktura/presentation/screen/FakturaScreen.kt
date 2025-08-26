@@ -85,7 +85,7 @@ fun FakturaScreen(
     val allFaktury by viewModel.allFakturyLive.observeAsState(emptyList())
 
     LaunchedEffect(allFaktury.size) {
-        viewModel.setGroupedFaktura(viewModel.getGroupedFakturaList(allFaktury))
+        viewModel.setGroupedFaktura(viewModel.getGroupedFakturaList(allFaktury.sortedBy { it.dataSprzedazy }))
     }
 
     var isFilterExpanded by remember { mutableStateOf(false) }

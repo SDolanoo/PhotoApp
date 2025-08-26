@@ -20,7 +20,6 @@ class FakturaService(
     fun getAllLive(): Flow<List<Faktura>> = callbackFlow {
         val listener = fakturaCol
             .whereEqualTo("uzytkownikId", currentUserIdProvider())
-            .orderBy("dataSprzedazy")
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
                     val list = snapshot.documents.mapNotNull { it.toObject<Faktura>() }
