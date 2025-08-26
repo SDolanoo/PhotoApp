@@ -1,12 +1,13 @@
-package com.example.photoapp.features.faktura.presentation.details
+package com.example.photoapp.features.captureFlow.presentation.optionSelector.options.addByHandFaktura
 
 import android.util.Log
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.photoapp.core.utils.convertDoubleToString
+import com.example.photoapp.core.utils.currentUserId
 import com.example.photoapp.features.faktura.data.faktura.Faktura
 import com.example.photoapp.features.faktura.data.faktura.FakturaRepository
+import com.example.photoapp.features.faktura.presentation.details.ProduktFakturaZProduktem
 import com.example.photoapp.features.odbiorca.data.Odbiorca
 import com.example.photoapp.features.odbiorca.data.OdbiorcaRepository
 import com.example.photoapp.features.produkt.data.Produkt
@@ -23,96 +24,31 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.collections.plus
 
 @HiltViewModel
-class FakturaDetailsViewModel @Inject constructor(
+class AddByHandFakturaViewModel @Inject constructor(
     private val repository: FakturaRepository,
     private val sprzedawcaRepository: SprzedawcaRepository,
     private val odbiorcaRepository: OdbiorcaRepository
 ) : ViewModel() {
 
     // ---- FAKTURA ----
-    private val _actualFaktura = MutableStateFlow<Faktura>(Faktura.default())
-    val actualFaktura: StateFlow<Faktura> = _actualFaktura.asStateFlow()
-
-    private val _editedFaktura = MutableStateFlow<Faktura>(Faktura.default())
+    private val _editedFaktura = MutableStateFlow<Faktura>(Faktura.default().copy(uzytkownikId = currentUserId()))
     val editedFaktura: StateFlow<Faktura> = _editedFaktura.asStateFlow()
 
     // ---- PRODUKTY ----
-    private val _actualProdukty = MutableStateFlow<List<ProduktFakturaZProduktem>>(emptyList())
-    val actualProdukty: StateFlow<List<ProduktFakturaZProduktem>> = _actualProdukty.asStateFlow()
-
     private val _editedProdukty = MutableStateFlow<List<ProduktFakturaZProduktem>>(emptyList())
     val editedProdukty: StateFlow<List<ProduktFakturaZProduktem>> = _editedProdukty.asStateFlow()
 
 
     // ---- SPRZEDAWCA ----
-    private val _actualSprzedawca = MutableStateFlow<Sprzedawca>(Sprzedawca.empty())
-    val actualSprzedawca: StateFlow<Sprzedawca> = _actualSprzedawca.asStateFlow()
-
-    private val _editedSprzedawca = MutableStateFlow<Sprzedawca>(Sprzedawca.empty())
+    private val _editedSprzedawca = MutableStateFlow<Sprzedawca>(Sprzedawca.empty().copy(uzytkownikId = currentUserId()))
     val editedSprzedawca: StateFlow<Sprzedawca> = _editedSprzedawca.asStateFlow()
 
     // ---- ODBIORCA ----
-    private val _actualOdbiorca = MutableStateFlow<Odbiorca>(Odbiorca.empty())
-    val actualOdbiorca: StateFlow<Odbiorca> = _actualOdbiorca.asStateFlow()
-
-    private val _editedOdbiorca = MutableStateFlow<Odbiorca>(Odbiorca.empty())
+    private val _editedOdbiorca = MutableStateFlow<Odbiorca>(Odbiorca.empty().copy(uzytkownikId = currentUserId()))
     val editedOdbiorca: StateFlow<Odbiorca> = _editedOdbiorca.asStateFlow()
-
-
-    fun loadProducts(faktura: Faktura) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val produktyFaktury = repository.getProduktyFakturaForFaktura(faktura)
-            val sprzedawca = sprzedawcaRepository.getById(faktura.sprzedawcaId)
-            val odbiorca = odbiorcaRepository.getById(faktura.odbiorcaId)
-            // Ustawienie actual i edited jednocześnie
-            _actualFaktura.value = faktura
-            _editedFaktura.value = faktura
-
-            val produktyZProduktami = produktyFaktury.mapNotNull { produktFaktura ->
-                val produkt = repository.getProduktForProduktFaktura(produktFaktura)
-                produkt.let {
-                    ProduktFakturaZProduktem(
-                        produktFaktura = produktFaktura,
-                        produkt = it
-                    )
-                }
-            }
-
-            _actualProdukty.value = produktyZProduktami
-            _editedProdukty.value = produktyZProduktami
-
-            _actualSprzedawca.value = sprzedawca!!
-            _editedSprzedawca.value = sprzedawca
-            Log.i("Dolan", sprzedawca.toString())
-
-            _actualOdbiorca.value = odbiorca!!
-            _editedOdbiorca.value = odbiorca
-            Log.i("Dolan", odbiorca.toString())
-        }
-    }
-
-    fun getFakturaByID(id: String, callback: (Faktura) -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val faktura = repository.getFakturaByID(id)
-            callback(faktura!!)
-        }
-    }
-
-    fun editingSuccess() {
-        viewModelScope.launch(Dispatchers.IO) {
-            updateAllEditedToDB {
-                loadProducts(it)
-            }
-        }
-    }
-
-    fun editingFailed() {
-        viewModelScope.launch(Dispatchers.IO) {
-            loadProducts(_actualFaktura.value)
-        }
-    }
 
     fun updateEditedFakturaTemp(faktura: Faktura, callback: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -137,75 +73,6 @@ class FakturaDetailsViewModel @Inject constructor(
             }
 
             callback()
-        }
-    }
-
-    fun updateAllEditedToDB(callback: (Faktura) -> Unit = {}) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val faktura = editedFaktura.value
-                val produktyEdited = editedProdukty.value
-                val sprzedawca = editedSprzedawca.value
-                val odbiorca = editedOdbiorca.value
-
-                val nowaListaId = mutableListOf<String>()
-
-
-                var razemNetto = 0.0
-                var razemBrutto = 0.0
-                // 🧠 OBSŁUGA KAŻDEGO PRODUKTU INDYWIDUALNIE
-                produktyEdited.forEachIndexed { index, produkt ->
-                    val isNowyProdukt = produkt.produktFaktura.id.length <= 4
-
-                    val produktId = if (isNowyProdukt) {
-                        repository.insertProduktFaktura(produkt.produktFaktura.copy(id = "")) // Zwraca nowe ID
-                    } else {
-                        repository.updateProduktFaktura(produkt.produktFaktura)
-                        produkt.produktFaktura.id
-                    }
-
-                    nowaListaId.add(produktId)
-
-                    // Jeżeli był nowy, nadpisujemy id w pamięci
-                    val produktFakturaZProduktem = produkt.copy(
-                        produktFaktura = produkt.produktFaktura.copy(id = produktId)
-                    )
-                    razemNetto += produkt.produktFaktura.wartoscNetto.replace(",", ".").toDoubleOrNull() ?: 0.0
-                    razemBrutto += produkt.produktFaktura.wartoscBrutto.replace(",", ".").toDoubleOrNull() ?: 0.0
-                    updateEditedProductTemp(index, produktFakturaZProduktem, callback = {})
-                }
-
-                // 🔥 DETEKCJA USUNIĘTYCH PRODUKTÓW
-                val aktualnePozycjeZBazy = repository.getProduktyFakturaForFaktura(faktura)
-                val aktualneIdsZBazy = aktualnePozycjeZBazy.map { it.id }.toSet() // Set<String>
-                val aktualneIdsPoEdycji = nowaListaId.toSet()
-
-
-                val usunieteIds = aktualneIdsZBazy - aktualneIdsPoEdycji
-
-                usunieteIds.forEach { id ->
-                    aktualnePozycjeZBazy.find { it.id == id }?.let { produktDoUsuniecia ->
-                        repository.deleteProduktFakturaFromFaktura(produktDoUsuniecia)
-                    }
-                }
-
-                // 🔁 Aktualizacja sprzedawcy i odbiorcy
-                val sprzedawcaId = sprzedawcaRepository.upsertSprzedawcaSmart(sprzedawca)
-                val odbiorcaId = odbiorcaRepository.upsertOdbiorcaSmart(odbiorca)
-
-                val updatedFaktura = faktura.copy(
-                    sprzedawcaId = sprzedawcaId,
-                    odbiorcaId = odbiorcaId,
-                    razemNetto = convertDoubleToString(razemNetto),
-                    razemVAT = convertDoubleToString(razemBrutto-razemNetto),
-                    razemBrutto = convertDoubleToString(razemBrutto),
-                    doZaplaty = convertDoubleToString(razemBrutto))
-                repository.updateFaktura(updatedFaktura)
-                callback(updatedFaktura)
-
-            } catch (e: Exception) {
-                Log.e("Dolan", "Błąd podczas zapisu do DB: ${e}")
-            }
         }
     }
 
@@ -234,8 +101,78 @@ class FakturaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun setFaktura(faktura: Faktura) {
-        _actualFaktura.value = faktura
+    fun updateAllEditedToDB(callback: (Faktura) -> Unit = {}) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val faktura = editedFaktura.value
+                val produktyEdited = editedProdukty.value
+                val sprzedawca = editedSprzedawca.value
+                val odbiorca = editedOdbiorca.value
+
+                // 🔁 Aktualizacja sprzedawcy i odbiorcy
+                val sprzedawcaId = sprzedawcaRepository.upsertSprzedawcaSmart(sprzedawca) // jak dodaje nową fakture to najpierw dodaje sprzedawca i odbiorca żeby mieć ich id
+                val odbiorcaId = odbiorcaRepository.upsertOdbiorcaSmart(odbiorca)
+
+                val insertedFaktura = faktura.copy(
+                    sprzedawcaId = sprzedawcaId,
+                    odbiorcaId = odbiorcaId)
+                val insertedFakturaId = repository.insertFaktura(insertedFaktura) // insertuje fakturę z sprzedawwca i odbiorca id żeby mieć ID do insertów produktów
+
+                val nowaListaId = mutableListOf<String>()
+
+                var razemNetto = 0.0
+                var razemBrutto = 0.0
+                // 🧠 OBSŁUGA KAŻDEGO PRODUKTU INDYWIDUALNIE
+                produktyEdited.forEachIndexed { index, produkt ->
+                    val isNowyProdukt = produkt.produktFaktura.id.length <= 4
+
+                    val produktId = if (isNowyProdukt) {
+                        repository.insertProduktFaktura(produkt.produktFaktura.copy(id = "", fakturaId = insertedFakturaId)) // Zwraca nowe ID
+                    } else { // doaje nowe produkty alb updateuje istniejące z fakturaID nowym
+                        repository.updateProduktFaktura(produkt.produktFaktura.copy(fakturaId = insertedFakturaId))
+                        produkt.produktFaktura.id
+                    }
+
+                    nowaListaId.add(produktId)
+
+                    // Jeżeli był nowy, nadpisujemy id w pamięci
+                    val produktFakturaZProduktem = produkt.copy(
+                        produktFaktura = produkt.produktFaktura.copy(id = produktId)
+                    )
+                    razemNetto += produkt.produktFaktura.wartoscNetto.replace(",", ".").toDoubleOrNull() ?: 0.0
+                    razemBrutto += produkt.produktFaktura.wartoscBrutto.replace(",", ".").toDoubleOrNull() ?: 0.0
+                    updateEditedProductTemp(index, produktFakturaZProduktem, callback = {})
+                }
+
+                // 🔥 DETEKCJA USUNIĘTYCH PRODUKTÓW
+                val aktualnePozycjeZBazy = repository.getProduktyFakturaForFaktura(faktura)
+                val aktualneIdsZBazy = aktualnePozycjeZBazy.map { it.id }.toSet() // Set<String>
+                val aktualneIdsPoEdycji = nowaListaId.toSet()
+
+
+                val usunieteIds = aktualneIdsZBazy - aktualneIdsPoEdycji
+
+                usunieteIds.forEach { id ->
+                    aktualnePozycjeZBazy.find { it.id == id }?.let { produktDoUsuniecia ->
+                        repository.deleteProduktFakturaFromFaktura(produktDoUsuniecia)
+                    }
+                }
+
+                val updatedFaktura = faktura.copy(
+                    id = insertedFakturaId, // updateuje nową fakturę o nowe dane, z razem netto brutto itd
+                    sprzedawcaId = sprzedawcaId,
+                    odbiorcaId = odbiorcaId,
+                    razemNetto = convertDoubleToString(razemNetto),
+                    razemVAT = convertDoubleToString(razemBrutto-razemNetto),
+                    razemBrutto = convertDoubleToString(razemBrutto),
+                    doZaplaty = convertDoubleToString(razemBrutto))
+                repository.updateFaktura(updatedFaktura)
+                callback(updatedFaktura)
+
+            } catch (e: Exception) {
+                Log.e("Dolan", "Błąd podczas zapisu do DB: ${e}")
+            }
+        }
     }
 
     // ---- SPRZEDAWCA ----
@@ -311,34 +248,4 @@ class FakturaDetailsViewModel @Inject constructor(
             callback()
         }
     }
-
-    @VisibleForTesting
-    fun setTestData(
-        actualFaktura: Faktura? = null,
-        editedFaktura: Faktura? = null,
-        actualProdukty: List<ProduktFakturaZProduktem>? = null,
-        editedProdukty: List<ProduktFakturaZProduktem>? = null,
-        actualSprzedawca: Sprzedawca? = null,
-        editedSprzedawca: Sprzedawca? = null,
-        actualOdbiorca: Odbiorca? = null,
-        editedOdbiorca: Odbiorca? = null
-    ) {
-        actualFaktura?.let { _actualFaktura.value = it }
-        editedFaktura?.let { _editedFaktura.value = it }
-
-        actualProdukty?.let { _actualProdukty.value = it }
-        editedProdukty?.let { _editedProdukty.value = it }
-
-        actualSprzedawca?.let { _actualSprzedawca.value = it }
-        editedSprzedawca?.let { _editedSprzedawca.value = it }
-
-        actualOdbiorca?.let { _actualOdbiorca.value = it }
-        editedOdbiorca?.let { _editedOdbiorca.value = it }
-
-    }
 }
-
-data class ProduktFakturaZProduktem(
-    val produktFaktura: ProduktFaktura,
-    val produkt: Produkt
-)
