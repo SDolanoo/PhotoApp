@@ -33,32 +33,32 @@ This project was created for people who receive a large number of invoices and n
 
 ## Project Structure
 
-📂 app/src/main/java/com/example/photoapp
- ┣ 📂 app
- ┃ ┣ 📜 MainActivity.kt         # Main entry point of the app
- ┃ ┗ 📜 AppApplication.kt       # Application class (Hilt initialization)
- ┣ 📂 core
- ┃ ┣ 📂 ai                      # AI integration (invoice recognition, parsing)
- ┃ ┣ 📂 components              # Reusable UI components (Jetpack Compose)
- ┃ ┣ 📂 navigation              # Navigation graph & routes
- ┃ ┗ 📂 utils                   # Utility classes & extensions
- ┣ 📂 features
- ┃ ┣ 📂 captureFlow             # Camera & invoice scanning flow
- ┃ ┣ 📂 excelPacker             # Excel export using Apache POI
- ┃ ┣ 📂 faktura                 # Invoice CRUD operations
- ┃ ┣ 📂 filterScreen            # Invoice filtering & search
- ┃ ┣ 📂 login                   # Authentication flow
- ┃ ┣ 📂 odbiorca                # Buyer/receiver module
- ┃ ┣ 📂 produkt                 # Product module
- ┃ ┣ 📂 selector                # Item/document selector
- ┃ ┗ 📂 sprzedawca              # Seller module
- ┗ 📜 (other core files)
+📂 app/src/main/java/com/example/photoapp <br/>
+ ┣ 📂 app<br/>
+ ┃ ┣ 📜 MainActivity.kt         # Main entry point of the app<br/>
+ ┃ ┗ 📜 AppApplication.kt       # Application class (Hilt initialization)<br/>
+ ┣ 📂 core<br/>
+ ┃ ┣ 📂 ai                      # AI integration (invoice recognition, parsing)<br/>
+ ┃ ┣ 📂 components              # Reusable UI components (Jetpack Compose)<br/>
+ ┃ ┣ 📂 navigation              # Navigation graph & routes<br/>
+ ┃ ┗ 📂 utils                   # Utility classes & extensions<br/>
+ ┣ 📂 features<br/>
+ ┃ ┣ 📂 captureFlow             # Camera & invoice scanning flow<br/>
+ ┃ ┣ 📂 excelPacker             # Excel export using Apache POI<br/>
+ ┃ ┣ 📂 faktura                 # Invoice CRUD operations<br/>
+ ┃ ┣ 📂 filterScreen            # Invoice filtering & search<br/>
+ ┃ ┣ 📂 login                   # Authentication flow<br/>
+ ┃ ┣ 📂 odbiorca                # Buyer/receiver module<br/>
+ ┃ ┣ 📂 produkt                 # Product module<br/>
+ ┃ ┣ 📂 selector                # Item/document selector<br/>
+ ┃ ┗ 📂 sprzedawca              # Seller module<br/>
+ ┗ 📜 (other core files)<br/>
 
 
 ## Tests
 
-📂 app/src/test/java/com/example/photoapp
-┗ 📜 Unit tests
+📂 app/src/test/java/com/example/photoapp<br/>
+┗ 📜 Unit tests<br/>
 
 - ✅ **189 unit tests**
 - 📊 **97% coverage**~~
