@@ -10,5 +10,5 @@ enum class NavBarDestinations(
 ) {
     Faktury(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE, R.drawable.baseline_home_filled_24, "Faktury", "Ekran faktur"),
     Excel(PhotoAppDestinations.EXCEL_PACKER_ROUTE, R.drawable.upload_file, "Export", "Ekran exportu"),
-    Edycja(PhotoAppDestinations.EDITING_SELECTOR, R.drawable.baseline_edit_note_24, "Profil", "Ekran profilu");
+    Edycja(PhotoAppDestinations.EDITING_SELECTOR, R.drawable.baseline_edit_note_24, "Edycja", "Ekran edycji");
 }
