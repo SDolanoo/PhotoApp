@@ -75,6 +75,9 @@ fun OdbiorcaDetailsScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer),
                 title = {
                     Text(
                         if (isEditing) "Edytuj Odbiorce" else "Szczegóły Odbiorca",

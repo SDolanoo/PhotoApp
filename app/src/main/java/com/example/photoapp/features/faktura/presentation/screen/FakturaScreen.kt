@@ -105,6 +105,9 @@ fun FakturaScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer),
                 title = {
                     Text(
                         if (isDeleteMode) "Usuń Faktury" else if (isFilterExpanded) "Filtry" else "Widok Faktury",

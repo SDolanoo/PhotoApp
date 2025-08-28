@@ -123,6 +123,9 @@ fun AcceptFakturaScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer),
                 title = {
                     Text(
                         "Szczegóły Faktura",

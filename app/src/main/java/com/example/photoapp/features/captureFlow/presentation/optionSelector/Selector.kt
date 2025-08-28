@@ -81,13 +81,13 @@ fun OptionSelector(
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                MenuButton(text = "Otwórz aparat", onClick = {onOpenCamera()}, color = Color(0xFFD0BCFF))
+                MenuButton(text = "Otwórz aparat", onClick = {onOpenCamera()}, color = Color(0xFF6650a4))
                 Spacer(modifier = Modifier.height(8.dp))
-                MenuButton(text = "Dodaj zdjęcie z Galerii", onClick = {openGallery = false}, color = Color(0xFFD0BCFF))
+                MenuButton(text = "Dodaj zdjęcie z Galerii", onClick = {openGallery = false}, color = Color(0xFF6650a4))
                 Spacer(modifier = Modifier.height(8.dp))
-                MenuButton(text = "Dodaj fakture z pliku PDF", onClick = {pdfPickerLauncher.launch(arrayOf("application/pdf"))}, color = Color(0xFFD0BCFF))
+                MenuButton(text = "Dodaj fakture z pliku PDF", onClick = {pdfPickerLauncher.launch(arrayOf("application/pdf"))}, color = Color(0xFF6650a4))
                 Spacer(modifier = Modifier.height(8.dp))
-                MenuButton(text = "Dodaj fakture ręcznie", onClick = {onAddByHand()}, color = Color(0xFFD0BCFF))
+                MenuButton(text = "Dodaj fakture ręcznie", onClick = {onAddByHand()}, color = Color(0xFF6650a4))
                 Spacer(modifier = Modifier.height(8.dp))
                 MenuButton(text = "Wyjdź", onClick = {backToHomeScreen()})
             }
