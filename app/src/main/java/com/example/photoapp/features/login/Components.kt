@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -27,7 +26,7 @@ fun ReaderLogo(modifier: Modifier = Modifier) {
     Text(text = "Czytnik Faktur",
         modifier = modifier.padding(bottom = 16.dp),
         style = MaterialTheme.typography.headlineMedium,
-        color = Color.Red.copy(alpha = 0.5f))
+        color = MaterialTheme.colorScheme.primaryContainer)
 }
 
 @Composable
