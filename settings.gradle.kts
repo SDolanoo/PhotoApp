@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Photo App"
+rootProject.name = "Skaner Faktur"
 include(":app")
  
