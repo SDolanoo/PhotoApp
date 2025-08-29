@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -21,9 +19,8 @@ import com.dolan.photoapp.R
 
 @Composable
 fun MainDrawer(
-    navigateToHome: () -> Unit,
-    navigateToAcceptPhoto: () -> Unit,
-    navigateToTestingButtons: () -> Unit,
+    navigateToMakePhoto: () -> Unit,
+    navigateToExport: () -> Unit,
     closeDrawer: () -> Unit,
     onSignout: () -> Unit,
     modifier: Modifier = Modifier
@@ -35,24 +32,17 @@ fun MainDrawer(
             modifier = Modifier.padding(horizontal = 28.dp, vertical = 24.dp)
         )
         NavigationDrawerItem(
-            label = { Text("HomeScreen") },
-            icon = { Icon(Icons.Filled.Home, null) },
+            label = { Text("Dodaj fakturę") },
+            icon = { Icon(painterResource(R.drawable.baseline_photo_camera_24), null) },
             selected = false,
-            onClick = { navigateToHome(); closeDrawer() },
+            onClick = { navigateToMakePhoto(); closeDrawer() },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
         NavigationDrawerItem(
-            label = { Text("MakePhoto") },
-            icon = { Icon(Icons.Filled.Home, null) },
+            label = { Text("Eksportuj faktury") },
+            icon = { Icon(painterResource(R.drawable.upload_file), null) },
             selected = false,
-            onClick = { navigateToAcceptPhoto(); closeDrawer() },
-            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-        )
-        NavigationDrawerItem(
-            label = { Text("Testing Buttons") },
-            icon = { Icon(Icons.Filled.Home, null) },
-            selected = false,
-            onClick = { navigateToTestingButtons(); closeDrawer() },
+            onClick = { navigateToExport(); closeDrawer() },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
 
@@ -64,6 +54,7 @@ fun MainDrawer(
             icon = { Icon(painter = painterResource(id = R.drawable.baseline_logout_24), null) },
             selected = false,
             onClick = { onSignout() },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
     }
 }
