@@ -41,7 +41,6 @@ import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import com.example.photoapp.features.MainDrawer
 import com.example.photoapp.features.captureFlow.presentation.optionSelector.OptionSelector
 import com.example.photoapp.features.captureFlow.presentation.optionSelector.options.addByHandFaktura.AddByHandFaktura
-import com.example.photoapp.features.captureFlow.presentation.optionSelector.options.addByPDFFaktura.AddByPDFFaktura
 import com.example.photoapp.ui.testingButtons.TestingButtons
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -102,9 +101,8 @@ fun PhotoAppNavGraph(
                 drawerState = drawerState,
                 drawerContent = {
                     MainDrawer(
-                        navigateToHome = { navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) },
-                        navigateToAcceptPhoto = {navController.navigate(PhotoAppDestinations.MAKE_PHOTO_ROUTE)},
-                        navigateToTestingButtons = {navController.navigate(PhotoAppDestinations.TESTING_BUTTONS_ROUTE)},
+                        navigateToMakePhoto = { navController.navigate(PhotoAppDestinations.OPTION_SELECTOR_ROUTE) },
+                        navigateToExport = {navController.navigate(PhotoAppDestinations.EXCEL_PACKER_ROUTE)},
                         closeDrawer = { coroutineScope.launch {drawerState = drawerState.apply { close() }}},
                         onSignout = {
                             coroutineScope.launch {drawerState = drawerState.apply { close() }}
