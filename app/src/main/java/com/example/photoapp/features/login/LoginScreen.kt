@@ -16,21 +16,25 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -38,8 +42,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.photoapp.core.navigation.PhotoAppDestinations
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
-@OptIn(ExperimentalComposeUiApi::class)
+    @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginScreen(
     navController: NavHostController,
@@ -49,11 +56,21 @@ fun LoginScreen(
 
     val showLoginForm = rememberSaveable { mutableStateOf(true) }
 
+    var showResetDialog by remember { mutableStateOf(false) }
+
     Surface(modifier = Modifier.fillMaxSize()) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
             Spacer(modifier = Modifier.height(48.dp))
             ReaderLogo()
+            Spacer(modifier = Modifier.height(16.dp))
+
             if (showLoginForm.value) {
                 UserForm(
                     loading = false,
@@ -86,32 +103,46 @@ fun LoginScreen(
                         }
                     )
                 }
-
             }
 
-        }
-        Spacer(modifier = Modifier.height(15.dp))
-        Row(
-            modifier = Modifier.padding(15.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val text = if (showLoginForm.value) "Zarejestuj się" else "Zaloguj"
-            Text(text = if (showLoginForm.value) "Nie posiadasz konta?" else "Masz już konto?")
-            Text(text,
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val text = if (showLoginForm.value) "Zarejestuj się" else "Zaloguj"
+                Text(
+                    text = if (showLoginForm.value) "Nie posiadasz konta?" else "Masz już konto?"
+                )
+                Text(
+                    text,
+                    modifier = Modifier
+                        .clickable {
+                            showLoginForm.value = !showLoginForm.value
+                        }
+                        .padding(start = 5.dp),
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = "Nie pamiętasz hasła?",
                 modifier = Modifier
-                    .clickable {
-                        showLoginForm.value = !showLoginForm.value
+                    .clickable { showResetDialog = true }
+                    .padding(top = 10.dp),
+                color = MaterialTheme.colorScheme.secondary,
+                fontWeight = FontWeight.Medium
+            )
 
-                    }
-                    .padding(start = 5.dp),
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.secondary)
-
+            if (showResetDialog) {
+                ResetPasswordDialog(onDismiss = { showResetDialog = false })
+            }
         }
-
     }
-
 }
 
 @ExperimentalComposeUiApi
@@ -193,4 +224,56 @@ fun SubmitButton(textId: String,
     }
 
 }
+
+
+    @Composable
+    fun ResetPasswordDialog(
+        onDismiss: () -> Unit,
+        auth: FirebaseAuth = Firebase.auth
+    ) {
+        var email by remember { mutableStateOf("") }
+        var message by remember { mutableStateOf<String?>(null) }
+
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Resetowanie hasła") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Adres e-mail") },
+                        singleLine = true
+                    )
+                    message?.let {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(it)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (email.isNotBlank()) {
+                        auth.sendPasswordResetEmail(email.trim())
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    message = "E-mail resetujący hasło został wysłany."
+                                } else {
+                                    message = "Błąd: ${task.exception?.message}"
+                                }
+                            }
+                    } else {
+                        message = "Wprowadź adres e-mail"
+                    }
+                }) {
+                    Text("Wyślij")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Anuluj")
+                }
+            }
+        )
+    }
 
