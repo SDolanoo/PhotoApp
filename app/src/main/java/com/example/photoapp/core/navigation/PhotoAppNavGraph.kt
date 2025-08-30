@@ -41,6 +41,7 @@ import com.example.photoapp.features.sprzedawca.data.Sprzedawca
 import com.example.photoapp.features.MainDrawer
 import com.example.photoapp.features.captureFlow.presentation.optionSelector.OptionSelector
 import com.example.photoapp.features.captureFlow.presentation.optionSelector.options.addByHandFaktura.AddByHandFaktura
+import com.example.photoapp.features.settings.presentation.SettingsScreen
 import com.example.photoapp.ui.testingButtons.TestingButtons
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -103,6 +104,7 @@ fun PhotoAppNavGraph(
                     MainDrawer(
                         navigateToMakePhoto = { navController.navigate(PhotoAppDestinations.OPTION_SELECTOR_ROUTE) },
                         navigateToExport = {navController.navigate(PhotoAppDestinations.EXCEL_PACKER_ROUTE)},
+                        navigateToSettings = {navController.navigate(PhotoAppDestinations.SETTINGS_ROUTE)},
                         closeDrawer = { coroutineScope.launch {drawerState = drawerState.apply { close() }}},
                         onSignout = {
                             coroutineScope.launch {drawerState = drawerState.apply { close() }}
@@ -299,6 +301,14 @@ fun PhotoAppNavGraph(
             Log.i("Dolan", "Odpalam PRODUKT_DETAILS_SCREEN_ROUTE w navGraph")
             LoginScreen(
                 navController = navController
+            )
+        }
+
+        composable(PhotoAppDestinations.SETTINGS_ROUTE) {
+            Log.i("Dolan", "Odpalam SETTINGS_ROUTE w navGraph")
+            SettingsScreen(
+                onDelete = {navController.navigate(PhotoAppDestinations.LOGIN_SCREEN_ROUTE)},
+                onBack = { navController.navigate(PhotoAppDestinations.FAKTURA_SCREEN_ROUTE) }
             )
         }
     }

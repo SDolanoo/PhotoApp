@@ -18,4 +18,5 @@ object PhotoAppDestinations {
     const val ACCEPT_PHOTO_ROUTE = "acceptPhoto"
     const val ACCEPT_FAKTURA_ROUTE = "acceptFaktura"
     const val ADD_BY_HAND_ROUTE = "addByHandFaktura"
+    const val SETTINGS_ROUTE = "settings"
 }

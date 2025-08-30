@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -23,6 +25,7 @@ import com.dolan.photoapp.R
 fun MainDrawer(
     navigateToMakePhoto: () -> Unit,
     navigateToExport: () -> Unit,
+    navigateToSettings: () -> Unit,
     closeDrawer: () -> Unit,
     onSignout: () -> Unit,
     modifier: Modifier = Modifier
@@ -45,6 +48,13 @@ fun MainDrawer(
             icon = { Icon(painterResource(R.drawable.upload_file), null) },
             selected = false,
             onClick = { navigateToExport(); closeDrawer() },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+        NavigationDrawerItem(
+            label = { Text("Ustawienia") },
+            icon = { Icon(Icons.Default.Settings, null) },
+            selected = false,
+            onClick = { navigateToSettings(); closeDrawer() },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
 
